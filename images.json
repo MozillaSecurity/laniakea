@@ -1,0 +1,8 @@
+{
+	"default": {
+		"image_id":"ami-555d2465",
+		"instance_type": "m3.medium",
+		"security_groups": ["laniakea"],
+		"key_name": "cdiehlAWSFuzz" 
+	}
+}
