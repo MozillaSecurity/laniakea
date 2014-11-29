@@ -24,7 +24,8 @@ Edit images.json with your AWS AMI data
 }
 ```
 
-Add your setup script which is going to be used for provisioning your EC2 instances to user_data/. If you add a custom script rather than modifying "default.sh" than add the path to the parameter "-user-data".
+Add your setup script which is going to be used for provisioning your EC2 instances to "user_data/". 
+If you add a custom script rather than modifying "default.sh" then use the "-user-data" parameter.
 
 <h4>Basic Usage</h4>
 ```
@@ -53,3 +54,30 @@ Add your setup script which is going to be used for provisioning your EC2 instan
 [Laniakea] 2014-11-29 12:03:20,702 INFO: [(u'i-98312d97', u'terminated')] - {u'Name': u'peach'}
 ```
 
+<h4>Help Menu</h4>
+```
+% ./laniakea.py -h
+usage: ./laniakea.py (-create | -stop | -terminate | -status) [-tags dict]
+                     [-only dict] [-count #] [-image-name str] [-images path]
+                     [-profile str] [-user-data path] [-logging #]
+
+Laniakea Runtime
+
+mandatory arguments:
+  -create          create instance/s (default: False)
+  -stop            stop instance/s (default: False)
+  -terminate       terminate instance/s (default: False)
+  -status          list current state of instance/s (default: False)
+
+optional arguments:
+  -tags dict       tag instance/s (default: {})
+  -only dict       filter instance/s (default: {})
+  -count #         number of instances to launch (default: 1)
+  -image-name str  name of image definition (default: default)
+  -images path     EC2 image definitions (default: images.json)
+  -profile str     AWS profile name in .boto (default: laniakea)
+  -user-data path  data script for cloud-init (default: user_data/default.sh)
+  -logging #       verbosity level of the logging module (default: 20)
+
+The exit status is 0 for non-failures and -1 for failures.
+```
