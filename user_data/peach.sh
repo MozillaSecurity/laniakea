@@ -7,6 +7,8 @@ apt-get --yes --quiet install python python-pip python-dev git
 apt-get --yes --quiet install libxml2-dev libxslt1-dev lib32z1-dev # Peach: lxml
 apt-get --yes --quiet install s3cmd # Peach: userdata.py
 
+# -----------------------------------------------------------------------------
+
 # Add GitHub as a known host
 ssh-keyscan github.com >> /root/.ssh/known_hosts
 
@@ -48,21 +50,25 @@ EOF
 chmod 600 /root/.ssh/id_rsa.peach
 chmod 600 /root/.ssh/id_rsa.pits
 
+# -----------------------------------------------------------------------------
+
 # Checkout Fuzzer
 git clone -v --depth 1 git@peach:MozillaSecurity/peach.git
-git clone -v --depth 1 git@pits:MozillaSecurity/pits.git peach/Pits
 cd peach
-sudo pip -q install -r requirements.txt
+git clone -v --depth 1 git@pits:MozillaSecurity/pits.git Pits
+pip -q install -r requirements.txt
 python scripts/userdata.py -sync
 
 # Download Firefox
 wget --no-check-certificate -r --no-parent -A firefox-*.en-US.linux-x86_64-asan.tar.bz2 https://ftp.mozilla.org/pub/mozilla.org/firefox/tinderbox-builds/mozilla-inbound-linux64-asan/latest/
-wget --no-check-certificate -r --no-parent -A firefox-*.txt https://ftp.mozilla.org/pub/mozilla.org/firefox/tinderbox-builds/mozilla-inbound-linux64-asan/latest/
-cd ftp.mozilla.org/pub/mozilla.org/firefox/tinderbox-builds/mozilla-inbound-linux64-asan/latest/
-tar xvfj *.tar.bz2
+#wget --no-check-certificate -r --no-parent -A firefox-*.txt https://ftp.mozilla.org/pub/mozilla.org/firefox/tinderbox-builds/mozilla-inbound-linux64-asan/latest/
+tar xvfj ftp.mozilla.org/pub/mozilla.org/firefox/tinderbox-builds/mozilla-inbound-linux64-asan/latest/*.tar.bz2
 
 # Run FuzzingBot
-./scripts/peachbot.py -data Resources
+xvfb-run ./scripts/peachbot.py -data .
+
+# -----------------------------------------------------------------------------
 
 # Stop Instance
-shutdown -h now
+# shutdown -h now
+
