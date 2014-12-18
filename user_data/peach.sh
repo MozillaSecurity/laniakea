@@ -56,7 +56,6 @@ chmod 600 /root/.ssh/id_rsa.pits
 
 # -----------------------------------------------------------------------------
 
-
 cd /home/ubuntu
 
 # Download Target
@@ -70,6 +69,9 @@ cd peach
 git clone -v --depth 1 git@pits:MozillaSecurity/pits.git Pits
 pip -q install -r requirements.txt
 python scripts/userdata.py -sync
+
+# Checkout FuzzManager
+git clone -v --depth 1 https://github.com/MozillaSecurity/FuzzManager.git Peach/Utilities/FuzzManager
 
 # Run FuzzingBot
 xvfb-run ./scripts/peachbot.py -data . -pits Pits/
