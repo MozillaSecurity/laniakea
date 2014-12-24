@@ -1,6 +1,7 @@
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
+import os
 import gzip
 
 from email import encoders
@@ -9,7 +10,8 @@ from email.mime.base import MIMEBase
 from email.mime.multipart import MIMEMultipart
 
 
-class Multipart(object):
+class MultipartUserData(object):
+    """Combine different types of user-data scripts into a single multipart file."""
     MIME = {
         '#include': 'text/x-include-url',
         '#include-once': 'text/x-include-once-url',
@@ -25,32 +27,32 @@ class Multipart(object):
         self.container = MIMEMultipart()
 
     def add(self, path, custom_mime_type="text/plain"):
-        main_type, sub_type = self.determine_mime_type(path, custom_mime_type)
-        if main_type == 'text':
-            msg = self._add_text(path, sub_type)
+        maintype, subtype = self.get_mime_type(path, custom_mime_type)
+        if maintype == 'text':
+            msg = self._add_text(path, subtype)
         else:
-            msg = self._add_base(path, main_type, sub_type)
+            msg = self._add_base(path, maintype, subtype)
         msg.add_header('Content-Disposition', 'attachment', filename=os.path.basename(path))
         self.container.attach(msg)
 
-    def _add_text(self, path, sub_type):
+    def _add_text(self, path, subtype):
         with open(path) as fo:
-            return MIMEText(fo.read(), _subtype=sub_type)
+            return MIMEText(fo.read(), _subtype=subtype)
 
-    def _add_base(self, path, main_type, sub_type):
+    def _add_base(self, path, maintype, subtype):
         with open(path, 'rb') as fo:
-            msg = MIMEBase(main_type, sub_type)
+            msg = MIMEBase(maintype, subtype)
             msg.set_payload(fo.read())
             encoders.encode_base64(msg)
             return msg
 
-    def determine_mime_type(self, path, default="text/plain"):
+    def get_mime_type(self, path, default="text/plain"):
         with open(path, 'rb') as fo:
             line = fo.readline()
         mime_type = default
-        for shebang in Multipart.MIME.keys():
+        for shebang in MultipartUserData.MIME.keys():
             if line.startswith(shebang):
-                mime_type = Multipart.MIME[shebang]
+                mime_type = MultipartUserData.MIME[shebang]
                 break
         return mime_type.split('/', 1)
 
