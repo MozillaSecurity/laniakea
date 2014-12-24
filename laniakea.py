@@ -11,54 +11,7 @@ import logging
 import argparse
 import threading
 
-from boto.ec2 import connect_to_region
-
-
-class LaniakeaEngine(object):
-
-    def __init__(self, images):
-        self.ec2 = None
-        self.instances = []
-        self.images = images
-
-    def connect(self, region="us-west-2", **kw_params):
-        self.ec2 = connect_to_region(region, **kw_params)
-
-    def create(self, instance_type='default', tags=None):
-        reservation = self.ec2.run_instances(**self.images[instance_type])
-        instance = reservation.instances[0]
-        self.ec2.create_tags([instance.id], tags or {})
-        while instance.state == 'pending':
-            time.sleep(0.5)
-            instance.update()
-        logging.info("DNS: %s (%s)" % (instance.public_dns_name, instance.ip_address))
-        self.instances.append(instance)
-
-    def state(self, instances=None):
-        instances = instances or self.instances
-        if not instances:
-            return
-        [instance.update() for instance in instances]
-        return [(instance.id, instance.state) for instance in instances]
-
-    def stop(self, instances=None):
-        instances = instances or self.instances
-        if not instances:
-            return
-        self.ec2.stop_instances([instance.id for instance in instances])
-
-    def terminate(self, instances=None):
-        instances = instances or self.instances
-        if not instances:
-            return
-        self.ec2.terminate_instances([instance.id for instance in instances])
-
-    def find(self, filters=None):
-        instances = []
-        reservations = self.ec2.get_all_instances(filters=filters or {})
-        for reservation in reservations:
-            instances.extend(reservation.instances)
-        return instances
+from core.manager import LaniakeaManager
 
 
 class Laniakea(object):
@@ -103,7 +56,7 @@ class Laniakea(object):
         images = json.loads(args.images.read())
         logging.info("Adding user data script content from %s", args.user_data.name)
         images[args.image_name]["user_data"] = args.user_data.read()
-        cluster = LaniakeaEngine(images)
+        cluster = LaniakeaManager(images)
         logging.info("Using Boto configuration profile '%s'" % args.profile)
         cluster.connect(profile_name=args.profile)
         if args.create:
@@ -122,7 +75,7 @@ class Laniakea(object):
         if args.status:
             instances = cluster.find(filters=args.only)
             for instance in instances:
-                logging.info("%s - %s" % (cluster.state([instance]), instance.tags))
+                logging.info("%s (%s) - %s" % (cluster.state([instance]), instance.ip_address, instance.tags))
         return 0
 
 
