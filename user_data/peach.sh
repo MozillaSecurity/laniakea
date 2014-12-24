@@ -74,4 +74,4 @@ python scripts/userdata.py -sync
 git clone -v --depth 1 https://github.com/MozillaSecurity/FuzzManager.git Peach/Utilities/FuzzManager
 
 # Run FuzzingBot
-xvfb-run ./scripts/peachbot.py -data . -pits Pits/
+xvfb-run ./scripts/peachbot.py -tasks 50 -data . -pits Pits/ -macros FuzzManagerServerAuthToken= FuzzManagerTargetVersion=
