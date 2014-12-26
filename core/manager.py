@@ -22,7 +22,7 @@ class LaniakeaManager(object):
         instance = reservation.instances[0]
         self.ec2.create_tags([instance.id], tags or {})
         while instance.state == 'pending':
-            time.sleep(0.5)
+            time.sleep(2.5)
             instance.update()
         logging.info("DNS: %s (%s)" % (instance.public_dns_name, instance.ip_address))
         self.instances.append(instance)
