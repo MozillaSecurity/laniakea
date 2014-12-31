@@ -59,9 +59,12 @@ chmod 600 /root/.ssh/id_rsa.pits
 cd /home/ubuntu
 
 # Download Target
-wget -r --no-parent -A firefox-*.en-US.linux-x86_64-asan.tar.bz2 https://ftp.mozilla.org/pub/mozilla.org/firefox/tinderbox-builds/mozilla-inbound-linux64-asan/latest/
-wget -r --no-parent -A firefox-*.txt https://ftp.mozilla.org/pub/mozilla.org/firefox/tinderbox-builds/mozilla-inbound-linux64-asan/latest/
-tar xvfj ftp.mozilla.org/pub/mozilla.org/firefox/tinderbox-builds/mozilla-inbound-linux64-asan/latest/*.tar.bz2
+TARGET_LOCATION="ftp.mozilla.org/pub/mozilla.org/firefox/tinderbox-builds/mozilla-inbound-linux64-asan/latest"
+TARGET_URL="ftp://"$TARGET_LOCATION
+wget --force-directories --no-parent --glob=on $TARGET_URL/firefox-*.en-US.linux-x86_64-asan.tar.bz2
+wget --force-directories --no-parent --glob=on $TARGET_URL/*.txt -O $TARGET_LOCATION/revision.txt
+tar xvfj $TARGET_LOCATION/firefox-*.en-US.linux-x86_64-asan.tar.bz2
+TARGET_VERSION=`cat $TARGET_LOCATION/revision.txt`
 
 # Checkout Fuzzer
 git clone -v --depth 1 git@peach:MozillaSecurity/peach.git
@@ -70,8 +73,9 @@ git clone -v --depth 1 git@pits:MozillaSecurity/pits.git Pits
 pip -q install -r requirements.txt
 python scripts/userdata.py -sync
 
-# Checkout FuzzManager
+# Checkout and setup FuzzManager
 git clone -v --depth 1 https://github.com/MozillaSecurity/FuzzManager.git Peach/Utilities/FuzzManager
+pip install -r Peach/Utilities/FuzzManager/requirements.txt
 
 # Run FuzzingBot
-xvfb-run ./scripts/peachbot.py -tasks 50 -data . -pits Pits/ -macros FuzzManagerServerAuthToken= FuzzManagerTargetVersion=
+xvfb-run ./scripts/peachbot.py -tasks 50 -data . -pits Pits/ -macros FuzzManagerServerAuthToken=41a4d5fd011f058ae32d4d71f99a45457e891d86 FuzzManagerTargetVersion=$TARGET_VERSION
