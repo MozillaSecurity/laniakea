@@ -3,6 +3,15 @@
 		"image_id":"ami-555d2465",
 		"instance_type": "m3.medium",
 		"security_groups": ["laniakea"],
-		"key_name": "cdiehlAWSFuzz" 
+		"key_name": "cdiehlAWSFuzz",
+	  	"min_count": 10,
+	  	"max_count": 10
+	},
+  	"ec2-spot": {
+		"image_id":"ami-555d2465",
+		"instance_type": "m3.medium",
+		"security_groups": ["laniakea"],
+		"key_name": "cdiehlAWSFuzz",
+	  	"count": 20
 	}
 }
