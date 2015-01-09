@@ -8,6 +8,7 @@ Laniakea is a utility for managing EC2 instances at AWS and aids in setting up a
 """
 import os
 import ast
+import re
 import sys
 import json
 import logging
@@ -48,6 +49,8 @@ class LaniakeaCommandLine(object):
         o.add_argument('-user-data', metavar='path', type=argparse.FileType(),
                        default=os.path.relpath(os.path.join(LaniakeaCommandLine.HOME, 'user_data', 'default.sh')),
                        help='data script for cloud-init')
+        o.add_argument('-user-data-macros', dest='macros', nargs='+', type=str, help="List of macros in the form 'KEY=VALUE'")
+
         o.add_argument('-max-spot-price', metavar='#', type=float, default=0.100, help='max price for spot instances')
         o.add_argument('-logging', metavar='#', default=20, type=int, choices=range(10, 60, 10),
                        help='verbosity level of the logging module')
@@ -56,6 +59,21 @@ class LaniakeaCommandLine(object):
         o.add_argument('-version', action='version', version='%(prog)s 0.2', help=argparse.SUPPRESS)
         return parser.parse_args()
 
+    @staticmethod
+    def macro_filter(user_data, raw_macros):
+        macros = {}
+        if raw_macros:
+            macros = dict(kv.split('=', 1) for kv in raw_macros)
+            
+        macro_vars = re.findall("@([a-zA-Z0-9]+)@", user_data)
+        for macro_var in macro_vars:
+            if not macro_var in macros:
+                logging.error("Undefined variable @%s@ in user-data script" % macro_var)
+                return
+            user_data = user_data.replace("@%s@" % macro_var, macros[macro_var])
+        
+        return user_data
+    
     @classmethod
     def main(cls):
         args = cls.parse_args()
@@ -63,13 +81,20 @@ class LaniakeaCommandLine(object):
                             level=args.logging,
                             datefmt="%Y-%m-%d %H:%M:%S")
         Focus.init() if args.focus else Focus.disable()
+        
         logging.info('Using image definition "%s" from %s.', Focus.info(args.image_name), Focus.info(args.images.name))
         images = json.loads(args.images.read())
+        
         logging.info('Adding user data script content from %s.', Focus.info(args.user_data.name))
-        images[args.image_name]['user_data'] = args.user_data.read()
+        user_data = cls.macro_filter(args.user_data.read(), args.macros)
+        if not user_data:
+            return 1
+        images[args.image_name]['user_data'] = user_data
+        
         cluster = Laniakea(images)
         logging.info('Using Boto configuration profile "%s".' % Focus.info(args.profile))
         cluster.connect(profile_name=args.profile)
+        
         if args.create:
             cluster.create_on_demand(args.image_name, args.tags)
         if args.create_spot:
@@ -81,6 +106,7 @@ class LaniakeaCommandLine(object):
         if args.status:
             for i in cluster.find(filters=args.only):
                 logging.info('%s is %s at %s - tags: %s', i.id, i.state, i.ip_address, i.tags)
+                
         return 0
 
 
