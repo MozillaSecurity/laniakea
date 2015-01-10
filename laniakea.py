@@ -51,6 +51,7 @@ class LaniakeaCommandLine(object):
                        default=os.path.relpath(os.path.join(LaniakeaCommandLine.HOME, 'user_data', 'default.sh')),
                        help='data script for cloud-init')
         o.add_argument('-user-data-macros', nargs='+', type=str, help="list of macros in the form 'key=value'")
+        o.add_argument('-list-user-data-macros', action='store_true', help="available macros inside user-data scripts")
         o.add_argument('-max-spot-price', metavar='#', type=float, default=0.100, help='max price for spot instances')
         o.add_argument('-logging', metavar='#', default=20, type=int, choices=range(10, 60, 10),
                        help='verbosity level of the logging module')
@@ -74,6 +75,11 @@ class LaniakeaCommandLine(object):
             user_data = user_data.replace("@%s@" % macro_var, macros[macro_var])
 
         return user_data
+
+    @staticmethod
+    def list_macros(user_data):
+        macros = re.findall("@([a-zA-Z0-9]+)@", user_data)
+        logging.info("List of available macros: %r", macros)
     
     @classmethod
     def main(cls):
@@ -86,12 +92,16 @@ class LaniakeaCommandLine(object):
         logging.info('Using image definition "%s" from %s.', Focus.info(args.image_name), Focus.info(args.images.name))
         images = json.loads(args.images.read())
         
-        logging.info('Adding user data script content from %s.', Focus.info(args.user_data.name))
+        logging.info('Reading user data script content from %s.', Focus.info(args.user_data.name))
+        if args.list_user_data_macros:
+            cls.list_macros(args.user_data.read())
+            return 0
+
         user_data = cls.macro_filter(args.user_data.read(), args.user_data_macros)
         if not user_data:
             return 1
         images[args.image_name]['user_data'] = user_data
-        
+
         cluster = Laniakea(images)
         logging.info('Using Boto configuration profile "%s".', Focus.info(args.profile))
         cluster.connect(profile_name=args.profile)
