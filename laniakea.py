@@ -23,6 +23,7 @@ class LaniakeaCommandLine(object):
     Command-line interface for Laniakea.
     """
     HOME = os.path.dirname(os.path.abspath(__file__))
+    VERSION = 0.3
 
     @staticmethod
     def parse_args():
@@ -49,14 +50,14 @@ class LaniakeaCommandLine(object):
         o.add_argument('-user-data', metavar='path', type=argparse.FileType(),
                        default=os.path.relpath(os.path.join(LaniakeaCommandLine.HOME, 'user_data', 'default.sh')),
                        help='data script for cloud-init')
-        o.add_argument('-user-data-macros', dest='macros', nargs='+', type=str, help="List of macros in the form 'KEY=VALUE'")
-
+        o.add_argument('-user-data-macros', nargs='+', type=str, help="list of macros in the form 'key=value'")
         o.add_argument('-max-spot-price', metavar='#', type=float, default=0.100, help='max price for spot instances')
         o.add_argument('-logging', metavar='#', default=20, type=int, choices=range(10, 60, 10),
                        help='verbosity level of the logging module')
         o.add_argument('-focus', action='store_true', default=False, help='colorized output')
         o.add_argument('-h', '-help', '--help', action='help', help=argparse.SUPPRESS)
-        o.add_argument('-version', action='version', version='%(prog)s 0.2', help=argparse.SUPPRESS)
+        o.add_argument('-version', action='version', version='%(prog)s {}'.format(LaniakeaCommandLine.VERSION),
+                       help=argparse.SUPPRESS)
         return parser.parse_args()
 
     @staticmethod
@@ -64,14 +65,14 @@ class LaniakeaCommandLine(object):
         macros = {}
         if raw_macros:
             macros = dict(kv.split('=', 1) for kv in raw_macros)
-            
+
         macro_vars = re.findall("@([a-zA-Z0-9]+)@", user_data)
         for macro_var in macro_vars:
-            if not macro_var in macros:
-                logging.error("Undefined variable @%s@ in user-data script" % macro_var)
+            if macro_var not in macros:
+                logging.error("Undefined variable @%s@ in user-data script", macro_var)
                 return
             user_data = user_data.replace("@%s@" % macro_var, macros[macro_var])
-        
+
         return user_data
     
     @classmethod
@@ -86,13 +87,13 @@ class LaniakeaCommandLine(object):
         images = json.loads(args.images.read())
         
         logging.info('Adding user data script content from %s.', Focus.info(args.user_data.name))
-        user_data = cls.macro_filter(args.user_data.read(), args.macros)
+        user_data = cls.macro_filter(args.user_data.read(), args.user_data_macros)
         if not user_data:
             return 1
         images[args.image_name]['user_data'] = user_data
         
         cluster = Laniakea(images)
-        logging.info('Using Boto configuration profile "%s".' % Focus.info(args.profile))
+        logging.info('Using Boto configuration profile "%s".', Focus.info(args.profile))
         cluster.connect(profile_name=args.profile)
         
         if args.create:
