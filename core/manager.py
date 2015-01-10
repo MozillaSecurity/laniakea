@@ -31,6 +31,8 @@ class Laniakea(object):
         :type kw_params: dict
         """
         self.ec2 = boto.ec2.connect_to_region(region, **kw_params)
+        if not self.ec2:
+            raise Exception("Unable to connect to region '%s'" % region)
 
     def create_on_demand(self, instance_type='default', tags=None):
         """Create one or more EC2 on-demand instances.
@@ -74,7 +76,6 @@ class Laniakea(object):
                 if r.status.code == 'fulfilled':
                     instance = self.ec2.get_only_instances(r.instance_id)[0]
                     self.ec2.create_tags([instance.id], tags or {})
-                    instance.update()
                     logging.info('Request %s is %s and %s.',
                                  r.id,
                                  r.status.code,

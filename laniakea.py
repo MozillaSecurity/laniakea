@@ -7,7 +7,6 @@
 Laniakea is a utility for managing EC2 instances at AWS and aids in setting up a fuzzing cluster.
 """
 import os
-import ast
 import re
 import sys
 import json
@@ -17,6 +16,8 @@ import argparse
 from core.common import Focus
 from core.manager import Laniakea
 
+import boto.exception
+
 
 class LaniakeaCommandLine(object):
     """
@@ -25,101 +26,143 @@ class LaniakeaCommandLine(object):
     HOME = os.path.dirname(os.path.abspath(__file__))
     VERSION = 0.3
 
-    @staticmethod
-    def parse_args():
+    def parse_args(self):
         parser = argparse.ArgumentParser(description='Laniakea Runtime',
                                          prog=__file__,
                                          add_help=False,
                                          formatter_class=argparse.ArgumentDefaultsHelpFormatter,
-                                         epilog='The exit status is 0 for non-failures and -1 for failures.')
-        m = parser.add_argument_group('mandatory arguments')
+                                         epilog='The exit status is 0 for non-failures and 1 for failures.')
+
+        m = parser.add_argument_group('Mandatory Arguments')
+
         g = m.add_mutually_exclusive_group(required=True)
-        g.add_argument('-create', action='store_true', help='create on-demand instance/s')
-        g.add_argument('-create-spot', action='store_true', help='create spot instance/s')
-        g.add_argument('-stop', action='store_true', help='stop instance/s')
-        g.add_argument('-terminate', action='store_true', help='terminate instance/s')
-        g.add_argument('-status', action='store_true', help='list current state of instance/s')
-        o = parser.add_argument_group('optional arguments')
-        o.add_argument('-tags', metavar='dict', type=ast.literal_eval, default={}, help='tag instance/s')
-        o.add_argument('-only', metavar='dict', type=ast.literal_eval, default={}, help='filter instance/s')
-        o.add_argument('-image-name', metavar='str', type=str, default="default", help='name of image definition')
+        g.add_argument('-create-on-demand', action='store_true', help='Create on-demand instances')
+        g.add_argument('-create-spot', action='store_true', help='Create spot instances')
+        g.add_argument('-stop', action='store_true', help='Stop active instances')
+        g.add_argument('-terminate', action='store_true', help='Terminate active instances')
+        g.add_argument('-status', action='store_true', help='List current state of instances')
+
+        u = parser.add_argument_group('UserData Arguments')
+        u.add_argument('-userdata', metavar='path', type=argparse.FileType(),
+                       default=os.path.relpath(os.path.join(self.HOME, 'userdata', 'default.sh')),
+                       help='UserData script for cloud-init')
+        u.add_argument('-list-userdata-macros', action='store_true', help='List available macros')
+        u.add_argument('-userdata-macros', metavar='k=v', nargs='+', type=str, help='Set custom macros')
+
+        o = parser.add_argument_group('Optional Arguments')
+        o.add_argument('-tags', metavar='k=v', nargs='+', type=str, help='Assign tags to instances')
+        o.add_argument('-only', metavar='k=v', nargs='+', type=str, help='Filter instances')
+        o.add_argument('-image-name', metavar='str', type=str, default='default', help='Name of image definition')
         o.add_argument('-images', metavar='path', type=argparse.FileType(),
-                       default=os.path.relpath(os.path.join(LaniakeaCommandLine.HOME, "images.json")),
+                       default=os.path.relpath(os.path.join(self.HOME, 'images.json')),
                        help='EC2 image definitions')
         o.add_argument('-profile', metavar='str', type=str, default='laniakea', help='AWS profile name in .boto')
-        o.add_argument('-user-data', metavar='path', type=argparse.FileType(),
-                       default=os.path.relpath(os.path.join(LaniakeaCommandLine.HOME, 'user_data', 'default.sh')),
-                       help='data script for cloud-init')
-        o.add_argument('-user-data-macros', nargs='+', type=str, help="list of macros in the form 'key=value'")
-        o.add_argument('-list-user-data-macros', action='store_true', help="available macros inside user-data scripts")
-        o.add_argument('-max-spot-price', metavar='#', type=float, default=0.100, help='max price for spot instances')
-        o.add_argument('-logging', metavar='#', default=20, type=int, choices=range(10, 60, 10),
-                       help='verbosity level of the logging module')
-        o.add_argument('-focus', action='store_true', default=False, help='colorized output')
+        o.add_argument('-max-spot-price', metavar='#', type=float, default=0.05, help='Max price for spot instances')
+        o.add_argument('-verbosity', default=2, type=int, choices=range(1, 6, 1),
+                       help='Log level for the logging module')
+        o.add_argument('-focus', action='store_true', default=False, help=argparse.SUPPRESS)
         o.add_argument('-h', '-help', '--help', action='help', help=argparse.SUPPRESS)
-        o.add_argument('-version', action='version', version='%(prog)s {}'.format(LaniakeaCommandLine.VERSION),
+        o.add_argument('-version', action='version', version='%(prog)s {}'.format(self.VERSION),
                        help=argparse.SUPPRESS)
+
         return parser.parse_args()
 
-    @staticmethod
-    def macro_filter(user_data, raw_macros):
+    def _convert_pair_to_dict(self, arg):
+        return dict(kv.split('=', 1) for kv in arg)
+
+    def _list_macros(self, userdata):
+        macros = re.findall('@([a-zA-Z0-9]+)@', userdata)
+        logging.info('List of available macros: %r', macros)
+
+    def _substitute_macros(self, userdata, raw_macros):
         macros = {}
         if raw_macros:
-            macros = dict(kv.split('=', 1) for kv in raw_macros)
+            macros = self._convert_pair_to_dict(raw_macros)
 
-        macro_vars = re.findall("@([a-zA-Z0-9]+)@", user_data)
+        macro_vars = re.findall("@([a-zA-Z0-9]+)@", userdata)
         for macro_var in macro_vars:
             if macro_var not in macros:
-                logging.error("Undefined variable @%s@ in user-data script", macro_var)
+                logging.error('Undefined variable @%s@ in UserData script', macro_var)
                 return
-            user_data = user_data.replace("@%s@" % macro_var, macros[macro_var])
+            userdata = userdata.replace('@%s@' % macro_var, macros[macro_var])
 
-        return user_data
+        return userdata
 
-    @staticmethod
-    def list_macros(user_data):
-        macros = re.findall("@([a-zA-Z0-9]+)@", user_data)
-        logging.info("List of available macros: %r", macros)
-    
-    @classmethod
-    def main(cls):
-        args = cls.parse_args()
+    def main(self):
+        args = self.parse_args()
+
         logging.basicConfig(format='[Laniakea] %(asctime)s %(levelname)s: %(message)s',
-                            level=args.logging,
-                            datefmt="%Y-%m-%d %H:%M:%S")
+                            level=args.verbosity * 10,
+                            datefmt='%Y-%m-%d %H:%M:%S')
+
         Focus.init() if args.focus else Focus.disable()
-        
+
+        args.only = self._convert_pair_to_dict(args.only or "")
+        args.tags = self._convert_pair_to_dict(args.tags or "")
+
         logging.info('Using image definition "%s" from %s.', Focus.info(args.image_name), Focus.info(args.images.name))
-        images = json.loads(args.images.read())
-        
-        logging.info('Reading user data script content from %s.', Focus.info(args.user_data.name))
-        if args.list_user_data_macros:
-            cls.list_macros(args.user_data.read())
-            return 0
-
-        user_data = cls.macro_filter(args.user_data.read(), args.user_data_macros)
-        if not user_data:
+        try:
+            images = json.loads(args.images.read())
+        except ValueError as msg:
+            logging.error('Unable to parse %s: %s', args.images.name, msg)
             return 1
-        images[args.image_name]['user_data'] = user_data
 
-        cluster = Laniakea(images)
+        logging.info('Reading user data script content from %s.', Focus.info(args.userdata.name))
+        if args.list_userdata_macros:
+            self._list_macros(args.userdata.read())
+            return 0
+        userdata = self._substitute_macros(args.userdata.read(), args.userdata_macros)
+        if not userdata:
+            return 1
+
+        images[args.image_name]['user_data'] = userdata
+
         logging.info('Using Boto configuration profile "%s".', Focus.info(args.profile))
-        cluster.connect(profile_name=args.profile)
-        
-        if args.create:
-            cluster.create_on_demand(args.image_name, args.tags)
+        cluster = Laniakea(images)
+        try:
+            cluster.connect(profile_name=args.profile)
+        except Exception as msg:
+            logging.error(msg)
+            return 1
+
+        if args.create_on_demand:
+            try:
+                cluster.create_on_demand(args.image_name, args.tags)
+            except boto.exception.EC2ResponseError as msg:
+                logging.error(msg)
+                return 1
+
         if args.create_spot:
-            cluster.create_spot(args.max_spot_price, args.image_name, args.tags)
+            try:
+                cluster.create_spot(args.max_spot_price, args.image_name, args.tags)
+            except boto.exception.EC2ResponseError as msg:
+                logging.error(msg)
+                return 1
+
         if args.stop:
-            cluster.stop(cluster.find(filters=args.only))
+            try:
+                cluster.stop(cluster.find(filters=args.only))
+            except boto.exception.EC2ResponseError as msg:
+                logging.error(msg)
+                return 1
+
         if args.terminate:
-            cluster.terminate(cluster.find(filters=args.only))
+            try:
+                cluster.terminate(cluster.find(filters=args.only))
+            except boto.exception.EC2ResponseError as msg:
+                logging.error(msg)
+                return 1
+
         if args.status:
-            for i in cluster.find(filters=args.only):
-                logging.info('%s is %s at %s - tags: %s', i.id, i.state, i.ip_address, i.tags)
-                
+            try:
+                for i in cluster.find(filters=args.only):
+                    logging.info('%s is %s at %s - tags: %s', i.id, i.state, i.ip_address, i.tags)
+            except boto.exception.EC2ResponseError as msg:
+                logging.error(msg)
+                return 1
+
         return 0
 
 
 if __name__ == '__main__':
-    sys.exit(LaniakeaCommandLine.main())
+    sys.exit(LaniakeaCommandLine().main())

@@ -12,6 +12,6 @@
 		"instance_type": "m3.medium",
 		"security_groups": ["laniakea"],
 		"key_name": "cdiehlAWSFuzz",
-	  	"count": 20
+	  	"count": 10
 	}
 }
