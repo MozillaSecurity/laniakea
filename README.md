@@ -28,22 +28,22 @@ Edit images.json with your AWS AMI data.
 }
 ```
 
-Add your user-data script - which is going to be used for provisioning your EC2 instances - to "user_data/".
-If you add a custom user-script rather than modifying "default.sh" then provide the path to that script to the "-user-data" parameter.
+Add your user-data script - which is going to be used for provisioning your EC2 instances - to "userdata/".
+If you add a custom user-script rather than modifying "default.sh" then provide the path to that script to the "-userdata" parameter.
 
 <h4>Basic Usage</h4>
 ```
-% ./laniakea.py -create -tags '{"Name": "peach"}'
-% ./laniakea.py -create-spot -tags '{"Name": "peach"}' -image-name ec2-spot -max-spot-price 0.100
-% ./laniakea.py -status -only "{'tag:Name': 'peach'}"
-% ./laniakea.py -terminate -only "{'tag:Name': 'peach'}"
+% ./laniakea.py -create-on-demand -tags Name=peach
+% ./laniakea.py -create-spot -tags Name=peach -image-name ec2-spot -userdata userdata/peach.private.sh
+% ./laniakea.py -status -only tag:Name=peach
+% ./laniakea.py -terminate -only tag:Name=peach
 ```
 
 <h4>Example</h4>
 ```
-% ./laniakea.py -create -tags '{"Name": "peach"}' -user-data user_data/peach.private.sh
+% ./laniakea.py -create-on-demand -tags Name=peach -userdata userdata/peach.private.sh
 [Laniakea] 2015-01-05 00:17:15 INFO: Using image definition "default" from images.json.
-[Laniakea] 2015-01-05 00:17:15 INFO: Adding user data script content from user_data/peach.private.sh.
+[Laniakea] 2015-01-05 00:17:15 INFO: Adding user data script content from userdata/peach.private.sh.
 [Laniakea] 2015-01-05 00:17:15 INFO: Using Boto configuration profile "laniakea".
 [Laniakea] 2015-01-05 00:17:40 INFO: i-7332e57d is running at ec2-54-149-44-1.us-west-2.compute.amazonaws.com (54.149.44.1)
 [Laniakea] 2015-01-05 00:17:40 INFO: i-7132e57f is running at ec2-54-149-43-14.us-west-2.compute.amazonaws.com (54.149.43.14)
@@ -56,9 +56,9 @@ If you add a custom user-script rather than modifying "default.sh" then provide 
 [Laniakea] 2015-01-05 00:17:41 INFO: i-7032e57e is running at ec2-54-149-93-26.us-west-2.compute.amazonaws.com (54.149.93.26)
 [Laniakea] 2015-01-05 00:17:41 INFO: i-7532e57b is running at ec2-54-149-38-127.us-west-2.compute.amazonaws.com (54.149.38.127)
 
-% ./laniakea.py -status -only "{'tag:Name': 'peach', 'instance-state-code': 16}"
+% ./laniakea.py -status -only tag:Name=peach instance-state-code=16
 [Laniakea] 2015-01-05 00:34:57 INFO: Using image definition "default" from images.json.
-[Laniakea] 2015-01-05 00:34:57 INFO: Adding user data script content from user_data/default.sh.
+[Laniakea] 2015-01-05 00:34:57 INFO: Adding user data script content from userdata/default.sh.
 [Laniakea] 2015-01-05 00:34:57 INFO: Using Boto configuration profile "laniakea".
 [Laniakea] 2015-01-05 00:35:01 INFO: i-e536e1eb is running at 54.149.155.103 - tags: {u'Name': u'peach'}
 [Laniakea] 2015-01-05 00:35:01 INFO: i-bd35e2b3 is running at 54.149.216.72 - tags: {u'Name': u'peach'}
@@ -74,31 +74,40 @@ If you add a custom user-script rather than modifying "default.sh" then provide 
 
 <h4>Help Menu</h4>
 ```
-usage: ./laniakea.py (-create | -create-spot | -stop | -terminate | -status)
-                     [-tags dict] [-only dict] [-image-name str]
-                     [-images path] [-profile str] [-user-data path]
-                     [-max-spot-price #] [-logging #] [-focus]
+usage: ./laniakea.py
+                     (-create-on-demand | -create-spot | -stop | -terminate | -status)
+                     [-userdata path] [-list-userdata-macros]
+                     [-userdata-macros k=v [k=v ...]] [-tags k=v [k=v ...]]
+                     [-only k=v [k=v ...]] [-image-name str] [-images path]
+                     [-profile str] [-max-spot-price #]
+                     [-verbosity {1,2,3,4,5}]
 
 Laniakea Runtime
 
-mandatory arguments:
-  -create            create on-demand instance/s (default: False)
-  -create-spot       create spot instance/s (default: False)
-  -stop              stop instance/s (default: False)
-  -terminate         terminate instance/s (default: False)
-  -status            list current state of instance/s (default: False)
+Mandatory Arguments:
+  -create-on-demand     Create on-demand instances (default: False)
+  -create-spot          Create spot instances (default: False)
+  -stop                 Stop active instances (default: False)
+  -terminate            Terminate active instances (default: False)
+  -status               List current state of instances (default: False)
 
-optional arguments:
-  -tags dict         tag instance/s (default: {})
-  -only dict         filter instance/s (default: {})
-  -image-name str    name of image definition (default: default)
-  -images path       EC2 image definitions (default: images.json)
-  -profile str       AWS profile name in .boto (default: laniakea)
-  -user-data path    data script for cloud-init (default:
-                     user_data/default.sh)
-  -max-spot-price #  max price for spot instances (default: 0.1)
-  -logging #         verbosity level of the logging module (default: 20)
-  -focus             colorized output (default: False)
+UserData Arguments:
+  -userdata path        UserData script for cloud-init (default:
+                        userdata/default.sh)
+  -list-userdata-macros
+                        List available macros (default: False)
+  -userdata-macros k=v [k=v ...]
+                        Set custom macros (default: None)
 
-The exit status is 0 for non-failures and -1 for failures.
+Optional Arguments:
+  -tags k=v [k=v ...]   Assign tags to instances (default: None)
+  -only k=v [k=v ...]   Filter instances (default: None)
+  -image-name str       Name of image definition (default: default)
+  -images path          EC2 image definitions (default: images.json)
+  -profile str          AWS profile name in .boto (default: laniakea)
+  -max-spot-price #     Max price for spot instances (default: 0.05)
+  -verbosity {1,2,3,4,5}
+                        Log level for the logging module (default: 2)
+
+The exit status is 0 for non-failures and 1 for failures.
 ```
