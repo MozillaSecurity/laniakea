@@ -47,15 +47,16 @@ class LaniakeaCommandLine(object):
                        default=os.path.relpath(os.path.join(self.HOME, 'userdata', 'default.sh')),
                        help='UserData script for cloud-init')
         u.add_argument('-list-userdata-macros', action='store_true', help='List available macros')
-        u.add_argument('-userdata-macros', metavar='k=v', nargs='+', type=str, help='Set custom macros')
+        u.add_argument('-userdata-macros', metavar='k=v', nargs='+', type=str, help='Custom macros')
 
         o = parser.add_argument_group('Optional Arguments')
         o.add_argument('-tags', metavar='k=v', nargs='+', type=str, help='Assign tags to instances')
         o.add_argument('-only', metavar='k=v', nargs='+', type=str, help='Filter instances')
-        o.add_argument('-image-name', metavar='str', type=str, default='default', help='Name of image definition')
         o.add_argument('-images', metavar='path', type=argparse.FileType(),
                        default=os.path.relpath(os.path.join(self.HOME, 'images.json')),
                        help='EC2 image definitions')
+        o.add_argument('-image-name', metavar='str', type=str, default='default', help='Name of image definition')
+        o.add_argument('-image-args', metavar='k=v', nargs='+', type=str, help='Custom image arguments')
         o.add_argument('-profile', metavar='str', type=str, default='laniakea', help='AWS profile name in .boto')
         o.add_argument('-max-spot-price', metavar='#', type=float, default=0.05, help='Max price for spot instances')
         o.add_argument('-verbosity', default=2, type=int, choices=range(1, 6, 1),
@@ -99,6 +100,7 @@ class LaniakeaCommandLine(object):
 
         args.only = self._convert_pair_to_dict(args.only or "")
         args.tags = self._convert_pair_to_dict(args.tags or "")
+        args.image_args = self._convert_pair_to_dict(args.image_args or {})
 
         logging.info('Using image definition "%s" from %s.', Focus.info(args.image_name), Focus.info(args.images.name))
         try:
@@ -114,8 +116,10 @@ class LaniakeaCommandLine(object):
         userdata = self._substitute_macros(args.userdata.read(), args.userdata_macros)
         if not userdata:
             return 1
-
         images[args.image_name]['user_data'] = userdata
+
+        logging.info("Setting custom image parameters for upcoming instances: %r " % args.image_args)
+        images.update(args.image_args)
 
         logging.info('Using Boto configuration profile "%s".', Focus.info(args.profile))
         cluster = Laniakea(images)
