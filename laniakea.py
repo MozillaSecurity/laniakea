@@ -72,6 +72,7 @@ class LaniakeaCommandLine(object):
         return dict(kv.split('=', 1) for kv in arg)
 
     def _list_macros(self, userdata):
+        # XXX: macros is empty!
         macros = re.findall('@([a-zA-Z0-9]+)@', userdata)
         logging.info('List of available macros: %r', macros)
 
@@ -118,8 +119,9 @@ class LaniakeaCommandLine(object):
             return 1
         images[args.image_name]['user_data'] = userdata
 
-        logging.info("Setting custom image parameters for upcoming instances: %r " % args.image_args)
-        images.update(args.image_args)
+        if args.image_args:
+            logging.info("Setting custom image parameters for upcoming instances: %r " % args.image_args)
+            images.update(args.image_args)
 
         logging.info('Using Boto configuration profile "%s".', Focus.info(args.profile))
         cluster = Laniakea(images)
