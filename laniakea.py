@@ -38,8 +38,8 @@ class LaniakeaCommandLine(object):
         g = m.add_mutually_exclusive_group(required=True)
         g.add_argument('-create-on-demand', action='store_true', help='Create on-demand instances')
         g.add_argument('-create-spot', action='store_true', help='Create spot instances')
-        g.add_argument('-stop', action='store_true', help='Stop active instances')
-        g.add_argument('-terminate', action='store_true', help='Terminate active instances')
+        g.add_argument('-stop', nargs='?', const=0, help='Stop active instances')
+        g.add_argument('-terminate', nargs='?', const=0, help='Terminate active instances')
         g.add_argument('-status', action='store_true', help='List current state of instances')
 
         u = parser.add_argument_group('UserData Arguments')
@@ -147,14 +147,14 @@ class LaniakeaCommandLine(object):
 
         if args.stop:
             try:
-                cluster.stop(cluster.find(filters=args.only))
+                cluster.stop(cluster.find(filters=args.only), int(args.stop))
             except boto.exception.EC2ResponseError as msg:
                 logging.error(msg)
                 return 1
 
         if args.terminate:
             try:
-                cluster.terminate(cluster.find(filters=args.only))
+                cluster.terminate(cluster.find(filters=args.only), int(args.terminate))
             except boto.exception.EC2ResponseError as msg:
                 logging.error(msg)
                 return 1

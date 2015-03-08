@@ -87,24 +87,49 @@ class Laniakea(object):
                                  instance.ip_address)
                     request_ids.pop(request_ids.index(r.id))
 
-    def stop(self, instances):
-        """Stop each provided running instances.
+    def _scale_down(self, instances, count):
+        """Return a list of |count| last created instances by launch time.
+
+        :param instances: A list of instances.
+        :type instances: list
+        :param count: Number of instances to scale down.
+        :type count: integer
+        :return: List of instances to be scaled down.
+        :rtype: list
+        """
+        i = sorted(instances, key=lambda i: i.launch_time, reverse=True)
+        if not i:
+            return []
+        running = len(i)
+        logging.info("%d instance/s are running." % running)
+        logging.info("Scaling down %d instances of those." % count)
+        if count > running:
+            logging.info("Scale-down value is > than running instance/s - using maximum of %d!" % running)
+            count = running
+        return i[0:count]
+
+    def stop(self, instances, count=0):
+        """Stop each provided running instance.
 
         :param instances: A list of instances.
         :type instances: list
         """
         if not instances:
             return
+        if count > 0:
+            instances = self._scale_down(instances, count)
         self.ec2.stop_instances([i.id for i in instances])
 
-    def terminate(self, instances):
-        """Terminate each provided running or stopped instances.
+    def terminate(self, instances, count=0):
+        """Terminate each provided running or stopped instance.
 
         :param instances: A list of instances.
         :type instances: list
         """
         if not instances:
             return
+        if count > 0:
+            instances = self._scale_down(instances, count)
         self.ec2.terminate_instances([i.id for i in instances])
 
     def find(self, filters=None):
