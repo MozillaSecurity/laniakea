@@ -16,7 +16,7 @@ aws_secret_access_key = <your_secret_key>
 Complement the provided **images.json** file with your AWS AMI information.
 ```
 "default": {
-    "image_id":"ami-<AMI_ID>",
+  "image_id":"ami-<AMI_ID>",
   "instance_type": "<INSTANCE_TYPE",
   "security_groups": ["laniakea"],
   "key_name": "<AWS_KEY_NAME>"
@@ -29,12 +29,27 @@ Add your UserData script - which is going to be used for provisioning your EC2 i
 In the likely case that you want to use a custom UserData script rather than modifying the "default.sh" file, then you need to point the "-userdata" parameter to that file.
 
 <h3>Basic Usage Examples</h3>
+
+Run N on-demand instances with a custom -userdata script
 ```
-% ./laniakea.py -create-spot -tags Name=peach -image-name ec2-spot -userdata userdata/peach.private.sh
-% ./laniakea.py -create-on-demand -tags Name=peach -userdata userdata/peach.private.sh
-% ./laniakea.py -status -only tag:Name=peach instance-state-code=16
-% ./laniakea.py -terminate -only tag:Name=peach
+% ./laniakea.py -create-on-demand -tags Name=fuzzer -userdata userdata/peach.private.sh
 ```
+
+Run N spot instances with a custom -userdata script and a -max-spot-price of $0.05
+```
+% ./laniakea.py -create-spot -tags Name=fuzzer -image-name ec2-spot -userdata userdata/peach.private.sh -image-args count=10
+```
+
+Show which instances are running and are tagged with the name 'fuzzer'
+```
+% ./laniakea.py -status -only tag:Name=fuzzer instance-state-code=16
+```
+
+Terminate all running instances which are tagged with the name 'fuzzer'
+```
+% ./laniakea.py -terminate -only tag:Name=fuzzer
+```
+
 
 <h3>Help Menu</h3>
 ```
