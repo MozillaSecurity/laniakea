@@ -24,7 +24,7 @@ class LaniakeaCommandLine(object):
     Command-line interface for Laniakea.
     """
     HOME = os.path.dirname(os.path.abspath(__file__))
-    VERSION = 0.3
+    VERSION = 0.4
 
     def parse_args(self):
         parser = argparse.ArgumentParser(description='Laniakea Runtime',
@@ -71,12 +71,11 @@ class LaniakeaCommandLine(object):
     def _convert_pair_to_dict(self, arg):
         return dict(kv.split('=', 1) for kv in arg)
 
-    def _list_macros(self, userdata):
-        # XXX: macros is empty!
+    def list_tags(self, userdata):
         macros = re.findall('@([a-zA-Z0-9]+)@', userdata)
         logging.info('List of available macros: %r', macros)
 
-    def _substitute_macros(self, userdata, raw_macros):
+    def handle_tags(self, userdata, raw_macros):
         macros = {}
         if raw_macros:
             macros = self._convert_pair_to_dict(raw_macros)
@@ -88,6 +87,25 @@ class LaniakeaCommandLine(object):
                 return
             userdata = userdata.replace('@%s@' % macro_var, macros[macro_var])
 
+        return userdata
+
+    def handle_import_tags(self, userdata):
+        """Handle @import(filepath)@ tags in a UserData script.
+
+        :param userdata: UserData script content.
+        :type userdata: str
+        :return: UserData script with the contents of the imported files.
+        :rtype: str
+        """
+        imports = re.findall("@import\((.*?)\)@", userdata)
+        if not imports:
+            return userdata
+
+        for filepath in imports:
+            logging.info('Processing "import" of %s' % filepath)
+            with open(filepath) as fp:
+                content = fp.read()
+                userdata = userdata.replace("@import(%s)@" % filepath, content)
         return userdata
 
     def main(self):
@@ -103,18 +121,21 @@ class LaniakeaCommandLine(object):
         args.tags = self._convert_pair_to_dict(args.tags or "")
         args.image_args = self._convert_pair_to_dict(args.image_args or {})
 
-        logging.info('Using image definition "%s" from %s.', Focus.info(args.image_name), Focus.info(args.images.name))
+        logging.info('Using image definition "%s" from %s', Focus.info(args.image_name), Focus.info(args.images.name))
         try:
             images = json.loads(args.images.read())
         except ValueError as msg:
             logging.error('Unable to parse %s: %s', args.images.name, msg)
             return 1
 
-        logging.info('Reading user data script content from %s.', Focus.info(args.userdata.name))
+        logging.info('Reading user data script content from %s', Focus.info(args.userdata.name))
+        userdata = args.userdata.read()
         if args.list_userdata_macros:
-            self._list_macros(args.userdata.read())
+            self.list_tags(userdata)
             return 0
-        userdata = self._substitute_macros(args.userdata.read(), args.userdata_macros)
+        userdata = self.handle_import_tags(userdata)
+        userdata = self.handle_tags(userdata, args.userdata_macros)
+        logging.debug("*** UserData ***\n%s" % userdata)
         if not userdata:
             return 1
         images[args.image_name]['user_data'] = userdata
@@ -123,7 +144,7 @@ class LaniakeaCommandLine(object):
             logging.info("Setting custom image parameters for upcoming instances: %r " % args.image_args)
             images.update(args.image_args)
 
-        logging.info('Using Boto configuration profile "%s".', Focus.info(args.profile))
+        logging.info('Using Boto configuration profile "%s"', Focus.info(args.profile))
         cluster = Laniakea(images)
         try:
             cluster.connect(profile_name=args.profile)
