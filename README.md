@@ -1,10 +1,6 @@
 Laniakea
 ========
 
-
-![](http://people.mozilla.com/~cdiehl/img/galaxy.jpg)
-
-
 <h4>Setup</h4>
 ```
 Python 2.x or Python 3.x
