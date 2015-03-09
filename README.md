@@ -1,9 +1,8 @@
 Laniakea
 ========
 
-<h4>Setup</h4>
+<h3>Setup</h3>
 ```
-Python 2.x or Python 3.x
 pip install -r requirements.txt
 ```
 
@@ -14,20 +13,22 @@ aws_access_key_id = <your_access_key_id>
 aws_secret_access_key = <your_secret_key>
 ```
 
-Edit images.json with your AWS AMI data.
+Complement the provided **images.json** file with your AWS AMI information.
 ```
 "default": {
     "image_id":"ami-<AMI_ID>",
-	"instance_type": "<INSTANCE_TYPE",
-	"security_groups": ["laniakea"],
-	"key_name": "<AWS_KEY_NAME>"
+  "instance_type": "<INSTANCE_TYPE",
+  "security_groups": ["laniakea"],
+  "key_name": "<AWS_KEY_NAME>"
 }
 ```
 
-Add your user-data script - which is going to be used for provisioning your EC2 instances - to "userdata/".
-If you add a custom user-script rather than modifying "default.sh" then provide the path to that script to the "-userdata" parameter.
+Add your UserData script - which is going to be used for provisioning your EC2 instances - to the "userdata/" folder.
 
-<h4>Basic Usage</h4>
+**NOTE**
+In the likely case that you want to use a custom UserData script rather than modifying the "default.sh" file, then you need to point the "-userdata" parameter to that file.
+
+<h3>Basic Usage Examples</h3>
 ```
 % ./laniakea.py -create-spot -tags Name=peach -image-name ec2-spot -userdata userdata/peach.private.sh
 % ./laniakea.py -create-on-demand -tags Name=peach -userdata userdata/peach.private.sh
@@ -35,7 +36,7 @@ If you add a custom user-script rather than modifying "default.sh" then provide 
 % ./laniakea.py -terminate -only tag:Name=peach
 ```
 
-<h4>Help Menu</h4>
+<h3>Help Menu</h3>
 ```
 usage: ./laniakea.py
                      (-create-on-demand | -create-spot | -stop [n] | -terminate [n] | -status)
