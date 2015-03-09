@@ -38,20 +38,21 @@ If you add a custom user-script rather than modifying "default.sh" then provide 
 <h4>Help Menu</h4>
 ```
 usage: ./laniakea.py
-                     (-create-on-demand | -create-spot | -stop | -terminate | -status)
+                     (-create-on-demand | -create-spot | -stop [STOP] | -terminate [TERMINATE] | -status)
                      [-userdata path] [-list-userdata-macros]
                      [-userdata-macros k=v [k=v ...]] [-tags k=v [k=v ...]]
-                     [-only k=v [k=v ...]] [-image-name str] [-images path]
-                     [-profile str] [-max-spot-price #]
-                     [-verbosity {1,2,3,4,5}]
+                     [-only k=v [k=v ...]] [-images path] [-image-name str]
+                     [-image-args k=v [k=v ...]] [-profile str]
+                     [-max-spot-price #] [-verbosity {1,2,3,4,5}]
 
 Laniakea Runtime
 
 Mandatory Arguments:
   -create-on-demand     Create on-demand instances (default: False)
   -create-spot          Create spot instances (default: False)
-  -stop                 Stop active instances (default: False)
-  -terminate            Terminate active instances (default: False)
+  -stop [STOP]          Stop active instances (default: None)
+  -terminate [TERMINATE]
+                        Terminate active instances (default: None)
   -status               List current state of instances (default: False)
 
 UserData Arguments:
@@ -60,13 +61,15 @@ UserData Arguments:
   -list-userdata-macros
                         List available macros (default: False)
   -userdata-macros k=v [k=v ...]
-                        Set custom macros (default: None)
+                        Custom macros (default: None)
 
 Optional Arguments:
   -tags k=v [k=v ...]   Assign tags to instances (default: None)
   -only k=v [k=v ...]   Filter instances (default: None)
-  -image-name str       Name of image definition (default: default)
   -images path          EC2 image definitions (default: images.json)
+  -image-name str       Name of image definition (default: default)
+  -image-args k=v [k=v ...]
+                        Custom image arguments (default: None)
   -profile str          AWS profile name in .boto (default: laniakea)
   -max-spot-price #     Max price for spot instances (default: 0.05)
   -verbosity {1,2,3,4,5}
