@@ -38,7 +38,7 @@ If you add a custom user-script rather than modifying "default.sh" then provide 
 <h4>Help Menu</h4>
 ```
 usage: ./laniakea.py
-                     (-create-on-demand | -create-spot | -stop [STOP] | -terminate [TERMINATE] | -status)
+                     (-create-on-demand | -create-spot | -stop [n] | -terminate [n] | -status)
                      [-userdata path] [-list-userdata-macros]
                      [-userdata-macros k=v [k=v ...]] [-tags k=v [k=v ...]]
                      [-only k=v [k=v ...]] [-images path] [-image-name str]
@@ -50,9 +50,8 @@ Laniakea Runtime
 Mandatory Arguments:
   -create-on-demand     Create on-demand instances (default: False)
   -create-spot          Create spot instances (default: False)
-  -stop [STOP]          Stop active instances (default: None)
-  -terminate [TERMINATE]
-                        Terminate active instances (default: None)
+  -stop [n]             Stop active instances (default: None)
+  -terminate [n]        Terminate active instances (default: None)
   -status               List current state of instances (default: False)
 
 UserData Arguments:
