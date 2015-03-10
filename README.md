@@ -17,7 +17,7 @@ Complement the provided **images.json** file with your AWS AMI information.
 ```
 "default": {
   "image_id":"ami-<AMI_ID>",
-  "instance_type": "<INSTANCE_TYPE",
+  "instance_type": "<INSTANCE_TYPE>",
   "security_groups": ["laniakea"],
   "key_name": "<AWS_KEY_NAME>"
 }
@@ -27,6 +27,9 @@ Add your UserData script - which is going to be used for provisioning your EC2 i
 
 **NOTE**
 In the likely case that you want to use a custom UserData script rather than modifying the "default.sh" file, then you need to point the "-userdata" parameter to that file.
+
+Please refer to https://help.ubuntu.com/community/CloudInit to learn more about UserData scripts.
+
 
 <h3>Basic Usage Examples</h3>
 
@@ -54,12 +57,12 @@ Terminate all running instances which are tagged with the name 'fuzzer'
 <h3>Help Menu</h3>
 ```
 usage: ./laniakea.py
-                     (-create-on-demand | -create-spot | -stop [n] | -terminate [n] | -status)
-                     [-userdata path] [-list-userdata-macros]
-                     [-userdata-macros k=v [k=v ...]] [-tags k=v [k=v ...]]
-                     [-only k=v [k=v ...]] [-images path] [-image-name str]
-                     [-image-args k=v [k=v ...]] [-profile str]
-                     [-max-spot-price #] [-verbosity {1,2,3,4,5}]
+     (-create-on-demand | -create-spot | -stop [n] | -terminate [n] | -status)
+     [-userdata path] [-list-userdata-macros]
+     [-userdata-macros k=v [k=v ...]] [-tags k=v [k=v ...]]
+     [-only k=v [k=v ...]] [-images path] [-image-name str]
+     [-image-args k=v [k=v ...]] [-profile str]
+     [-max-spot-price #] [-verbosity {1,2,3,4,5}]
 
 Laniakea Runtime
 
