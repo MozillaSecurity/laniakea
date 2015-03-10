@@ -59,6 +59,7 @@ class LaniakeaCommandLine(object):
         o.add_argument('-image-args', metavar='k=v', nargs='+', type=str, help='Custom image arguments')
         o.add_argument('-profile', metavar='str', type=str, default='laniakea', help='AWS profile name in .boto')
         o.add_argument('-max-spot-price', metavar='#', type=float, default=0.05, help='Max price for spot instances')
+        o.add_argument('-region', type=str, default='us-west-2', help='EC2 region')
         o.add_argument('-verbosity', default=2, type=int, choices=range(1, 6, 1),
                        help='Log level for the logging module')
         o.add_argument('-focus', action='store_true', default=False, help=argparse.SUPPRESS)
@@ -147,7 +148,7 @@ class LaniakeaCommandLine(object):
         logging.info('Using Boto configuration profile "%s"', Focus.info(args.profile))
         cluster = Laniakea(images)
         try:
-            cluster.connect(profile_name=args.profile)
+            cluster.connect(profile_name=args.profile, region=args.region)
         except Exception as msg:
             logging.error(msg)
             return 1

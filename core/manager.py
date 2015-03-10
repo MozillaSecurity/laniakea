@@ -22,7 +22,7 @@ class Laniakea(object):
         self.ec2 = None
         self.images = images
 
-    def connect(self, region='us-west-2', **kw_params):
+    def connect(self, region, **kw_params):
         """Connect to a EC2.
 
         :param region: The name of the region to connect to.
