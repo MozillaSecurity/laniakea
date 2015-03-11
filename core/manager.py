@@ -8,10 +8,27 @@ import logging
 
 try:
     import boto.ec2
+    import boto.exception
 except ImportError as msg:
     logging.error(msg)
     sys.exit(-1)
 
+
+def retryOnEC2Error(method):
+    """
+    Decorator to use with EC2 methods that can temporarily fail
+    """
+    def decorator(self, *args, **options):
+        exceptionRetryCount = 3
+        while True:
+            try:
+                return method(self, *args, **options)
+            except boto.exception.EC2ResponseError, e:
+                exceptionRetryCount -= 1
+                if exceptionRetryCount <= 0:
+                    raise e
+                time.sleep(1)
+    return decorator 
 
 class Laniakea(object):
     """
@@ -21,6 +38,14 @@ class Laniakea(object):
     def __init__(self, images):
         self.ec2 = None
         self.images = images
+
+    @retryOnEC2Error
+    def __create_tags(self, instance, tags):
+        return self.ec2.create_tags([ instance.id ], tags or {})
+
+    @retryOnEC2Error
+    def __update(self, instance):
+        return instance.update()
 
     def connect(self, region, **kw_params):
         """Connect to a EC2.
@@ -43,18 +68,25 @@ class Laniakea(object):
         :type tags: dict
         """
         reservation = self.ec2.run_instances(**self.images[instance_type])
-        self.ec2.create_tags([i.id for i in reservation.instances], tags or {})
+
+        logging.info('Creating requested tags...')
+        for i in reservation.instances:
+            self.__create_tags(i, tags)
+
+        logging.info('Waiting for instances to become ready...')
         while len(reservation.instances):
             for i in reservation.instances:
-                if i.state == 'pending':
-                    i.update()
-                else:
+                if i.state == 'running':
                     reservation.instances.pop(reservation.instances.index(i))
                     logging.info('%s is %s at %s (%s)',
                                  i.id,
                                  i.state,
                                  i.public_dns_name,
                                  i.ip_address)
+                else:
+                    self.__update(i)
+
+
 
     def create_spot(self, price, instance_type='default', tags=None):
         """Create one or more EC2 spot instances.
