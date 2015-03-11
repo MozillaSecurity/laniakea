@@ -70,7 +70,19 @@ class LaniakeaCommandLine(object):
         return parser.parse_args()
 
     def _convert_pair_to_dict(self, arg):
+        """Utility function which transform k=v strings from the command-line into a dict.
+        """
         return dict(kv.split('=', 1) for kv in arg)
+
+    def _convert_str_to_int(self, arg):
+        # FIXME: Convert certain values of keys from images.json to ints.
+        for k, v in arg.items():
+            try:
+                arg[unicode(k)] = int(v)
+            except ValueError as e:
+                # Let's assume it is a str.
+                pass
+        return arg
 
     def list_tags(self, userdata):
         macros = re.findall("@(.*?)@", userdata)
@@ -120,7 +132,7 @@ class LaniakeaCommandLine(object):
 
         args.only = self._convert_pair_to_dict(args.only or "")
         args.tags = self._convert_pair_to_dict(args.tags or "")
-        args.image_args = self._convert_pair_to_dict(args.image_args or {})
+        args.image_args = self._convert_str_to_int(self._convert_pair_to_dict(args.image_args or {}))
 
         logging.info('Using image definition "%s" from %s', Focus.info(args.image_name), Focus.info(args.images.name))
         try:
@@ -143,9 +155,10 @@ class LaniakeaCommandLine(object):
 
         if args.image_args:
             logging.info("Setting custom image parameters for upcoming instances: %r " % args.image_args)
-            images.update(args.image_args)
+            images[args.image_name].update(args.image_args)
 
         logging.info('Using Boto configuration profile "%s"', Focus.info(args.profile))
+
         cluster = Laniakea(images)
         try:
             cluster.connect(profile_name=args.profile, region=args.region)

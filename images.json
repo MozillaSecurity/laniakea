@@ -1,17 +1,17 @@
 {
-	"default": {
-		"image_id":"ami-555d2465",
-		"instance_type": "m3.medium",
-		"security_groups": ["laniakea"],
-		"key_name": "cdiehlAWSFuzz",
-	  	"min_count": 3,
-	  	"max_count": 3
-	},
-  	"ec2-spot": {
-		"image_id":"ami-555d2465",
-		"instance_type": "m3.medium",
-		"security_groups": ["laniakea"],
-		"key_name": "cdiehlAWSFuzz",
-	  	"count": 3
-	}
+    "default": {
+        "image_id":"ami-555d2465",
+        "instance_type": "m3.medium",
+        "security_groups": ["laniakea"],
+        "key_name": "cdiehlAWSFuzz",
+        "min_count": 3,
+        "max_count": 3
+    },
+    "peach": {
+        "image_id":"ami-555d2465",
+        "instance_type": "c3.2xlarge",
+        "security_groups": ["laniakea"],
+        "key_name": "cdiehlAWSFuzz",
+        "count": 3
+    }
 }

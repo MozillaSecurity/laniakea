@@ -41,7 +41,7 @@ class Laniakea(object):
 
     @retry_on_ec2_error
     def __create_tags(self, instance, tags):
-        return self.ec2.create_tags([ instance.id ], tags or {})
+        return self.ec2.create_tags([instance.id], tags or {})
 
     @retry_on_ec2_error
     def __update(self, instance):

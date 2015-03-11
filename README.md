@@ -15,11 +15,23 @@ aws_secret_access_key = <your_secret_key>
 
 Complement the provided **images.json** file with your AWS AMI information.
 ```
+# Example: an on-demand instance
 "default": {
   "image_id":"ami-<AMI_ID>",
   "instance_type": "<INSTANCE_TYPE>",
   "security_groups": ["laniakea"],
-  "key_name": "<AWS_KEY_NAME>"
+  "key_name": "<AWS_KEY_NAME>",
+  "min_count": 3,
+  "max_count": 3
+}
+
+# Example: a spot instance
+"peach": {
+  "image_id":"ami-<AMI_ID>",
+  "instance_type": "<INSTANCE_TYPE>",
+  "security_groups": ["laniakea"],
+  "key_name": "<AWS_KEY_NAME>",
+  "count": 3
 }
 ```
 
@@ -40,7 +52,7 @@ Run N on-demand instances with a custom -userdata script
 
 Run N spot instances with a custom -userdata script and a -max-spot-price of $0.05
 ```
-% ./laniakea.py -create-spot -tags Name=fuzzer -image-name ec2-spot -userdata userdata/peach.private.sh -image-args count=10
+% ./laniakea.py -create-spot -tags Name=fuzzer -image-name peach -userdata userdata/peach.private.sh -image-args count=10
 ```
 
 Show which instances are running and are tagged with the name 'fuzzer'
