@@ -53,6 +53,11 @@ Terminate all running instances which are tagged with the name 'fuzzer'
 % ./laniakea.py -terminate -only tag:Name=fuzzer
 ```
 
+Scale down and terminate the oldest N running instances
+```
+% ./laniakea.py -terminate N -only tag:Name=fuzzer
+```
+
 
 <h3>Help Menu</h3>
 ```
