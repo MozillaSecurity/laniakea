@@ -90,6 +90,7 @@ Optional Arguments:
                         Custom image arguments (default: None)
   -profile str          AWS profile name in .boto (default: laniakea)
   -max-spot-price #     Max price for spot instances (default: 0.05)
+  -region str           EC2 region (default: us-west-2)
   -verbosity {1,2,3,4,5}
                         Log level for the logging module (default: 2)
 
