@@ -14,21 +14,21 @@ except ImportError as msg:
     sys.exit(-1)
 
 
-def retryOnEC2Error(method):
-    """
-    Decorator to use with EC2 methods that can temporarily fail
+def retry_on_ec2_error(method):
+    """Decorator to use with EC2 methods that can temporarily fail.
     """
     def decorator(self, *args, **options):
-        exceptionRetryCount = 3
+        exception_retry_count = 3
         while True:
             try:
                 return method(self, *args, **options)
             except boto.exception.EC2ResponseError, e:
-                exceptionRetryCount -= 1
-                if exceptionRetryCount <= 0:
+                exception_retry_count -= 1
+                if exception_retry_count <= 0:
                     raise e
                 time.sleep(1)
     return decorator 
+
 
 class Laniakea(object):
     """
@@ -39,11 +39,11 @@ class Laniakea(object):
         self.ec2 = None
         self.images = images
 
-    @retryOnEC2Error
+    @retry_on_ec2_error
     def __create_tags(self, instance, tags):
         return self.ec2.create_tags([ instance.id ], tags or {})
 
-    @retryOnEC2Error
+    @retry_on_ec2_error
     def __update(self, instance):
         return instance.update()
 
@@ -85,8 +85,6 @@ class Laniakea(object):
                                  i.ip_address)
                 else:
                     self.__update(i)
-
-
 
     def create_spot(self, price, instance_type='default', tags=None):
         """Create one or more EC2 spot instances.
