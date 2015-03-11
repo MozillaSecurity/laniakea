@@ -73,7 +73,7 @@ class LaniakeaCommandLine(object):
         return dict(kv.split('=', 1) for kv in arg)
 
     def list_tags(self, userdata):
-        macros = re.findall('@([a-zA-Z0-9]+)@', userdata)
+        macros = re.findall("@(.*?)@", userdata)
         logging.info('List of available macros: %r', macros)
 
     def handle_tags(self, userdata, raw_macros):
