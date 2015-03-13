@@ -13,7 +13,7 @@ import json
 import logging
 import argparse
 
-from core.common import Focus
+from core.common import Focus, String
 from core.manager import Laniakea
 
 import boto.exception
@@ -60,7 +60,7 @@ class LaniakeaCommandLine(object):
         o.add_argument('-profile', metavar='str', type=str, default='laniakea', help='AWS profile name in .boto')
         o.add_argument('-max-spot-price', metavar='#', type=float, default=0.05, help='Max price for spot instances')
         o.add_argument('-region', type=str, default='us-west-2', help='EC2 region')
-        o.add_argument('-verbosity', default=2, type=int, choices=range(1, 6, 1),
+        o.add_argument('-verbosity', default=2, type=int, choices=list(range(1, 6, 1)),
                        help='Log level for the logging module')
         o.add_argument('-focus', action='store_true', default=False, help=argparse.SUPPRESS)
         o.add_argument('-h', '-help', '--help', action='help', help=argparse.SUPPRESS)
@@ -76,9 +76,9 @@ class LaniakeaCommandLine(object):
 
     def _convert_str_to_int(self, arg):
         # FIXME: Convert certain values of keys from images.json to ints.
-        for k, v in arg.items():
+        for k, v in list(arg.items()):
             try:
-                arg[unicode(k)] = int(v)
+                arg[String(k)] = int(v)
             except ValueError as e:
                 # Let's assume it is a str and move on.
                 pass

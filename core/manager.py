@@ -22,7 +22,7 @@ def retry_on_ec2_error(method):
         while True:
             try:
                 return method(self, *args, **options)
-            except boto.exception.EC2ResponseError, e:
+            except boto.exception.EC2ResponseError as e:
                 exception_retry_count -= 1
                 if exception_retry_count <= 0:
                     raise e

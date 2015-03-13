@@ -50,3 +50,8 @@ class Focus(type):
     @staticmethod
     def info(msg):
         return Focus.format('info', msg)
+
+
+class String(object):
+    def __new__(self, u_or_str, encoding="utf-8"):
+        return u_or_str if isinstance(u_or_str, str) else u_or_str.decode(encoding)
