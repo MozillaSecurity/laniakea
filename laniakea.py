@@ -38,8 +38,8 @@ class LaniakeaCommandLine(object):
         g = m.add_mutually_exclusive_group(required=True)
         g.add_argument('-create-on-demand', action='store_true', help='Create on-demand instances')
         g.add_argument('-create-spot', action='store_true', help='Create spot instances')
-        g.add_argument('-stop', nargs='?', const=0, metavar='n', help='Stop active instances')
-        g.add_argument('-terminate', nargs='?', const=0, metavar='n', help='Terminate active instances')
+        g.add_argument('-stop', nargs='?', const=-1, metavar='n', help='Stop active instances')
+        g.add_argument('-terminate', nargs='?', const=-1, metavar='n', help='Terminate active instances')
         g.add_argument('-status', action='store_true', help='List current state of instances')
 
         u = parser.add_argument_group('UserData Arguments')
@@ -80,7 +80,7 @@ class LaniakeaCommandLine(object):
             try:
                 arg[unicode(k)] = int(v)
             except ValueError as e:
-                # Let's assume it is a str.
+                # Let's assume it is a str and move on.
                 pass
         return arg
 
