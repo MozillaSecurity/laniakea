@@ -24,7 +24,7 @@ class LaniakeaCommandLine(object):
     Command-line interface for Laniakea.
     """
     HOME = os.path.dirname(os.path.abspath(__file__))
-    VERSION = 0.4
+    VERSION = 0.5
 
     def parse_args(self):
         parser = argparse.ArgumentParser(description='Laniakea Runtime',
