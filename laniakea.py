@@ -95,7 +95,7 @@ class LaniakeaCommandLine(object):
         if raw_macros:
             macros = self._convert_pair_to_dict(raw_macros)
 
-        macro_vars = re.findall("@([a-zA-Z0-9]+)@", userdata)
+        macro_vars = re.findall("@(.*?)@", userdata)
         for macro_var in macro_vars:
             if macro_var not in macros:
                 logging.error('Undefined variable @%s@ in UserData script', macro_var)

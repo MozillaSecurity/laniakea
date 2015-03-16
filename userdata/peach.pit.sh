@@ -60,6 +60,4 @@ chown -R ubuntu:ubuntu /home/ubuntu
 # Example:
 # ./laniakea.py -create-on-demand -image-args min_count=1 max_count=1 -tags Name=peach -userdata userdata/peach.sh -userdata-macros TARGET_PIT=Pits/Targets/Laniakea/firefox.xml FUZZING_PIT=Pits/Files/MP4/fmp4.xml FILE_SAMPLE_PATH=./Resources/Samples/mp4
 
-su -c "screen -t peach -dmS peach xvfb-run python ./peach.py -target @TARGET_PIT@ \
--pit @FUZZING_PIT@ \
--macro FileSampleMaxFileSize=-1 Strategy=rand.RandomMutationStrategy StrategyParams=SwitchCount=1000,MaxFieldsToMutate=$(($RANDOM % 50)) FileSamplePath=@FILE_SAMPLE_PATH@" ubuntu
+su -c "screen -t peach -dmS peach xvfb-run python ./peach.py -target @TARGET_PIT@ -pit @FUZZING_PIT@ -macro FileSampleMaxFileSize=-1 Strategy=rand.RandomMutationStrategy StrategyParams=SwitchCount=1000,MaxFieldsToMutate=$(($RANDOM % 50)) FileSamplePath=@FILE_SAMPLE_PATH@" ubuntu
