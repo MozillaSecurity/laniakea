@@ -47,27 +47,32 @@ Please refer to https://help.ubuntu.com/community/CloudInit to learn more about 
 
 Run N on-demand instances with a custom -userdata script
 ```
-% ./laniakea.py -create-on-demand -tags Name=fuzzer -userdata userdata/peach.private.sh
+% ./laniakea.py -create-on-demand -tags Name=peach -userdata userdata/peach.private.sh
 ```
 
 Run N spot instances with a custom -userdata script and a -max-spot-price of $0.05
 ```
-% ./laniakea.py -create-spot -tags Name=fuzzer -image-name peach -userdata userdata/peach.private.sh -image-args count=10
+% ./laniakea.py -create-spot -tags Name=peach -image-name peach -userdata userdata/peach.private.sh -image-args count=10
 ```
 
-Show which instances are running and are tagged with the name 'fuzzer'
+Show which instances are running and are tagged with the name 'peach'
 ```
-% ./laniakea.py -status -only tag:Name=fuzzer instance-state-code=16
+% ./laniakea.py -status -only tag:Name=peach instance-state-code=16
 ```
 
-Terminate all running instances which are tagged with the name 'fuzzer'
+Terminate all running instances which are tagged with the name 'peach'
 ```
-% ./laniakea.py -terminate -only tag:Name=fuzzer
+% ./laniakea.py -terminate -only tag:Name=peach
 ```
 
 Scale down and terminate the oldest N running instances
 ```
-% ./laniakea.py -terminate N -only tag:Name=fuzzer
+% ./laniakea.py -terminate N -only tag:Name=peach
+```
+
+Terminate a specific instance by id
+```
+% ./laniakea.py -status -only tag:Name=peach instance-id=i-9110fa9e
 ```
 
 
