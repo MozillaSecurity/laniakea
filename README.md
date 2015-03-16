@@ -75,6 +75,15 @@ Terminate a specific instance by id
 % ./laniakea.py -status -only tag:Name=peach instance-id=i-9110fa9e
 ```
 
+<h3>UserData Reference</h3>
+
+Laniakea supports various macros to construct and maintain user-data files.
+```
+@import(path_to_other_userdata_file)@
+@macro_name@
+```
+You can use the "-list-userdata-macros" option to print out available macros inside a user-data file. Each of these macros can then be substituted with the -userdata-macros option.
+
 
 <h3>Help Menu</h3>
 ```
