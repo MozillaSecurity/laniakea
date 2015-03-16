@@ -86,7 +86,9 @@ class LaniakeaCommandLine(object):
 
     def list_tags(self, userdata):
         macros = re.findall("@(.*?)@", userdata)
-        logging.info('List of available macros: %r', macros)
+        logging.info("List of available macros:")
+        for m in macros:
+            logging.info('\t%r', m)
 
     def handle_tags(self, userdata, raw_macros):
         macros = {}
