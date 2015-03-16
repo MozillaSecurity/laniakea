@@ -41,12 +41,12 @@ class LaniakeaCommandLine(object):
         g.add_argument('-stop', nargs='?', const=-1, metavar='n', help='Stop active instances')
         g.add_argument('-terminate', nargs='?', const=-1, metavar='n', help='Terminate active instances')
         g.add_argument('-status', action='store_true', help='List current state of instances')
+        g.add_argument('-list-userdata-macros', action='store_true', help='List available macros')
 
         u = parser.add_argument_group('UserData Arguments')
         u.add_argument('-userdata', metavar='path', type=argparse.FileType(),
                        default=os.path.relpath(os.path.join(self.HOME, 'userdata', 'default.sh')),
                        help='UserData script for cloud-init')
-        u.add_argument('-list-userdata-macros', action='store_true', help='List available macros')
         u.add_argument('-userdata-macros', metavar='k=v', nargs='+', type=str, help='Custom macros')
 
         o = parser.add_argument_group('Optional Arguments')
