@@ -60,6 +60,8 @@ Show which instances are running and are tagged with the name 'peach'
 % ./laniakea.py -status -only tag:Name=peach instance-state-code=16
 ```
 
+**Hint** Filters support wildcards. Example: "tag:Name=peach-*" would be suitable to list all instances having the  word "peach" as prefix of a tag name.
+
 Terminate all running instances which are tagged with the name 'peach'
 ```
 % ./laniakea.py -terminate -only tag:Name=peach
