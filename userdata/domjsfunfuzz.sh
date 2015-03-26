@@ -150,7 +150,7 @@ apt-get --yes --quiet install xserver-xorg xsel maven openjdk-7-jdk
 su ubuntu
 
 # Add GitHub as a known host
-sudo -u ubuntu ssh-keyscan github.com >> /home/ubuntu/.ssh/known_hosts
+#sudo -u ubuntu ssh-keyscan github.com >> /home/ubuntu/.ssh/known_hosts
 
 # Set up deployment keys for domjsfunfuzz
 @import(userdata/keys/github.domjsfunfuzz.sh)@
