@@ -180,7 +180,7 @@ sudo chown ubuntu:ubuntu /home/ubuntu/.hgrc
 @import(userdata/misc-domjsfunfuzz/location.sh)@
 
 # Download mozilla-central's Mercurial bundle.
-sudo -u ubuntu wget -P /home/ubuntu http://ftp.mozilla.org/pub/mozilla.org/firefox/bundles/mozilla-central.hg
+sudo -u ubuntu wget -P /home/ubuntu https://ftp.mozilla.org/pub/mozilla.org/firefox/bundles/mozilla-central.hg
 
 # Set up m-c in ~/trees/
 sudo -u ubuntu mkdir /home/ubuntu/trees/
