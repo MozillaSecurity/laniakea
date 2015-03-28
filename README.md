@@ -1,6 +1,10 @@
 Laniakea
 ========
 
+
+[![Build Status](https://api.travis-ci.org/MozillaSecurity/laniakea.svg)](https://api.travis-ci.org/MozillaSecurity/laniakea.svg)
+
+
 <h3>Setup</h3>
 ```
 pip install -r requirements.txt
@@ -60,7 +64,7 @@ Show which instances are running and are tagged with the name 'peach'
 % ./laniakea.py -status -only tag:Name=peach instance-state-code=16
 ```
 
-**Hint** Filters support wildcards. Example: "tag:Name=peach-*" would be suitable to list all instances having the  word "peach" as prefix of a tag name.
+**Hint** Filters support wildcards. Example: "tag:Name=peach-*" would be suitable to list all instances having the  word "peach" as prefix of a tag name. For a list of available filters refer to http://docs.aws.amazon.com/AWSEC2/latest/CommandLineReference/ApiReference-cmd-DescribeInstances.html
 
 Terminate all running instances which are tagged with the name 'peach'
 ```
