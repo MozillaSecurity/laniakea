@@ -1,9 +1,8 @@
 Laniakea
 ========
 
-
-[![Build Status](https://api.travis-ci.org/MozillaSecurity/laniakea.svg)](https://api.travis-ci.org/MozillaSecurity/laniakea.svg)
-
+[![Build 
+Status](https://api.travis-ci.org/MozillaSecurity/laniakea.svg)](https://travis-ci.org/MozillaSecurity/laniakea)
 
 <h3>Setup</h3>
 ```
