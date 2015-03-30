@@ -60,6 +60,7 @@ class LaniakeaCommandLine(object):
         o.add_argument('-profile', metavar='str', type=str, default='laniakea', help='AWS profile name in .boto')
         o.add_argument('-max-spot-price', metavar='#', type=float, default=0.05, help='Max price for spot instances')
         o.add_argument('-region', type=str, default='us-west-2', help='EC2 region')
+        o.add_argument('-zone', type=str, default=None, help='EC2 placement zone')
         o.add_argument('-verbosity', default=2, type=int, choices=list(range(1, 6, 1)),
                        help='Log level for the logging module')
         o.add_argument('-focus', action='store_true', default=False, help=argparse.SUPPRESS)
@@ -160,6 +161,11 @@ class LaniakeaCommandLine(object):
             images[args.image_name].update(args.image_args)
 
         logging.info('Using Boto configuration profile "%s"', Focus.info(args.profile))
+        
+        # If a zone has been specified on the command line, use that for all of our images
+        if args.zone:
+            for image_name in images:
+                images[image_name]['placement'] = args.zone
 
         cluster = Laniakea(images)
         try:
