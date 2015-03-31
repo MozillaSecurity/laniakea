@@ -93,12 +93,13 @@ You can use the "-list-userdata-macros" option to print out available macros ins
 <h3>Help Menu</h3>
 ```
 usage: ./laniakea.py
-     (-create-on-demand | -create-spot | -stop [n] | -terminate [n] | -status)
-     [-userdata path] [-list-userdata-macros]
-     [-userdata-macros k=v [k=v ...]] [-tags k=v [k=v ...]]
-     [-only k=v [k=v ...]] [-images path] [-image-name str]
-     [-image-args k=v [k=v ...]] [-profile str]
-     [-max-spot-price #] [-verbosity {1,2,3,4,5}]
+   (-create-on-demand | -create-spot | -stop [n] | -terminate [n] | -status | -run cmd | -list-userdata-macros)
+   [-userdata path] [-userdata-macros k=v [k=v ...]]
+   [-tags k=v [k=v ...]] [-only k=v [k=v ...]]
+   [-images path] [-image-name str]
+   [-image-args k=v [k=v ...]] [-profile str]
+   [-max-spot-price #] [-region REGION] [-zone ZONE]
+   [-verbosity {1,2,3,4,5}] [-settings path]
 
 Laniakea Runtime
 
@@ -108,12 +109,13 @@ Mandatory Arguments:
   -stop [n]             Stop active instances (default: None)
   -terminate [n]        Terminate active instances (default: None)
   -status               List current state of instances (default: False)
+  -run cmd              Execute commands via SSH (default: )
+  -list-userdata-macros
+                        List available macros (default: False)
 
 UserData Arguments:
   -userdata path        UserData script for cloud-init (default:
                         userdata/default.sh)
-  -list-userdata-macros
-                        List available macros (default: False)
   -userdata-macros k=v [k=v ...]
                         Custom macros (default: None)
 
@@ -126,9 +128,11 @@ Optional Arguments:
                         Custom image arguments (default: None)
   -profile str          AWS profile name in .boto (default: laniakea)
   -max-spot-price #     Max price for spot instances (default: 0.05)
-  -region str           EC2 region (default: us-west-2)
+  -region REGION        EC2 region (default: us-west-2)
+  -zone ZONE            EC2 placement zone (default: None)
   -verbosity {1,2,3,4,5}
                         Log level for the logging module (default: 2)
+  -settings path        Laniakea settings (default: laniakea.json)
 
 The exit status is 0 for non-failures and 1 for failures.
 ```
