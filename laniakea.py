@@ -10,8 +10,10 @@ import os
 import re
 import sys
 import json
+import shlex
 import logging
 import argparse
+import subprocess
 
 from core.common import Focus, String
 from core.manager import Laniakea
@@ -41,6 +43,7 @@ class LaniakeaCommandLine(object):
         g.add_argument('-stop', nargs='?', const=-1, metavar='n', help='Stop active instances')
         g.add_argument('-terminate', nargs='?', const=-1, metavar='n', help='Terminate active instances')
         g.add_argument('-status', action='store_true', help='List current state of instances')
+        g.add_argument('-run', metavar='cmd', type=str, default='', help='Execute commands via SSH')
         g.add_argument('-list-userdata-macros', action='store_true', help='List available macros')
 
         u = parser.add_argument_group('UserData Arguments')
@@ -63,6 +66,8 @@ class LaniakeaCommandLine(object):
         o.add_argument('-verbosity', default=2, type=int, choices=list(range(1, 6, 1)),
                        help='Log level for the logging module')
         o.add_argument('-focus', action='store_true', default=False, help=argparse.SUPPRESS)
+        o.add_argument('-settings', metavar='path', type=argparse.FileType(),
+                       default=os.path.relpath(os.path.join(self.HOME, 'laniakea.json')), help='Laniakea settings')
         o.add_argument('-h', '-help', '--help', action='help', help=argparse.SUPPRESS)
         o.add_argument('-version', action='version', version='%(prog)s {}'.format(self.VERSION),
                        help=argparse.SUPPRESS)
@@ -129,6 +134,13 @@ class LaniakeaCommandLine(object):
         logging.basicConfig(format='[Laniakea] %(asctime)s %(levelname)s: %(message)s',
                             level=args.verbosity * 10,
                             datefmt='%Y-%m-%d %H:%M:%S')
+
+        logging.info('Loading Laniakea configuration from %s' % args.settings.name)
+        try:
+            settings = json.loads(args.settings.read())
+        except ValueError as msg:
+            logging.error('Unable to parse %s: %s', args.settings.name)
+            return 1
 
         Focus.init() if args.focus else Focus.disable()
 
@@ -203,6 +215,51 @@ class LaniakeaCommandLine(object):
             except boto.exception.EC2ResponseError as msg:
                 logging.error(msg)
                 return 1
+
+        if args.run:
+            ssh = settings.get('SSH')
+            if not ssh:
+                logging.error('No SSH settings defined in %s' % args.settings.name)
+                return 1
+
+            identity = ssh.get('identity')
+            if not key:
+                logging.error('Key for SSH is not defined.')
+                return 1
+            identity = os.path.expanduser(identity)
+
+            username = ssh.get('username')
+            if not username:
+                logging.error('User for SSH is not defined.')
+                return 1
+
+            logging.info("Bucketing available instances.")
+            hosts = []
+            try:
+                for host in cluster.find(filters=args.only):
+                    hosts.append(host)
+            except boto.exception.EC2ResponseError as msg:
+                logging.error(msg)
+                return 1
+            logging.info("Executing remote commands on %d instances." % len(hosts))
+
+            # Be able to extend ssh_command from settings.json
+            ssh_command = ['ssh',
+                           '-o' 'UserKnownHostsFile=/dev/null',
+                           '-o' 'StrictHostKeyChecking=no',
+                           '-o' 'LogLevel=error',
+                           '-i', '%s' % identity]
+
+            for host in hosts:
+                command = []
+                command.extend(ssh_command)
+                command.append('%s@%s' % (username, host.ip_address))
+                command.extend(shlex.split(args.run))
+                logging.info('Running remote command [%s]: %s' % (host.ip_address, args.run))
+                try:
+                    print(subprocess.check_output(command))
+                except subprocess.CalledProcessError as msg:
+                    logging.error(msg)
 
         return 0
 

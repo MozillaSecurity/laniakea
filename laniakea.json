@@ -1,0 +1,6 @@
+{
+	"SSH": {
+		"identity": "~/.ssh/cdiehlAWSFuzz.pem",
+		"username": "ubuntu"
+	}
+}
