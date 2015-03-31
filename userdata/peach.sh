@@ -48,7 +48,8 @@ retry python scripts/userdata.py -sync
 retry git clone -v --depth 1 https://github.com/MozillaSecurity/FuzzManager.git Peach/Utilities/FuzzManager
 pip install -r Peach/Utilities/FuzzManager/requirements.txt
 
-@import(userdata/loggers/fuzzmanager.local.sh)@
+@import(userdata/loggers/fuzzmanager.sh)@
+@import(userdata/loggers/fuzzmanager.binary.sh)@
 
 
 # Ensure proper permissions

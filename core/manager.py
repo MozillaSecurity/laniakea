@@ -73,7 +73,6 @@ class Laniakea(object):
                         del self.images[i]['image_name']
                 if not 'image_id' in self.images[i]:
                     raise Exception("Failed to resolve AMI name '%s' to an AMI ID" % image_name)
-                            
 
     def create_on_demand(self, instance_type='default', tags=None):
         """Create one or more EC2 on-demand instances.
