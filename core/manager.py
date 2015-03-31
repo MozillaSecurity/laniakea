@@ -58,6 +58,22 @@ class Laniakea(object):
         self.ec2 = boto.ec2.connect_to_region(region, **kw_params)
         if not self.ec2:
             raise Exception("Unable to connect to region '%s'" % region)
+        
+        # Resolve AMI names in our configuration to their IDs
+        logging.info('Getting all available images...')
+        remote_images = self.ec2.get_all_images(owners = ['self'])
+        for i in self.images:
+            if "image_name" in self.images[i] and not 'image_id' in self.images[i]:
+                image_name = self.images[i]['image_name']
+                for ri in remote_images:
+                    if ri.name == image_name:
+                        if 'image_id' in self.images[i]:
+                            raise Exception("Ambiguous AMI name '%s' resolves to multiple IDs" % image_name)
+                        self.images[i]['image_id'] = ri.id
+                        del self.images[i]['image_name']
+                if not 'image_id' in self.images[i]:
+                    raise Exception("Failed to resolve AMI name '%s' to an AMI ID" % image_name)
+                            
 
     def create_on_demand(self, instance_type='default', tags=None):
         """Create one or more EC2 on-demand instances.
