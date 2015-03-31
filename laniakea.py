@@ -229,7 +229,7 @@ class LaniakeaCommandLine(object):
                 return 1
 
             identity = ssh.get('identity')
-            if not key:
+            if not identity:
                 logging.error('Key for SSH is not defined.')
                 return 1
             identity = os.path.expanduser(identity)
