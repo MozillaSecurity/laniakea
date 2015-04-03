@@ -60,7 +60,7 @@ class Laniakea(object):
             raise Exception("Unable to connect to region '%s'" % region)
         
         # Resolve AMI names in our configuration to their IDs
-        logging.info('Retrieving available images...')
+        logging.info('Retrieving available AMIs...')
         remote_images = self.ec2.get_all_images(owners = ['self'])
         for i in self.images:
             if "image_name" in self.images[i] and not 'image_id' in self.images[i]:

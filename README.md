@@ -50,34 +50,39 @@ Please refer to https://help.ubuntu.com/community/CloudInit to learn more about 
 
 Run N on-demand instances with a custom -userdata script
 ```
-% ./laniakea.py -create-on-demand -tags Name=peach -userdata userdata/peach.private.sh
+./laniakea.py -create-on-demand -tags Name=peach -userdata userdata/peach.private.sh
 ```
 
 Run N spot instances with a custom -userdata script and a -max-spot-price of $0.05
 ```
-% ./laniakea.py -create-spot -tags Name=peach -image-name peach -userdata userdata/peach.private.sh -image-args count=10
+./laniakea.py -create-spot -tags Name=peach -image-name peach -userdata userdata/peach.private.sh -image-args count=10
 ```
 
 Show which instances are running and are tagged with the name 'peach'
 ```
-% ./laniakea.py -status -only tag:Name=peach instance-state-code=16
+./laniakea.py -status -only tag:Name=peach instance-state-code=16
 ```
 
 **Hint** Filters support wildcards. Example: "tag:Name=peach-*" would be suitable to list all instances having the  word "peach" as prefix of a tag name. For a list of available filters refer to http://docs.aws.amazon.com/AWSEC2/latest/CommandLineReference/ApiReference-cmd-DescribeInstances.html
 
 Terminate all running instances which are tagged with the name 'peach'
 ```
-% ./laniakea.py -terminate -only tag:Name=peach
+./laniakea.py -terminate -only tag:Name=peach
 ```
 
 Scale down and terminate the oldest N running instances
 ```
-% ./laniakea.py -terminate N -only tag:Name=peach
+./laniakea.py -terminate N -only tag:Name=peach
 ```
 
 Terminate a specific instance by id
 ```
-% ./laniakea.py -status -only tag:Name=peach instance-id=i-9110fa9e
+./laniakea.py -status -only tag:Name=peach instance-id=i-9110fa9e
+```
+
+List available macros in a UserData script
+```
+./laniakea.py -list-userdata-macros -userdata userdata/peach.pit.sh
 ```
 
 <h3>UserData Reference</h3>
