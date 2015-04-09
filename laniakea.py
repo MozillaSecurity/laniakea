@@ -64,6 +64,7 @@ class LaniakeaCommandLine(object):
         o.add_argument('-max-spot-price', metavar='#', type=float, default=0.05, help='Max price for spot instances')
         o.add_argument('-region', type=str, default='us-west-2', help='EC2 region')
         o.add_argument('-zone', type=str, default=None, help='EC2 placement zone')
+        o.add_argument('-size', type=int, default=None, help='Sets the initial disk space size. If unset, the EC2 default is used.')
         o.add_argument('-verbosity', default=2, type=int, choices=list(range(1, 6, 1)),
                        help='Log level for the logging module')
         o.add_argument('-focus', action='store_true', default=False, help=argparse.SUPPRESS)
@@ -178,6 +179,14 @@ class LaniakeaCommandLine(object):
         if args.zone:
             for image_name in images:
                 images[image_name]['placement'] = args.zone
+
+        if args.size:
+            # From GitHub boto docs: http://git.io/veyDv
+            dev_sda1 = boto.ec2.blockdevicemapping.BlockDeviceType()
+            dev_sda1.size = args.size   # change root volume to desired size
+            bdm = boto.ec2.blockdevicemapping.BlockDeviceMapping()
+            bdm['/dev/sda1'] = dev_sda1
+            images[args.image_name]['block_device_map'] = bdm
 
         cluster = Laniakea(images)
         try:
