@@ -135,6 +135,8 @@ Optional Arguments:
   -max-spot-price #     Max price for spot instances (default: 0.05)
   -region REGION        EC2 region (default: us-west-2)
   -zone ZONE            EC2 placement zone (default: None)
+  -size SIZE            Sets the initial disk space size. If unset, the EC2
+                        default is used. (default: None)
   -verbosity {1,2,3,4,5}
                         Log level for the logging module (default: 2)
   -settings path        Laniakea settings (default: laniakea.json)
