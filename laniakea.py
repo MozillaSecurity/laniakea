@@ -64,7 +64,13 @@ class LaniakeaCommandLine(object):
         o.add_argument('-max-spot-price', metavar='#', type=float, default=0.05, help='Max price for spot instances')
         o.add_argument('-region', type=str, default='us-west-2', help='EC2 region')
         o.add_argument('-zone', type=str, default=None, help='EC2 placement zone')
-        o.add_argument('-size', type=int, default=None, help='Sets the initial disk space size. If unset, the EC2 default is used.')
+        o.add_argument('-root-device-type', type=str, default='ebs', choices=['ebs', 'instance_store'],
+                       help='EC2 placement zone')
+        o.add_argument('-ebs-size', type=int, default=None, help='Sets the root disk space size. If unset, the EC2 default is used.')
+        o.add_argument('-ebs-volume-type', type=str, default='gp2', choices=['gp2', 'io1', 'standard'],
+                       help='Sets the root disk volume type.')
+        o.add_argument('-ebs-volume-delete-on-termination', action='store_true', default=False,
+                       help='Set this to delete the root EBS volume on termination.')
         o.add_argument('-verbosity', default=2, type=int, choices=list(range(1, 6, 1)),
                        help='Log level for the logging module')
         o.add_argument('-focus', action='store_true', default=False, help=argparse.SUPPRESS)
@@ -180,14 +186,6 @@ class LaniakeaCommandLine(object):
             for image_name in images:
                 images[image_name]['placement'] = args.zone
 
-        if args.size:
-            # From GitHub boto docs: http://git.io/veyDv
-            dev_sda1 = boto.ec2.blockdevicemapping.BlockDeviceType()
-            dev_sda1.size = args.size   # change root volume to desired size
-            bdm = boto.ec2.blockdevicemapping.BlockDeviceMapping()
-            bdm['/dev/sda1'] = dev_sda1
-            images[args.image_name]['block_device_map'] = bdm
-
         cluster = Laniakea(images)
         try:
             cluster.connect(profile_name=args.profile, region=args.region)
@@ -197,14 +195,16 @@ class LaniakeaCommandLine(object):
 
         if args.create_on_demand:
             try:
-                cluster.create_on_demand(args.image_name, args.tags)
+                cluster.create_on_demand(args.image_name, args.tags, args.root_device_type, args.ebs_size,
+                                         args.ebs_volume_type, args.ebs_volume_delete_on_termination)
             except boto.exception.EC2ResponseError as msg:
                 logging.error(msg)
                 return 1
 
         if args.create_spot:
             try:
-                cluster.create_spot(args.max_spot_price, args.image_name, args.tags)
+                cluster.create_spot(args.max_spot_price, args.image_name, args.tags, args.root_device_type, args.ebs_size,
+                                    args.ebs_volume_type, args.ebs_volume_delete_on_termination)
             except boto.exception.EC2ResponseError as msg:
                 logging.error(msg)
                 return 1

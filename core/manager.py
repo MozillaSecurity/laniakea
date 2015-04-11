@@ -74,7 +74,8 @@ class Laniakea(object):
                 if not 'image_id' in self.images[i]:
                     raise Exception("Failed to resolve AMI name '%s' to an AMI ID" % image_name)
 
-    def create_on_demand(self, instance_type='default', tags=None):
+    def create_on_demand(self, instance_type='default', tags=None, root_device_type='ebs',
+                         size='default', vol_type='gp2', delete_on_termination=False):
         """Create one or more EC2 on-demand instances.
 
         :param instance_type: A section name in images.json
@@ -82,6 +83,9 @@ class Laniakea(object):
         :param tags:
         :type tags: dict
         """
+        if root_device_type == 'ebs':
+            self.images[instance_type]['block_device_map'] = self._configure_ebs_volume(vol_type, size, delete_on_termination)
+
         reservation = self.ec2.run_instances(**self.images[instance_type])
 
         logging.info('Creating requested tags...')
@@ -101,7 +105,8 @@ class Laniakea(object):
                 else:
                     self.__update(i)
 
-    def create_spot(self, price, instance_type='default', tags=None):
+    def create_spot(self, price, instance_type='default', tags=None, root_device_type='ebs',
+                    size='default', vol_type='gp2', delete_on_termination=False):
         """Create one or more EC2 spot instances.
 
         :param price: Max price to pay for spot instance per hour.
@@ -111,6 +116,9 @@ class Laniakea(object):
         :param tags:
         :type tags: dict
         """
+        if root_device_type == 'ebs':
+            self.images[instance_type]['block_device_map'] = self._configure_ebs_volume(vol_type, size, delete_on_termination)
+
         requests = self.ec2.request_spot_instances(price, **self.images[instance_type])
         request_ids = [r.id for r in requests]
         logging.info("Waiting on fulfillment of requested spot instances.")
@@ -152,6 +160,28 @@ class Laniakea(object):
             logging.info("Scale-down value is > than running instance/s - using maximum of %d!" % running)
             count = running
         return i[0:count]
+
+    def _configure_ebs_volume(self, vol_type, size, delete_on_termination):
+        """Sets the desired root EBS size, otherwise the default EC2 value is used.
+
+        :param vol_type: Type of EBS storage - gp2 (SSD), io1 or standard (magnetic)
+        :type vol_type: str
+        :param size: Desired root EBS size.
+        :type size: int
+        :param delete_on_termination: Toggle this flag to delete EBS volume on termination.
+        :type delete_on_termination: bool
+        :return: A BlockDeviceMapping object.
+        :rtype: object
+        """
+        # From GitHub boto docs: http://git.io/veyDv
+        dev_sda1 = boto.ec2.blockdevicemapping.BlockDeviceType()
+        dev_sda1.delete_on_termination = delete_on_termination
+        dev_sda1.volume_type = vol_type
+        if size != 'default':
+            dev_sda1.size = size   # change root volume to desired size
+        bdm = boto.ec2.blockdevicemapping.BlockDeviceMapping()
+        bdm['/dev/sda1'] = dev_sda1
+        return bdm
 
     def stop(self, instances, count=0):
         """Stop each provided running instance.
