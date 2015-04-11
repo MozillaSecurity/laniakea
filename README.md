@@ -135,8 +135,15 @@ Optional Arguments:
   -max-spot-price #     Max price for spot instances (default: 0.05)
   -region REGION        EC2 region (default: us-west-2)
   -zone ZONE            EC2 placement zone (default: None)
-  -size SIZE            Sets the initial disk space size. If unset, the EC2
+  -root-device-type {ebs,instance_store}
+                        EC2 placement zone (default: ebs)
+  -ebs-size EBS_SIZE    Sets the root disk space size. If unset, the EC2
                         default is used. (default: None)
+  -ebs-volume-type {gp2,io1,standard}
+                        Sets the root disk volume type. (default: gp2)
+  -ebs-volume-delete-on-termination
+                        Set this to delete the root EBS volume on termination.
+                        (default: False)
   -verbosity {1,2,3,4,5}
                         Log level for the logging module (default: 2)
   -settings path        Laniakea settings (default: laniakea.json)
