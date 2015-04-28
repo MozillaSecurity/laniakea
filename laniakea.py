@@ -103,11 +103,7 @@ class LaniakeaCommandLine(object):
         for m in macros:
             logging.info('\t%r', m)
 
-    def handle_tags(self, userdata, raw_macros):
-        macros = {}
-        if raw_macros:
-            macros = self._convert_pair_to_dict(raw_macros)
-
+    def handle_tags(self, userdata, macros):
         macro_vars = re.findall("@(.*?)@", userdata)
         for macro_var in macro_vars:
             if macro_var not in macros:
@@ -169,7 +165,8 @@ class LaniakeaCommandLine(object):
             self.list_tags(userdata)
             return 0
         userdata = self.handle_import_tags(userdata)
-        userdata = self.handle_tags(userdata, args.userdata_macros)
+        if args.userdata_macros:
+            userdata = self.handle_tags(userdata, self._convert_pair_to_dict(args.userdata_macros))
         logging.debug("*** UserData ***\n%s" % userdata)
         if not userdata:
             return 1
