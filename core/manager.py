@@ -59,20 +59,21 @@ class Laniakea(object):
         if not self.ec2:
             raise Exception("Unable to connect to region '%s'" % region)
         
-        # Resolve AMI names in our configuration to their IDs
-        logging.info('Retrieving available AMIs...')
-        remote_images = self.ec2.get_all_images(owners = ['self'])
-        for i in self.images:
-            if "image_name" in self.images[i] and not 'image_id' in self.images[i]:
-                image_name = self.images[i]['image_name']
-                for ri in remote_images:
-                    if ri.name == image_name:
-                        if 'image_id' in self.images[i]:
-                            raise Exception("Ambiguous AMI name '%s' resolves to multiple IDs" % image_name)
-                        self.images[i]['image_id'] = ri.id
-                        del self.images[i]['image_name']
-                if not 'image_id' in self.images[i]:
-                    raise Exception("Failed to resolve AMI name '%s' to an AMI ID" % image_name)
+        if self.images:
+            # Resolve AMI names in our configuration to their IDs
+            logging.info('Retrieving available AMIs...')
+            remote_images = self.ec2.get_all_images(owners = ['self'])
+            for i in self.images:
+                if "image_name" in self.images[i] and not 'image_id' in self.images[i]:
+                    image_name = self.images[i]['image_name']
+                    for ri in remote_images:
+                        if ri.name == image_name:
+                            if 'image_id' in self.images[i]:
+                                raise Exception("Ambiguous AMI name '%s' resolves to multiple IDs" % image_name)
+                            self.images[i]['image_id'] = ri.id
+                            del self.images[i]['image_name']
+                    if not 'image_id' in self.images[i]:
+                        raise Exception("Failed to resolve AMI name '%s' to an AMI ID" % image_name)
 
     def create_on_demand(self, instance_type='default', tags=None, root_device_type='ebs',
                          size='default', vol_type='gp2', delete_on_termination=False):
