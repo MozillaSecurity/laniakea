@@ -83,6 +83,8 @@ class Laniakea(object):
         :type instance_type: str
         :param tags:
         :type tags: dict
+        :return: List of instances created
+        :rtype: list
         """
         if root_device_type == 'ebs':
             self.images[instance_type]['block_device_map'] = self._configure_ebs_volume(vol_type, size, delete_on_termination)
@@ -93,10 +95,12 @@ class Laniakea(object):
         for i in reservation.instances:
             self.__create_tags(i, tags)
 
+        instances = []
         logging.info('Waiting for instances to become ready...')
         while len(reservation.instances):
             for i in reservation.instances:
                 if i.state == 'running':
+                    instances.append(i)
                     reservation.instances.pop(reservation.instances.index(i))
                     logging.info('%s is %s at %s (%s)',
                                  i.id,
@@ -105,6 +109,7 @@ class Laniakea(object):
                                  i.ip_address)
                 else:
                     self.__update(i)
+        return instances
 
     def create_spot(self, price, instance_type='default', tags=None, root_device_type='ebs',
                     size='default', vol_type='gp2', delete_on_termination=False):
@@ -116,12 +121,15 @@ class Laniakea(object):
         :type instance_type: str
         :param tags:
         :type tags: dict
+        :return: List of instances created
+        :rtype: list
         """
         if root_device_type == 'ebs':
             self.images[instance_type]['block_device_map'] = self._configure_ebs_volume(vol_type, size, delete_on_termination)
 
         requests = self.ec2.request_spot_instances(price, **self.images[instance_type])
         request_ids = [r.id for r in requests]
+        instances = []
         logging.info("Waiting on fulfillment of requested spot instances.")
         while len(request_ids):
             time.sleep(5.0)
@@ -129,6 +137,7 @@ class Laniakea(object):
             for r in pending:
                 if r.status.code == 'fulfilled':
                     instance = self.ec2.get_only_instances(r.instance_id)[0]
+                    instances.append(instance)
                     self.ec2.create_tags([instance.id], tags or {})
                     logging.info('Request %s is %s and %s.',
                                  r.id,
@@ -140,6 +149,7 @@ class Laniakea(object):
                                  instance.public_dns_name,
                                  instance.ip_address)
                     request_ids.pop(request_ids.index(r.id))
+        return instances
 
     def _scale_down(self, instances, count):
         """Return a list of |count| last created instances by launch time.
