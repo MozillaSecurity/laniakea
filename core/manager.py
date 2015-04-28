@@ -218,16 +218,18 @@ class Laniakea(object):
             instances = self._scale_down(instances, count)
         self.ec2.terminate_instances([i.id for i in instances])
 
-    def find(self, filters=None):
+    def find(self, instance_ids=None, filters=None):
         """Flatten list of reservations to a list of instances.
 
+        :param instance_ids: A list of instance ids to filter by
+        :type instance_ids: list
         :param filters: A dict of |Filter.N| values defined in http://goo.gl/jYNej9
         :type filters: dict
         :return: A flattened list of filtered instances.
         :rtype: list
         """
         instances = []
-        reservations = self.ec2.get_all_instances(filters=filters or {})
+        reservations = self.ec2.get_all_instances(instance_ids=instance_ids, filters=filters)
         for reservation in reservations:
             instances.extend(reservation.instances)
         return instances
