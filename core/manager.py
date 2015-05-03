@@ -112,7 +112,7 @@ class Laniakea(object):
         return instances
 
     def create_spot(self, price, instance_type='default', tags=None, root_device_type='ebs',
-                    size='default', vol_type='gp2', delete_on_termination=False):
+                    size='default', vol_type='gp2', delete_on_termination=False, timeout=None):
         """Create one or more EC2 spot instances.
 
         :param price: Max price to pay for spot instance per hour.
@@ -131,9 +131,15 @@ class Laniakea(object):
         request_ids = [r.id for r in requests]
         instances = []
         logging.info("Waiting on fulfillment of requested spot instances.")
+        poll_resolution = 5.0
         while len(request_ids):
-            time.sleep(5.0)
+            time.sleep(poll_resolution)
             pending = self.ec2.get_all_spot_instance_requests(request_ids=request_ids)
+            
+            if timeout != None:
+                timeout -= poll_resolution
+                time_exceeded = timeout <= 0
+            
             for r in pending:
                 if r.status.code == 'fulfilled':
                     instance = self.ec2.get_only_instances(r.instance_id)[0]
@@ -149,7 +155,13 @@ class Laniakea(object):
                                  instance.public_dns_name,
                                  instance.ip_address)
                     request_ids.pop(request_ids.index(r.id))
-        return instances
+                elif time_exceeded:
+                    r.cancel()
+            
+            if time_exceeded:
+                return (instances, pending)
+                    
+        return (instances, None)
 
     def _scale_down(self, instances, count):
         """Return a list of |count| last created instances by launch time.
