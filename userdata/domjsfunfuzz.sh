@@ -145,7 +145,7 @@ apt-get --yes --quiet install mesa-common-dev libgstreamer0.10-dev libgstreamer-
 apt-get --yes --quiet install lib32z1 gcc-multilib g++-multilib  # For compiling 32-bit in 64-bit OS
 apt-get --yes --quiet install valgrind libc6-dbg # Needed for Valgrind
 apt-get --yes --quiet install mailutils mdadm
-apt-get --yes --quiet install xserver-xorg xsel maven openjdk-7-jdk
+apt-get --yes --quiet install xserver-xorg xsel maven openjdk-7-jdk python-virtualenv
 
 # -----------------------------------------------------------------------------
 
@@ -203,17 +203,9 @@ sudo -u ubuntu hg -R /home/ubuntu/trees/mozilla-central/ up -C default
 sudo -u ubuntu hg -R /home/ubuntu/trees/mozilla-central/ pull
 sudo -u ubuntu hg -R /home/ubuntu/trees/mozilla-central/ up -C default
 
-cat << EOF > /home/ubuntu/repoUpdateRunBotPy.sh
-#! /bin/bash
-sudo apt-get --yes --quiet update 2>&1 | tee /home/ubuntu/log-aptGetUpdate.txt
-sudo apt-get --yes --quiet upgrade 2>&1 | tee /home/ubuntu/log-aptGetUpgrade.txt
-# Work around lack of disk space in EC2 virtual machines until we have something better with shell-cache
-rm -rf /home/ubuntu/shell-cache 2>&1 | tee /home/ubuntu/log-rmShellCache.txt
-/usr/bin/env python -u /home/ubuntu/fuzzing/util/reposUpdate.py 2>&1 | tee /home/ubuntu/log-reposUpdate.txt
-/usr/bin/env python -u /home/ubuntu/fuzzing/bot.py -b "--random" -t "js" --target-time=26000 2>&1 | tee /home/ubuntu/log-botPy.txt
-EOF
-
-sudo chown ubuntu:ubuntu /home/ubuntu/repoUpdateRunBotPy.sh
+# Install virtualenv to get boto.
+sudo -u ubuntu virtualenv /home/ubuntu/trees/funfuzz-python
+sudo -u ubuntu /home/ubuntu/trees/funfuzz-python/bin/pip install boto
 
 cat << EOF > /etc/cron.d/domjsfunfuzz
 SHELL=/bin/bash
@@ -222,7 +214,7 @@ SHELL=/bin/bash
 #USER=ubuntu
 #LOGNAME=ubuntulog
 #HOME=/home/ubuntu
-3 */8 * * *  ubuntu  /usr/bin/env bash /home/ubuntu/repoUpdateRunBotPy.sh
+@reboot ubuntu /home/ubuntu/trees/funfuzz-python/bin/python -u /home/ubuntu/fuzzing/loopBot.py -b "--random" -t "js" --target-time 28800 | tee /home/ubuntu/log-loopBotPy.txt
 EOF
 
 sudo chown root:root /etc/cron.d/domjsfunfuzz
