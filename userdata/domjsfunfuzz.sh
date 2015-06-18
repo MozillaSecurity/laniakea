@@ -131,6 +131,8 @@ rm -rf /ubuntuUser-old
 # -----------------------------------------------------------------------------
 
 # Essential Packages
+# Without this ppa, git 1.9.1 is installed, but it sometimes leaves a hung git-remote-https process after cloning
+add-apt-repository -y ppa:git-core/ppa  # git 2.x works better
 apt-get --yes --quiet update
 apt-get --yes --quiet dist-upgrade
 apt-get --yes --quiet build-dep firefox
