@@ -203,6 +203,8 @@ sudo -u ubuntu hg -R /home/ubuntu/trees/mozilla-central/ up -C default
 sudo -u ubuntu hg -R /home/ubuntu/trees/mozilla-central/ pull
 sudo -u ubuntu hg -R /home/ubuntu/trees/mozilla-central/ up -C default
 
+sudo -u ubuntu rm /home/ubuntu/mozilla-central.hg
+
 # Install virtualenv to get boto.
 sudo -u ubuntu virtualenv /home/ubuntu/trees/funfuzz-python
 sudo -u ubuntu /home/ubuntu/trees/funfuzz-python/bin/pip install boto
