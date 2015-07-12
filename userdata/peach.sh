@@ -39,9 +39,10 @@ cd /home/ubuntu
 # Checkout Peach
 retry git clone -v --depth 1 git@peach:MozillaSecurity/peach.git
 cd peach
+rm -rf Pits
 retry git clone -v --depth 1 git@pits:MozillaSecurity/pits.git Pits
 pip -q install -r requirements.txt
-retry python scripts/userdata.py -sync
+retry python Peach/Utilities/userdata.py -sync
 
 
 # Checkout and setup FuzzManager
