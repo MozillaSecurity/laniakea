@@ -38,10 +38,12 @@ cd /home/ubuntu
 
 # Checkout Peach
 retry git clone -v --depth 1 git@peach:MozillaSecurity/peach.git
+cd peach
+
+# Install Peach dependencies
 pip -q install -r requirements.txt
 
 # Checkout Peach Pits
-cd peach
 rm -rf Pits
 retry git clone -v --depth 1 git@pits:MozillaSecurity/pits.git Pits
 
