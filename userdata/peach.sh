@@ -38,11 +38,15 @@ cd /home/ubuntu
 
 # Checkout Peach
 retry git clone -v --depth 1 git@peach:MozillaSecurity/peach.git
+pip -q install -r requirements.txt
+
+# Checkout Peach Pits
 cd peach
 rm -rf Pits
 retry git clone -v --depth 1 git@pits:MozillaSecurity/pits.git Pits
-pip -q install -r requirements.txt
-retry python Peach/Utilities/userdata.py -sync
+
+# Checkout Peach Resources
+python Peach/Utilities/userdata.py -sync
 
 
 # Checkout and setup FuzzManager
@@ -58,5 +62,6 @@ chown -R ubuntu:ubuntu /home/ubuntu
 
 
 # Run FuzzingBot as user "ubuntu"
-#su -c "xvfb-run ./scripts/peachbot.py -tasks 50 -testcases 50000 -data . -pits Pits/" ubuntu
-su -c "screen -t peach -dmS peach xvfb-run ./scripts/peachbot.py -tasks 50 -testcases 50000 -data . -pits Pits/" ubuntu
+su -c "screen -t peach -dmS peach xvfb-run python Resources/Scripts/peachbot.py -tasks 50 -testcases 50000 -data . -pits Pits/" ubuntu
+
+	
