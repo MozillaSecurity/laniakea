@@ -57,8 +57,6 @@ pip install -r Peach/Utilities/FuzzManager/requirements.txt
 chown -R ubuntu:ubuntu /home/ubuntu
 
 
-# Run Peach as user "ubuntu"
-
 # Example:
 # ./laniakea.py -create-on-demand -image-args min_count=1 max_count=1 -tags Name=peach -userdata userdata/peach.sh -userdata-macros TARGET_PIT=Pits/Targets/Laniakea/firefox.xml FUZZING_PIT=Pits/Files/MP4/fmp4.xml FILE_SAMPLE_PATH=./Resources/Samples/mp4
 
