@@ -51,6 +51,7 @@ class LaniakeaCommandLine(object):
                        default=os.path.relpath(os.path.join(self.HOME, 'userdata', 'default.sh')),
                        help='UserData script for cloud-init')
         u.add_argument('-userdata-macros', metavar='k=v', nargs='+', type=str, help='Custom macros')
+        u.add_argument('-print-userdata', action='store_true', help='Print the UserData script to stdout')
 
         o = parser.add_argument_group('Optional Arguments')
         o.add_argument('-tags', metavar='k=v', nargs='+', type=str, help='Assign tags to instances')
@@ -170,9 +171,15 @@ class LaniakeaCommandLine(object):
             return 0
         userdata = self.handle_import_tags(userdata)
         userdata = self.handle_tags(userdata, args.userdata_macros)
-        logging.debug("*** UserData ***\n%s" % userdata)
+
+        if args.print_userdata:
+            logging.info("Combined user-data script:")
+            print(userdata)
+            return 0
+
         if not userdata:
             return 1
+
         images[args.image_name]['user_data'] = userdata
 
         if args.image_args:
