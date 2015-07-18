@@ -8,18 +8,14 @@
 #sudo apt-get --yes --quiet update
 #sudo apt-get --yes --quiet upgrade
 #sudo apt-get --yes --quiet build-dep firefox
-#sudo apt-get --yes --quiet install \
-#	python python-pip python-dev git mercurial s3cmd
+#sudo apt-get --yes --quiet install python python-pip python-dev git mercurial s3cmd
 
 # Peach
-#sudo apt-get --yes --quiet install \
-#	libxml2-dev libxslt1-dev lib32z1-dev xterm
-#sudo pip install \
-#	Twisted==14.0.0 lxml==3.3.5 psutil==2.1.1 pyasn1==0.1.7 tlslite==0.4.6 
+#sudo apt-get --yes --quiet install libxml2-dev libxslt1-dev lib32z1-dev xterm
+#sudo pip install Twisted==14.0.0 lxml==3.3.5 psutil==2.1.1 pyasn1==0.1.7 tlslite==0.4.6 
 
 # FuzzManager
-#sudo pip install \
-#	Django==1.7.1 numpy==1.9.1 djangorestframework==2.4.4 requests>=2.5.0 lockfile>=0.8
+#sudo pip install Django==1.7.1 numpy==1.9.1 djangorestframework==2.4.4 requests>=2.5.0 lockfile>=0.8
 
 
 # Add GitHub as a known host
@@ -47,9 +43,9 @@ pip -q install -r requirements.txt
 rm -rf Pits
 retry git clone -v --depth 1 git@pits:MozillaSecurity/pits.git Pits
 
-# Checkout Peach Resources
-python Peach/Utilities/userdata.py -sync
-
+# Checkout script for fetching S3
+wget https://gist.githubusercontent.com/posidron/f9d00c2387aaac15f8ea/raw/347d03bffbf1ade03487b52d9f5c195ead4a06c8/userdata.py
+python userdata.py -sync
 
 # Checkout and setup FuzzManager
 retry git clone -v --depth 1 https://github.com/MozillaSecurity/FuzzManager.git Peach/Utilities/FuzzManager
