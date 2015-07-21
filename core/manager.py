@@ -142,7 +142,19 @@ class Laniakea(object):
             
             for r in pending:
                 if r.status.code == 'fulfilled':
-                    instance = self.ec2.get_only_instances(r.instance_id)[0]
+                    instance = None
+                    exception_retry_count = 3
+                    while exception_retry_count > 0:
+                        try:
+                            instance = self.ec2.get_only_instances(r.instance_id)[0]
+                            break
+                        except boto.exception.EC2ResponseError as e:
+                            exception_retry_count -= 1;
+                            time.sleep(poll_resolution)
+                            
+                    if not instance:
+                        raise Exception("Failed to get instance with id %s for fulfilled request" % r.instance_id)
+                                                
                     instances.append(instance)
                     self.ec2.create_tags([instance.id], tags or {})
                     logging.info('Request %s is %s and %s.',
