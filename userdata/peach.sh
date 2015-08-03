@@ -12,7 +12,7 @@
 
 # Peach
 #sudo apt-get --yes --quiet install libxml2-dev libxslt1-dev lib32z1-dev xterm
-#sudo pip install Twisted==14.0.0 lxml==3.3.5 psutil==2.1.1 pyasn1==0.1.7 tlslite==0.4.6 
+#sudo pip install Twisted==14.0.0 lxml==3.3.5 psutil==2.1.1 pyasn1==0.1.7 tlslite==0.4.6
 
 # FuzzManager
 #sudo pip install Django==1.7.1 numpy==1.9.1 djangorestframework==2.4.4 requests>=2.5.0 lockfile>=0.8
@@ -43,9 +43,12 @@ pip -q install -r requirements.txt
 rm -rf Pits
 retry git clone -v --depth 1 git@pits:MozillaSecurity/pits.git Pits
 
-# Checkout script for fetching S3
-wget https://gist.githubusercontent.com/posidron/f9d00c2387aaac15f8ea/raw/347d03bffbf1ade03487b52d9f5c195ead4a06c8/userdata.py
-python userdata.py -sync
+# Download PeachBot
+wget https://gist.githubusercontent.com/posidron/41cb0f276c317ed77264/raw/f37d524a1e055d75aa68f7740340e65102288169/peachbot.py
+chmod a+x peachbot.py
+
+# Checkout fuzzing resources
+git clone https://github.com/MozillaSecurity/fuzzdata
 
 # Checkout and setup FuzzManager
 retry git clone -v --depth 1 https://github.com/MozillaSecurity/FuzzManager.git Peach/Utilities/FuzzManager
@@ -60,6 +63,4 @@ chown -R ubuntu:ubuntu /home/ubuntu
 
 
 # Run FuzzingBot as user "ubuntu"
-su -c "screen -t peach -dmS peach xvfb-run python Resources/Scripts/peachbot.py -tasks 50 -testcases 50000 -data . -pits Pits/" ubuntu
-
-	
+su -c "screen -t peach -dmS peach xvfb-run python peachbot.py -tasks 50 -testcases 50000 -data . -pits Pits/" ubuntu
