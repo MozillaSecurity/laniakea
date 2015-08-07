@@ -136,12 +136,13 @@ add-apt-repository -y ppa:git-core/ppa  # git 2.x works better
 apt-get --yes --quiet update
 apt-get --yes --quiet dist-upgrade
 apt-get --yes --quiet build-dep firefox
-# Retrieved on 2015-02-05 from MDN Linux Prerequisites: http://mzl.la/1CyPyog
-apt-get --yes --quiet install zip unzip mercurial g++ make autoconf2.13 yasm ccache m4 flex
+# Retrieved on 2015-08-07: http://hg.mozilla.org/mozilla-central/file/461fc0a6a130/python/mozboot/mozboot/debian.py
+apt-get --yes --quiet install autoconf2.13 build-essential ccache mercurial python-dev python-setuptools unzip uuid zip
+apt-get --yes --quiet install libasound2-dev libcurl4-openssl-dev libdbus-1-dev libdbus-glib-1-dev libgconf2-dev
+apt-get --yes --quiet install libgstreamer0.10-dev libgstreamer-plugins-base0.10-dev libgtk2.0-dev libgtk-3-dev
+apt-get --yes --quiet install libiw-dev libnotify-dev libpulse-dev libxt-dev mesa-common-dev python-dbus
+apt-get --yes --quiet install yasm xvfb
 apt-get --yes --quiet install cmake curl gdb git openssh-server screen silversearcher-ag vim
-apt-get --yes --quiet install libgtk2.0-dev libglib2.0-dev libdbus-1-dev libdbus-glib-1-dev
-apt-get --yes --quiet install libasound2-dev libcurl4-openssl-dev libiw-dev libxt-dev libpulse-dev
-apt-get --yes --quiet install mesa-common-dev libgstreamer0.10-dev libgstreamer-plugins-base0.10-dev
 apt-get --yes --quiet install lib32z1 gcc-multilib g++-multilib  # For compiling 32-bit in 64-bit OS
 apt-get --yes --quiet install valgrind libc6-dbg # Needed for Valgrind
 apt-get --yes --quiet install mailutils mdadm
