@@ -206,8 +206,8 @@ sudo -u ubuntu hg -R /home/ubuntu/trees/mozilla-central/ up -C default
 sudo -u ubuntu rm /home/ubuntu/mozilla-central.hg
 
 # Install virtualenv to get boto.
-sudo -u ubuntu virtualenv /home/ubuntu/trees/funfuzz-python
-sudo -u ubuntu /home/ubuntu/trees/funfuzz-python/bin/pip install boto
+sudo -u ubuntu virtualenv /home/ubuntu/trees/venv-funfuzz
+sudo -u ubuntu /home/ubuntu/trees/venv-funfuzz/bin/pip install boto
 
 cat << EOF > /etc/cron.d/funfuzz
 SHELL=/bin/bash
@@ -216,7 +216,7 @@ MAILTO=gkwong@mozilla.com
 #USER=ubuntu
 #LOGNAME=ubuntulog
 #HOME=/home/ubuntu
-@reboot ubuntu /home/ubuntu/trees/funfuzz-python/bin/python -u /home/ubuntu/funfuzz/loopBot.py -b "--random" -t "js" --target-time 28800 | tee /home/ubuntu/log-loopBotPy.txt
+@reboot ubuntu /home/ubuntu/trees/venv-funfuzz/bin/python -u /home/ubuntu/funfuzz/loopBot.py -b "--random" -t "js" --target-time 28800 | tee /home/ubuntu/log-loopBotPy.txt
 EOF
 
 sudo chown root:root /etc/cron.d/funfuzz
