@@ -136,12 +136,13 @@ add-apt-repository -y ppa:git-core/ppa  # git 2.x works better
 apt-get --yes --quiet update
 apt-get --yes --quiet dist-upgrade
 apt-get --yes --quiet build-dep firefox
-# Retrieved on 2015-02-05 from MDN Linux Prerequisites: http://mzl.la/1CyPyog
-apt-get --yes --quiet install zip unzip mercurial g++ make autoconf2.13 yasm ccache m4 flex
+# Retrieved on 2015-08-07: http://hg.mozilla.org/mozilla-central/file/461fc0a6a130/python/mozboot/mozboot/debian.py
+apt-get --yes --quiet install autoconf2.13 build-essential ccache mercurial python-dev python-setuptools unzip uuid zip
+apt-get --yes --quiet install libasound2-dev libcurl4-openssl-dev libdbus-1-dev libdbus-glib-1-dev libgconf2-dev
+apt-get --yes --quiet install libgstreamer0.10-dev libgstreamer-plugins-base0.10-dev libgtk2.0-dev libgtk-3-dev
+apt-get --yes --quiet install libiw-dev libnotify-dev libpulse-dev libxt-dev mesa-common-dev python-dbus
+apt-get --yes --quiet install yasm xvfb
 apt-get --yes --quiet install cmake curl gdb git openssh-server screen silversearcher-ag vim
-apt-get --yes --quiet install libgtk2.0-dev libglib2.0-dev libdbus-1-dev libdbus-glib-1-dev
-apt-get --yes --quiet install libasound2-dev libcurl4-openssl-dev libiw-dev libxt-dev libpulse-dev
-apt-get --yes --quiet install mesa-common-dev libgstreamer0.10-dev libgstreamer-plugins-base0.10-dev
 apt-get --yes --quiet install lib32z1 gcc-multilib g++-multilib  # For compiling 32-bit in 64-bit OS
 apt-get --yes --quiet install valgrind libc6-dbg # Needed for Valgrind
 apt-get --yes --quiet install mailutils mdadm
@@ -151,11 +152,8 @@ apt-get --yes --quiet install xserver-xorg xsel maven openjdk-7-jdk python-virtu
 
 su ubuntu
 
-# Add GitHub as a known host
-#sudo -u ubuntu ssh-keyscan github.com >> /home/ubuntu/.ssh/known_hosts
-
-# Set up deployment keys for domjsfunfuzz
-@import(userdata/keys/github.domjsfunfuzz.sh)@
+# Set up deployment keys for funfuzz
+@import(userdata/keys/github.funfuzz.sh)@
 
 sudo chown ubuntu:ubuntu /home/ubuntu/.bashrc
 
@@ -178,8 +176,10 @@ EOF
 
 sudo chown ubuntu:ubuntu /home/ubuntu/.hgrc
 
-
-@import(userdata/misc-domjsfunfuzz/location.sh)@
+# Get the fuzzing harness
+sudo -u ubuntu git clone https://github.com/MozillaSecurity/lithium /home/ubuntu/lithium
+sudo -u ubuntu git clone https://github.com/MozillaSecurity/funfuzz /home/ubuntu/funfuzz
+@import(userdata/misc-funfuzz/location.sh)@
 
 # Download mozilla-central's Mercurial bundle.
 sudo -u ubuntu wget -P /home/ubuntu https://ftp.mozilla.org/pub/mozilla.org/firefox/bundles/mozilla-central.hg
@@ -209,17 +209,17 @@ sudo -u ubuntu rm /home/ubuntu/mozilla-central.hg
 sudo -u ubuntu virtualenv /home/ubuntu/trees/funfuzz-python
 sudo -u ubuntu /home/ubuntu/trees/funfuzz-python/bin/pip install boto
 
-cat << EOF > /etc/cron.d/domjsfunfuzz
+cat << EOF > /etc/cron.d/funfuzz
 SHELL=/bin/bash
 #PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games
-@import(userdata/misc-domjsfunfuzz/extra.sh)@
+MAILTO=gkwong@mozilla.com
 #USER=ubuntu
 #LOGNAME=ubuntulog
 #HOME=/home/ubuntu
 @reboot ubuntu /home/ubuntu/trees/funfuzz-python/bin/python -u /home/ubuntu/fuzzing/loopBot.py -b "--random" -t "js" --target-time 28800 | tee /home/ubuntu/log-loopBotPy.txt
 EOF
 
-sudo chown root:root /etc/cron.d/domjsfunfuzz
+sudo chown root:root /etc/cron.d/funfuzz
 
 ##############
 
@@ -248,7 +248,7 @@ EOF
 
 cat << EOF > /etc/cron.d/overwriteCloudInitConfigOnBoot
 SHELL=/bin/bash
-@import(userdata/misc-domjsfunfuzz/extra.sh)@
+MAILTO=gkwong@mozilla.com
 @reboot root /usr/bin/env bash /home/ubuntu/overwriteCloudInitConfig.sh
 EOF
 
