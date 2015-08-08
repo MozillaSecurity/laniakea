@@ -212,7 +212,7 @@ sudo -u ubuntu /home/ubuntu/trees/funfuzz-python/bin/pip install boto
 cat << EOF > /etc/cron.d/funfuzz
 SHELL=/bin/bash
 #PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games
-@import(userdata/misc-domjsfunfuzz/extra.sh)@
+MAILTO=gkwong@mozilla.com
 #USER=ubuntu
 #LOGNAME=ubuntulog
 #HOME=/home/ubuntu
@@ -248,7 +248,7 @@ EOF
 
 cat << EOF > /etc/cron.d/overwriteCloudInitConfigOnBoot
 SHELL=/bin/bash
-@import(userdata/misc-domjsfunfuzz/extra.sh)@
+MAILTO=gkwong@mozilla.com
 @reboot root /usr/bin/env bash /home/ubuntu/overwriteCloudInitConfig.sh
 EOF
 
