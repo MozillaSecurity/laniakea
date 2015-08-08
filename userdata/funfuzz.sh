@@ -152,11 +152,8 @@ apt-get --yes --quiet install xserver-xorg xsel maven openjdk-7-jdk python-virtu
 
 su ubuntu
 
-# Add GitHub as a known host
-#sudo -u ubuntu ssh-keyscan github.com >> /home/ubuntu/.ssh/known_hosts
-
-# Set up deployment keys for domjsfunfuzz
-@import(userdata/keys/github.domjsfunfuzz.sh)@
+# Set up deployment keys for funfuzz
+@import(userdata/keys/github.funfuzz.sh)@
 
 sudo chown ubuntu:ubuntu /home/ubuntu/.bashrc
 
@@ -179,8 +176,10 @@ EOF
 
 sudo chown ubuntu:ubuntu /home/ubuntu/.hgrc
 
-
-@import(userdata/misc-domjsfunfuzz/location.sh)@
+# Get the fuzzing harness
+sudo -u ubuntu git clone https://github.com/MozillaSecurity/lithium /home/ubuntu/lithium
+sudo -u ubuntu git clone https://github.com/MozillaSecurity/funfuzz /home/ubuntu/funfuzz
+@import(userdata/misc-funfuzz/location.sh)@
 
 # Download mozilla-central's Mercurial bundle.
 sudo -u ubuntu wget -P /home/ubuntu https://ftp.mozilla.org/pub/mozilla.org/firefox/bundles/mozilla-central.hg
@@ -210,7 +209,7 @@ sudo -u ubuntu rm /home/ubuntu/mozilla-central.hg
 sudo -u ubuntu virtualenv /home/ubuntu/trees/funfuzz-python
 sudo -u ubuntu /home/ubuntu/trees/funfuzz-python/bin/pip install boto
 
-cat << EOF > /etc/cron.d/domjsfunfuzz
+cat << EOF > /etc/cron.d/funfuzz
 SHELL=/bin/bash
 #PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games
 @import(userdata/misc-domjsfunfuzz/extra.sh)@
@@ -220,7 +219,7 @@ SHELL=/bin/bash
 @reboot ubuntu /home/ubuntu/trees/funfuzz-python/bin/python -u /home/ubuntu/fuzzing/loopBot.py -b "--random" -t "js" --target-time 28800 | tee /home/ubuntu/log-loopBotPy.txt
 EOF
 
-sudo chown root:root /etc/cron.d/domjsfunfuzz
+sudo chown root:root /etc/cron.d/funfuzz
 
 ##############
 
