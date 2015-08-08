@@ -158,6 +158,11 @@ su ubuntu
 sudo chown ubuntu:ubuntu /home/ubuntu/.bashrc
 
 
+# Get the fuzzing harness
+sudo -u ubuntu git clone https://github.com/MozillaSecurity/lithium /home/ubuntu/lithium
+sudo -u ubuntu git clone https://github.com/MozillaSecurity/funfuzz /home/ubuntu/funfuzz
+@import(userdata/misc-funfuzz/location.sh)@
+
 # Populate Mercurial settings.
 cat << EOF > /home/ubuntu/.hgrc
 [ui]
@@ -175,11 +180,6 @@ hg.mozilla.org = af:27:b9:34:47:4e:e5:98:01:f6:83:2b:51:c9:aa:d8:df:fb:1a:27
 EOF
 
 sudo chown ubuntu:ubuntu /home/ubuntu/.hgrc
-
-# Get the fuzzing harness
-sudo -u ubuntu git clone https://github.com/MozillaSecurity/lithium /home/ubuntu/lithium
-sudo -u ubuntu git clone https://github.com/MozillaSecurity/funfuzz /home/ubuntu/funfuzz
-@import(userdata/misc-funfuzz/location.sh)@
 
 # Download mozilla-central's Mercurial bundle.
 sudo -u ubuntu wget -P /home/ubuntu https://ftp.mozilla.org/pub/mozilla.org/firefox/bundles/mozilla-central.hg
