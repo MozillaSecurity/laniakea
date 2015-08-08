@@ -216,7 +216,7 @@ MAILTO=gkwong@mozilla.com
 #USER=ubuntu
 #LOGNAME=ubuntulog
 #HOME=/home/ubuntu
-@reboot ubuntu /home/ubuntu/trees/funfuzz-python/bin/python -u /home/ubuntu/fuzzing/loopBot.py -b "--random" -t "js" --target-time 28800 | tee /home/ubuntu/log-loopBotPy.txt
+@reboot ubuntu /home/ubuntu/trees/funfuzz-python/bin/python -u /home/ubuntu/funfuzz/loopBot.py -b "--random" -t "js" --target-time 28800 | tee /home/ubuntu/log-loopBotPy.txt
 EOF
 
 sudo chown root:root /etc/cron.d/funfuzz
