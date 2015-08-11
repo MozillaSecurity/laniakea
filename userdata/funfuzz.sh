@@ -43,7 +43,15 @@ function check_devices
 {
     # If these lines are added/removed, make sure to check the sed line dealing with /etc/fstab too.
     check_device xvdb
+    check_device xvdb1
+    check_device xvdb2
+    check_device xvdb3
+    check_device xvdb4
     check_device xvdc
+    check_device xvdc1
+    check_device xvdc2
+    check_device xvdc3
+    check_device xvdc4
     check_device xvdd
     check_device xvde
     check_device xvdf
@@ -115,7 +123,7 @@ bash /home/mountInstanceStore.sh
 # Remove existing lines involving possibly-mounted devices
 # r3.large with 1 instance-store does not mount it.
 # c3.large with 2 instance-stores only mounts the first one.
-sed -i '/\/dev\/xvd[b-k][ \t]*\/mnt[0-9]*[ \t]*auto[ \t]*defaults,nobootwait,comment=cloudconfig[ \t]*0[ \t]*2/d' /etc/fstab
+sed -i '/\/dev\/xvd[b-k][0-9]*[ \t]*\/mnt[0-9]*[ \t]*auto[ \t]*defaults,nobootwait,comment=cloudconfig[ \t]*0[ \t]*2/d' /etc/fstab
 
 sudo chown ubuntu:ubuntu /home/ubuntu/
 mkdir /home/ubuntu/.ssh/
