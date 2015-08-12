@@ -83,7 +83,9 @@ p
 w
 EOF
 # format!
-mkfs -t ext4 $1
+mkfs -t ext4 $1 << EOF
+y
+EOF
 
 if [ ! -e $2 ]; then
     mkdir $2
