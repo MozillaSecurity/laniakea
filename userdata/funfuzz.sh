@@ -43,15 +43,7 @@ function check_devices
 {
     # If these lines are added/removed, make sure to check the sed line dealing with /etc/fstab too.
     check_device xvdb
-    check_device xvdb1
-    check_device xvdb2
-    check_device xvdb3
-    check_device xvdb4
     check_device xvdc
-    check_device xvdc1
-    check_device xvdc2
-    check_device xvdc3
-    check_device xvdc4
     check_device xvdd
     check_device xvde
     check_device xvdf
