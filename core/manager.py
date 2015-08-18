@@ -171,9 +171,9 @@ class Laniakea(object):
                     r.cancel()
             
             if time_exceeded:
-                return (instances, pending)
+                return instances
                     
-        return (instances, [])
+        return instances
 
     def _scale_down(self, instances, count):
         """Return a list of |count| last created instances by launch time.
