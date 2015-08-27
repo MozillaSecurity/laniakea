@@ -26,7 +26,7 @@ def retry_on_ec2_error(method):
                 exception_retry_count -= 1
                 if exception_retry_count <= 0:
                     raise e
-                time.sleep(1)
+                time.sleep(5)
     return decorator 
 
 
