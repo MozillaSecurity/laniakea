@@ -61,6 +61,9 @@ target/
 # PyCharm
 .idea/
 
+# Platform
+.DS_Store
+
 userdata/dharma.private.sh
 userdata/keys/
 userdata/loggers/fuzzmanager.sh
