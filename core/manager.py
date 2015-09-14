@@ -13,23 +13,6 @@ except ImportError as msg:
     logging.error(msg)
     sys.exit(-1)
 
-
-def retry_on_ec2_error(method):
-    """Decorator to use with EC2 methods that can temporarily fail.
-    """
-    def decorator(self, *args, **options):
-        exception_retry_count = 3
-        while True:
-            try:
-                return method(self, *args, **options)
-            except boto.exception.EC2ResponseError as e:
-                exception_retry_count -= 1
-                if exception_retry_count <= 0:
-                    raise e
-                time.sleep(5)
-    return decorator 
-
-
 class Laniakea(object):
     """
     Laniakea managing class.
@@ -38,14 +21,26 @@ class Laniakea(object):
     def __init__(self, images):
         self.ec2 = None
         self.images = images
-
-    @retry_on_ec2_error
-    def __create_tags(self, instance, tags):
-        return self.ec2.create_tags([instance.id], tags or {})
-
-    @retry_on_ec2_error
-    def __update(self, instance):
-        return instance.update()
+    
+    def retry_on_ec2_error(self, func, *args, **kwargs):
+        """
+        Call the given method with the given arguments, retrying if the call
+        failed due to an EC2ResponseError. This method will wait at most 30
+        seconds and perform up to 6 retries. If the method still fails, it will
+        propagate the error.
+        
+        :param func: Function to call
+        :type func: function
+        """
+        exception_retry_count = 6
+        while True:
+            try:
+                return func(*args, **kwargs)
+            except boto.exception.EC2ResponseError as e:
+                exception_retry_count -= 1
+                if exception_retry_count <= 0:
+                    raise e
+                time.sleep(5)
 
     def connect(self, region, **kw_params):
         """Connect to a EC2.
@@ -93,7 +88,7 @@ class Laniakea(object):
 
         logging.info('Creating requested tags...')
         for i in reservation.instances:
-            self.__create_tags(i, tags)
+            self.retry_on_ec2_error(self.ec2.create_tags, [i.id], tags or {})
 
         instances = []
         logging.info('Waiting for instances to become ready...')
@@ -108,7 +103,7 @@ class Laniakea(object):
                                  i.public_dns_name,
                                  i.ip_address)
                 else:
-                    self.__update(i)
+                    self.retry_on_ec2_error(i.update)
         return instances
 
     def create_spot(self, price, instance_type='default', tags=None, root_device_type='ebs',
@@ -143,20 +138,13 @@ class Laniakea(object):
             for r in pending:
                 if r.status.code == 'fulfilled':
                     instance = None
-                    exception_retry_count = 3
-                    while exception_retry_count > 0:
-                        try:
-                            instance = self.ec2.get_only_instances(r.instance_id)[0]
-                            break
-                        except boto.exception.EC2ResponseError as e:
-                            exception_retry_count -= 1;
-                            time.sleep(poll_resolution)
+                    instance = self.retry_on_ec2_error(self.ec2.get_only_instances, r.instance_id)[0]
                             
                     if not instance:
                         raise Exception("Failed to get instance with id %s for fulfilled request" % r.instance_id)
                                                 
                     instances.append(instance)
-                    self.ec2.create_tags([instance.id], tags or {})
+                    self.retry_on_ec2_error(self.ec2.create_tags, [instance.id], tags or {})
                     logging.info('Request %s is %s and %s.',
                                  r.id,
                                  r.status.code,
@@ -253,7 +241,7 @@ class Laniakea(object):
         :rtype: list
         """
         instances = []
-        reservations = self.ec2.get_all_instances(instance_ids=instance_ids, filters=filters)
+        reservations = self.retry_on_ec2_error(self.ec2.get_all_instances, instance_ids=instance_ids, filters=filters)
         for reservation in reservations:
             instances.extend(reservation.instances)
         return instances
