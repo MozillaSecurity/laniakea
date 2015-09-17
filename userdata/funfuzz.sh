@@ -243,6 +243,7 @@ HISTSIZE=10000
 export PS1="[\u@\h \d \t \W ] $ "
 
 export LD_LIBRARY_PATH=.
+export ASAN_SYMBOLIZER_PATH=~/llvm/build/bin/llvm-symbolizer
 
 ccache -M 4G
 REOF
