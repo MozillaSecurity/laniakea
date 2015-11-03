@@ -1,6 +1,6 @@
 # Target desscription for Firefox
 TARGET_PRODUCT="mozilla-inbound-linux64-asan"
-TARGET_LOCATION="ftp.mozilla.org/pub/mozilla.org/firefox/tinderbox-builds/${TARGET_PRODUCT}/latest"
+TARGET_LOCATION="ftp.mozilla.org/pub/firefox/tinderbox-builds/${TARGET_PRODUCT}/latest/"
 TARGET_URL="https://${TARGET_LOCATION}"
 retry wget -r -l1 -np -A "firefox-*.en-US.linux-x86_64-asan.tar.bz2" "${TARGET_URL}"
 retry wget -r -l1 -np -A "firefox-*-asan.json" "${TARGET_URL}"
