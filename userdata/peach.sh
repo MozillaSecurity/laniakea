@@ -44,7 +44,7 @@ rm -rf Pits
 retry git clone -v --depth 1 git@pits:MozillaSecurity/pits.git Pits
 
 # Download PeachBot
-wget https://gist.githubusercontent.com/posidron/41cb0f276c317ed77264/raw/f37d524a1e055d75aa68f7740340e65102288169/peachbot.py
+wget https://gist.github.com/posidron/41cb0f276c317ed77264/raw/bc0a5072a97d04517e2bde7ee7bcc7a9f56d9c80/peachbot.py
 chmod a+x peachbot.py
 
 # Checkout fuzzing resources
