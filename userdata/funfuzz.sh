@@ -181,7 +181,7 @@ purge =
 rebase =
 
 [experimental]
-clonebundles=true
+#clonebundles=true  # Reactivate after a fix for http://bz.mercurial-scm.org/show_bug.cgi?id=4932 is released in a new Mercurial version.
 
 [hostfingerprints]
 hg.mozilla.org = af:27:b9:34:47:4e:e5:98:01:f6:83:2b:51:c9:aa:d8:df:fb:1a:27
