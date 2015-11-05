@@ -138,8 +138,8 @@ add-apt-repository -y ppa:git-core/ppa  # git 2.x works better
 apt-get --yes --quiet update
 apt-get --yes --quiet dist-upgrade
 apt-get --yes --quiet build-dep firefox
-# Retrieved on 2015-08-07: http://hg.mozilla.org/mozilla-central/file/461fc0a6a130/python/mozboot/mozboot/debian.py
-apt-get --yes --quiet install autoconf2.13 build-essential ccache mercurial python-dev python-setuptools unzip uuid zip
+# Retrieved on 2015-11-04: http://hg.mozilla.org/mozilla-central/file/6077f51254c6/python/mozboot/mozboot/debian.py
+apt-get --yes --quiet install autoconf2.13 build-essential ccache python-dev python-pip python-setuptools unzip uuid zip
 apt-get --yes --quiet install libasound2-dev libcurl4-openssl-dev libdbus-1-dev libdbus-glib-1-dev libgconf2-dev
 apt-get --yes --quiet install libgstreamer0.10-dev libgstreamer-plugins-base0.10-dev libgtk2.0-dev libgtk-3-dev
 apt-get --yes --quiet install libiw-dev libnotify-dev libpulse-dev libxt-dev mesa-common-dev python-dbus
@@ -159,6 +159,9 @@ su ubuntu
 
 sudo chown ubuntu:ubuntu /home/ubuntu/.bashrc
 
+
+# Get Mercurial
+pip install --upgrade mercurial
 
 # Get the fuzzing harness
 sudo -u ubuntu git clone https://github.com/MozillaSecurity/lithium /home/ubuntu/lithium
