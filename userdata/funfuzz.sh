@@ -180,35 +180,17 @@ progress =
 purge =
 rebase =
 
+[experimental]
+clonebundles=true
+
 [hostfingerprints]
 hg.mozilla.org = af:27:b9:34:47:4e:e5:98:01:f6:83:2b:51:c9:aa:d8:df:fb:1a:27
 EOF
 
 sudo chown ubuntu:ubuntu /home/ubuntu/.hgrc
 
-# Download mozilla-central's Mercurial bundle.
-sudo -u ubuntu wget -P /home/ubuntu https://ftp.mozilla.org/pub/mozilla.org/firefox/bundles/mozilla-central.hg
-
-# Set up m-c in ~/trees/
-sudo -u ubuntu mkdir /home/ubuntu/trees/
-sudo -u ubuntu hg --cwd /home/ubuntu/trees/ init mozilla-central
-
-cat << EOF > /home/ubuntu/trees/mozilla-central/.hg/hgrc
-[paths]
-
-default = https://hg.mozilla.org/mozilla-central
-
-EOF
-
-sudo chown ubuntu:ubuntu /home/ubuntu/trees/mozilla-central/.hg/hgrc
-
-# Update m-c repository.
-sudo -u ubuntu hg -R /home/ubuntu/trees/mozilla-central/ unbundle /home/ubuntu/mozilla-central.hg
-sudo -u ubuntu hg -R /home/ubuntu/trees/mozilla-central/ up -C default
-sudo -u ubuntu hg -R /home/ubuntu/trees/mozilla-central/ pull
-sudo -u ubuntu hg -R /home/ubuntu/trees/mozilla-central/ up -C default
-
-sudo -u ubuntu rm /home/ubuntu/mozilla-central.hg
+# Clone m-c repository.
+sudo -u ubuntu hg clone https://hg.mozilla.org/mozilla-central /home/ubuntu/trees/mozilla-central
 
 # Install virtualenv to get boto.
 sudo -u ubuntu virtualenv /home/ubuntu/trees/venv-funfuzz
