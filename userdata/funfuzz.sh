@@ -198,11 +198,11 @@ sudo -u ubuntu /home/ubuntu/trees/venv-funfuzz/bin/pip install boto
 
 cat << EOF > /etc/cron.d/funfuzz
 SHELL=/bin/bash
-#PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games
+PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games
 MAILTO=gkwong@mozilla.com
-#USER=ubuntu
-#LOGNAME=ubuntulog
-#HOME=/home/ubuntu
+USER=ubuntu
+LOGNAME=ubuntulog
+HOME=/home/ubuntu
 @reboot ubuntu /home/ubuntu/trees/venv-funfuzz/bin/python -u /home/ubuntu/funfuzz/loopBot.py -b "--random" -t "js" --target-time 28800 | tee /home/ubuntu/log-loopBotPy.txt
 EOF
 
