@@ -149,7 +149,7 @@ apt-get --yes --quiet install lib32z1 gcc-multilib g++-multilib  # For compiling
 apt-get --yes --quiet install valgrind libc6-dbg # Needed for Valgrind
 apt-get --yes --quiet install mailutils mdadm
 apt-get --yes --quiet install xserver-xorg xsel maven openjdk-7-jdk python-virtualenv
-apt-get --yes --quiet install gcc-4.9 # Needed for Ubuntu 15.10 and later, since our ASan Clang last compiled with this version
+apt-get --yes --quiet install gcc-4.9 g++-4.9 # Needed for Ubuntu 15.10 and later, since our ASan Clang last compiled with this version
 
 # -----------------------------------------------------------------------------
 
