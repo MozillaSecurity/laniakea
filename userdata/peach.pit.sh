@@ -23,10 +23,10 @@ pip -q install -r requirements.txt
 
 # Checkout Peach Pits
 rm -rf Pits
-retry git clone -v --depth 1 git@pits:MozillaSecurity/pits.git Pits
+retry git clone -v --depth 1 git@pits:MozillaSecurity/pits.git
 
 # Checkout script for fetching S3
-wget https://gist.githubusercontent.com/posidron/f9d00c2387aaac15f8ea/raw/347d03bffbf1ade03487b52d9f5c195ead4a06c8/userdata.py
+wget https://gist.githubusercontent.com/posidron/41cb0f276c317ed77264/raw/b3dea77ca22d4040540ce7776f55796e1a2f0dd9/peachbot.py
 python userdata.py -sync
 
 # Checkout and setup FuzzManager
@@ -42,6 +42,6 @@ chown -R ubuntu:ubuntu /home/ubuntu
 
 
 # Example:
-# ./laniakea.py -create-on-demand -image-args min_count=1 max_count=1 -tags Name=peach -userdata userdata/peach.sh -userdata-macros TARGET_PIT=Pits/Targets/Laniakea/firefox.xml FUZZING_PIT=Pits/Files/MP4/fmp4.xml FILE_SAMPLE_PATH=./Resources/Samples/mp4
+# ./laniakea.py -create-on-demand -image-args min_count=1 max_count=1 -tags Name=peach -userdata userdata/peach.sh -userdata-macros TARGET_PIT=pits/targets/laniakea/firefox.xml FUZZING_PIT=pits/files/mp4/fmp4.xml FILE_SAMPLE_PATH=./fuzzdata/samples/mp4
 
 su -c "screen -t peach -dmS peach xvfb-run python ./peach.py -target @TARGET_PIT@ -pit @FUZZING_PIT@ -macro FileSampleMaxFileSize=-1 Strategy=rand.RandomMutationStrategy StrategyParams=SwitchCount=1000 MaxFieldsToMutate=$(($RANDOM % 50)) FileSamplePath=@FILE_SAMPLE_PATH@ WebSocketTemplate=@WEBSOCKET_TEMPLATE@ DataModel=@DATA_MODEL@" ubuntu

@@ -41,10 +41,10 @@ pip -q install -r requirements.txt
 
 # Checkout Peach Pits
 rm -rf Pits
-retry git clone -v --depth 1 git@pits:MozillaSecurity/pits.git Pits
+retry git clone -v --depth 1 git@pits:MozillaSecurity/pits.git
 
 # Download PeachBot
-wget https://gist.github.com/posidron/41cb0f276c317ed77264/raw/bc0a5072a97d04517e2bde7ee7bcc7a9f56d9c80/peachbot.py
+wget https://gist.githubusercontent.com/posidron/41cb0f276c317ed77264/raw/b3dea77ca22d4040540ce7776f55796e1a2f0dd9/peachbot.py
 chmod a+x peachbot.py
 
 # Checkout fuzzing resources
@@ -63,4 +63,5 @@ chown -R ubuntu:ubuntu /home/ubuntu
 
 
 # Run FuzzingBot as user "ubuntu"
-su -c "screen -t peach -dmS peach xvfb-run python peachbot.py -tasks 50 -testcases 50000 -data . -pits Pits/" ubuntu
+su -c "screen -t peach -dmS peach xvfb-run python peachbot.py -tasks 50 -testcases 50000 -data . -pits pits/" ubuntu
+
