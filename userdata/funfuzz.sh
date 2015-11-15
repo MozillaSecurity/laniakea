@@ -138,8 +138,8 @@ add-apt-repository -y ppa:git-core/ppa  # git 2.x works better
 apt-get --yes --quiet update
 apt-get --yes --quiet dist-upgrade
 apt-get --yes --quiet build-dep firefox
-# Retrieved on 2015-08-07: http://hg.mozilla.org/mozilla-central/file/461fc0a6a130/python/mozboot/mozboot/debian.py
-apt-get --yes --quiet install autoconf2.13 build-essential ccache mercurial python-dev python-setuptools unzip uuid zip
+# Retrieved on 2015-11-04: http://hg.mozilla.org/mozilla-central/file/6077f51254c6/python/mozboot/mozboot/debian.py
+apt-get --yes --quiet install autoconf2.13 build-essential ccache python-dev python-pip python-setuptools unzip uuid zip
 apt-get --yes --quiet install libasound2-dev libcurl4-openssl-dev libdbus-1-dev libdbus-glib-1-dev libgconf2-dev
 apt-get --yes --quiet install libgstreamer0.10-dev libgstreamer-plugins-base0.10-dev libgtk2.0-dev libgtk-3-dev
 apt-get --yes --quiet install libiw-dev libnotify-dev libpulse-dev libxt-dev mesa-common-dev python-dbus
@@ -149,6 +149,7 @@ apt-get --yes --quiet install lib32z1 gcc-multilib g++-multilib  # For compiling
 apt-get --yes --quiet install valgrind libc6-dbg # Needed for Valgrind
 apt-get --yes --quiet install mailutils mdadm
 apt-get --yes --quiet install xserver-xorg xsel maven openjdk-7-jdk python-virtualenv
+apt-get --yes --quiet install gcc-4.9 g++-4.9 # Needed for Ubuntu 15.10 and later, since our ASan Clang last compiled with this version
 
 # -----------------------------------------------------------------------------
 
@@ -160,9 +161,13 @@ su ubuntu
 sudo chown ubuntu:ubuntu /home/ubuntu/.bashrc
 
 
+# Get Mercurial
+pip install --upgrade mercurial
+
 # Get the fuzzing harness
 sudo -u ubuntu git clone https://github.com/MozillaSecurity/lithium /home/ubuntu/lithium
 sudo -u ubuntu git clone https://github.com/MozillaSecurity/funfuzz /home/ubuntu/funfuzz
+sudo -u ubuntu git clone https://github.com/MozillaSecurity/FuzzManager.git /home/ubuntu/FuzzManager
 @import(userdata/misc-funfuzz/location.sh)@
 
 # Populate Mercurial settings.
@@ -177,35 +182,17 @@ progress =
 purge =
 rebase =
 
+[experimental]
+clonebundles=true
+
 [hostfingerprints]
 hg.mozilla.org = af:27:b9:34:47:4e:e5:98:01:f6:83:2b:51:c9:aa:d8:df:fb:1a:27
 EOF
 
 sudo chown ubuntu:ubuntu /home/ubuntu/.hgrc
 
-# Download mozilla-central's Mercurial bundle.
-sudo -u ubuntu wget -P /home/ubuntu https://ftp.mozilla.org/pub/mozilla.org/firefox/bundles/mozilla-central.hg
-
-# Set up m-c in ~/trees/
-sudo -u ubuntu mkdir /home/ubuntu/trees/
-sudo -u ubuntu hg --cwd /home/ubuntu/trees/ init mozilla-central
-
-cat << EOF > /home/ubuntu/trees/mozilla-central/.hg/hgrc
-[paths]
-
-default = https://hg.mozilla.org/mozilla-central
-
-EOF
-
-sudo chown ubuntu:ubuntu /home/ubuntu/trees/mozilla-central/.hg/hgrc
-
-# Update m-c repository.
-sudo -u ubuntu hg -R /home/ubuntu/trees/mozilla-central/ unbundle /home/ubuntu/mozilla-central.hg
-sudo -u ubuntu hg -R /home/ubuntu/trees/mozilla-central/ up -C default
-sudo -u ubuntu hg -R /home/ubuntu/trees/mozilla-central/ pull
-sudo -u ubuntu hg -R /home/ubuntu/trees/mozilla-central/ up -C default
-
-sudo -u ubuntu rm /home/ubuntu/mozilla-central.hg
+# Clone m-c repository.
+sudo -u ubuntu hg clone https://hg.mozilla.org/mozilla-central /home/ubuntu/trees/mozilla-central
 
 # Install virtualenv to get boto.
 sudo -u ubuntu virtualenv /home/ubuntu/trees/venv-funfuzz
@@ -213,11 +200,11 @@ sudo -u ubuntu /home/ubuntu/trees/venv-funfuzz/bin/pip install boto
 
 cat << EOF > /etc/cron.d/funfuzz
 SHELL=/bin/bash
-#PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games
+PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games
 MAILTO=gkwong@mozilla.com
-#USER=ubuntu
-#LOGNAME=ubuntulog
-#HOME=/home/ubuntu
+USER=ubuntu
+LOGNAME=ubuntulog
+HOME=/home/ubuntu
 @reboot ubuntu /home/ubuntu/trees/venv-funfuzz/bin/python -u /home/ubuntu/funfuzz/loopBot.py -b "--random" -t "js" --target-time 28800 | tee /home/ubuntu/log-loopBotPy.txt
 EOF
 
