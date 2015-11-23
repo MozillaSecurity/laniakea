@@ -70,3 +70,4 @@ laniakea-notes/
 userdata/dharma.private.sh
 userdata/keys/
 userdata/loggers/fuzzmanager.sh
+userdata/misc-funfuzz/
