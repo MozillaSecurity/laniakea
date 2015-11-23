@@ -162,7 +162,7 @@ sudo chown ubuntu:ubuntu /home/ubuntu/.bashrc
 
 
 # Get Mercurial
-pip install --upgrade mercurial
+pip install --upgrade mercurial numpy requests
 
 # Get the fuzzing harness
 sudo -u ubuntu git clone https://github.com/MozillaSecurity/lithium /home/ubuntu/lithium
