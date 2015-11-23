@@ -170,6 +170,10 @@ sudo -u ubuntu git clone https://github.com/MozillaSecurity/funfuzz /home/ubuntu
 sudo -u ubuntu git clone https://github.com/MozillaSecurity/FuzzManager.git /home/ubuntu/FuzzManager
 @import(userdata/misc-funfuzz/location.sh)@
 
+# Populate FuzzManager settings
+sudo -u ubuntu mkdir /home/ubuntu/sigcache
+@import(userdata/misc-funfuzz/fmsettings.sh)@
+
 # Populate Mercurial settings.
 cat << EOF > /home/ubuntu/.hgrc
 [ui]
