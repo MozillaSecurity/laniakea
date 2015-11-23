@@ -162,7 +162,7 @@ sudo chown ubuntu:ubuntu /home/ubuntu/.bashrc
 
 
 # Get Mercurial
-pip install --upgrade mercurial numpy requests
+pip install --upgrade mercurial
 
 # Get the fuzzing harness
 sudo -u ubuntu git clone https://github.com/MozillaSecurity/lithium /home/ubuntu/lithium
@@ -200,7 +200,7 @@ sudo -u ubuntu hg clone https://hg.mozilla.org/mozilla-central /home/ubuntu/tree
 
 # Install virtualenv to get boto.
 sudo -u ubuntu virtualenv /home/ubuntu/trees/venv-funfuzz
-sudo -u ubuntu /home/ubuntu/trees/venv-funfuzz/bin/pip install boto
+sudo -u ubuntu /home/ubuntu/trees/venv-funfuzz/bin/pip install boto numpy requests
 
 cat << EOF > /etc/cron.d/funfuzz
 SHELL=/bin/bash
