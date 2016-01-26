@@ -147,6 +147,16 @@ apt-get --yes --quiet install yasm xvfb
 apt-get --yes --quiet install cmake curl gdb git openssh-server screen silversearcher-ag vim
 apt-get --yes --quiet install lib32z1 gcc-multilib g++-multilib  # For compiling 32-bit in 64-bit OS
 apt-get --yes --quiet install valgrind libc6-dbg # Needed for Valgrind
+apt-get --yes --quiet install clang # Needed for compiling with clang, along with llvm-symbolizer
+LLVMSYMBOLIZER="/usr/bin/llvm-symbolizer-3.6"  # Update this number whenever Clang is updated
+LLVMSYMBOLIZER_DEST="/usr/bin/llvm-symbolizer"
+if [ -f $LLVMSYMBOLIZER ];
+then
+    echo "Creating $LLVMSYMBOLIZER_DEST symlink to file located at: $LLVMSYMBOLIZER"
+    sudo ln -s $LLVMSYMBOLIZER $LLVMSYMBOLIZER_DEST
+else
+    echo "WARNING: File $LLVMSYMBOLIZER does not exist."
+fi
 apt-get --yes --quiet install mailutils mdadm
 apt-get --yes --quiet install xserver-xorg xsel maven openjdk-7-jdk python-virtualenv
 apt-get --yes --quiet install gcc-4.9 g++-4.9 # Needed for Ubuntu 15.10 and later, since our ASan Clang last compiled with this version
