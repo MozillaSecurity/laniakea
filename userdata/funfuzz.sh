@@ -159,7 +159,6 @@ else
 fi
 apt-get --yes --quiet install mailutils mdadm
 apt-get --yes --quiet install xserver-xorg xsel maven openjdk-7-jdk python-virtualenv
-apt-get --yes --quiet install gcc-4.9 g++-4.9 # Needed for Ubuntu 15.10 and later, since our ASan Clang last compiled with this version
 
 # -----------------------------------------------------------------------------
 
