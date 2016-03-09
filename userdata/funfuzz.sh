@@ -176,7 +176,7 @@ pip install --upgrade mercurial
 # Get the fuzzing harness
 sudo -u ubuntu git clone https://github.com/MozillaSecurity/lithium /home/ubuntu/lithium
 sudo -u ubuntu git clone https://github.com/MozillaSecurity/funfuzz /home/ubuntu/funfuzz
-sudo -u ubuntu git clone https://github.com/MozillaSecurity/FuzzManager.git /home/ubuntu/FuzzManager
+sudo -u ubuntu git clone https://github.com/MozillaSecurity/FuzzManager /home/ubuntu/FuzzManager
 @import(userdata/misc-funfuzz/location.sh)@
 
 # Populate FuzzManager settings
