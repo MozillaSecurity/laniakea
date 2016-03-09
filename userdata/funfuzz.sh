@@ -167,9 +167,8 @@ su ubuntu
 
 sudo chown ubuntu:ubuntu /home/ubuntu/.bashrc
 
-
-# Get Mercurial
-pip install --upgrade mercurial
+# Get more fuzzing prerequisites
+pip install --upgrade boto mercurial numpy requests
 
 # Get the fuzzing harness
 sudo -u ubuntu git clone https://github.com/MozillaSecurity/lithium /home/ubuntu/lithium
@@ -202,10 +201,6 @@ sudo chown ubuntu:ubuntu /home/ubuntu/.hgrc
 # Clone m-c repository.
 sudo -u ubuntu hg clone https://hg.mozilla.org/mozilla-central /home/ubuntu/trees/mozilla-central
 
-# Install virtualenv to get boto.
-sudo -u ubuntu virtualenv /home/ubuntu/trees/venv-fm
-sudo -u ubuntu /home/ubuntu/trees/venv-fm/bin/pip install boto numpy requests
-
 cat << EOF > /etc/cron.d/funfuzz
 SHELL=/bin/bash
 PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games
@@ -213,7 +208,7 @@ MAILTO=gkwong@mozilla.com
 USER=ubuntu
 LOGNAME=ubuntulog
 HOME=/home/ubuntu
-@reboot ubuntu /home/ubuntu/trees/venv-fm/bin/python -u /home/ubuntu/funfuzz/loopBot.py -b "--random" -t "js" --target-time 28800 | tee /home/ubuntu/log-loopBotPy.txt
+@reboot ubuntu python -u /home/ubuntu/funfuzz/loopBot.py -b "--random" -t "js" --target-time 28800 | tee /home/ubuntu/log-loopBotPy.txt
 EOF
 
 sudo chown root:root /etc/cron.d/funfuzz
