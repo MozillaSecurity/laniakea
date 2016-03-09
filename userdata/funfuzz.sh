@@ -138,16 +138,15 @@ add-apt-repository -y ppa:git-core/ppa  # git 2.x works better
 apt-get --yes --quiet update
 apt-get --yes --quiet dist-upgrade
 apt-get --yes --quiet build-dep firefox
-# Retrieved on 2015-11-04: http://hg.mozilla.org/mozilla-central/file/6077f51254c6/python/mozboot/mozboot/debian.py
+# Retrieved on 2016-03-07: http://hg.mozilla.org/mozilla-central/file/be593a64d7c6/python/mozboot/mozboot/debian.py
 apt-get --yes --quiet install autoconf2.13 build-essential ccache python-dev python-pip python-setuptools unzip uuid zip
 apt-get --yes --quiet install libasound2-dev libcurl4-openssl-dev libdbus-1-dev libdbus-glib-1-dev libgconf2-dev
-apt-get --yes --quiet install libgstreamer0.10-dev libgstreamer-plugins-base0.10-dev libgtk2.0-dev libgtk-3-dev
-apt-get --yes --quiet install libiw-dev libnotify-dev libpulse-dev libxt-dev mesa-common-dev python-dbus
-apt-get --yes --quiet install yasm xvfb
-apt-get --yes --quiet install cmake curl gdb git openssh-server screen silversearcher-ag vim
+apt-get --yes --quiet install libgtk2.0-dev libgtk-3-dev libiw-dev libnotify-dev libpulse-dev libxt-dev
+apt-get --yes --quiet install mesa-common-dev python-dbus yasm xvfb
+apt-get --yes --quiet install cmake curl gdb git openssh-server python-virtualenv screen silversearcher-ag vim
 apt-get --yes --quiet install lib32z1 gcc-multilib g++-multilib  # For compiling 32-bit in 64-bit OS
-apt-get --yes --quiet install valgrind libc6-dbg # Needed for Valgrind
-apt-get --yes --quiet install clang # Needed for compiling with clang, along with llvm-symbolizer
+# Needed for Valgrind and for compiling with clang, along with llvm-symbolizer
+apt-get --yes --quiet install valgrind libc6-dbg clang
 LLVMSYMBOLIZER="/usr/bin/llvm-symbolizer-3.6"  # Update this number whenever Clang is updated
 LLVMSYMBOLIZER_DEST="/usr/bin/llvm-symbolizer"
 if [ -f $LLVMSYMBOLIZER ];
@@ -158,7 +157,8 @@ else
     echo "WARNING: File $LLVMSYMBOLIZER does not exist."
 fi
 apt-get --yes --quiet install mailutils mdadm
-apt-get --yes --quiet install xserver-xorg xsel maven openjdk-7-jdk python-virtualenv
+# Needed for DOMFuzz stuff
+apt-get --yes --quiet install xserver-xorg xsel maven openjdk-7-jdk
 
 # -----------------------------------------------------------------------------
 
