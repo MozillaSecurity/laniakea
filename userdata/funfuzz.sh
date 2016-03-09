@@ -154,7 +154,6 @@ then
 else
     echo "WARNING: File $LLVMSYMBOLIZER does not exist."
 fi
-apt-get --yes --quiet install mailutils mdadm
 # Needed for DOMFuzz stuff
 apt-get --yes --quiet install xserver-xorg xsel maven openjdk-7-jdk
 
@@ -204,7 +203,6 @@ sudo -u ubuntu hg clone https://hg.mozilla.org/mozilla-central /home/ubuntu/tree
 cat << EOF > /etc/cron.d/funfuzz
 SHELL=/bin/bash
 PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games
-MAILTO=gkwong@mozilla.com
 USER=ubuntu
 LOGNAME=ubuntulog
 HOME=/home/ubuntu
@@ -241,7 +239,6 @@ EOF
 
 cat << EOF > /etc/cron.d/overwriteCloudInitConfigOnBoot
 SHELL=/bin/bash
-MAILTO=gkwong@mozilla.com
 @reboot root /usr/bin/env bash /home/ubuntu/overwriteCloudInitConfig.sh
 EOF
 
