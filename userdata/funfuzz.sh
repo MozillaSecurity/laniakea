@@ -178,7 +178,7 @@ sudo chown ubuntu:ubuntu /home/ubuntu/.bashrc
 pip install --upgrade boto mercurial numpy requests
 
 # Get the fuzzing harness
-sudo -u ubuntu git clone https://github.com/nth10sd/lithium -b nbp-branch --single-branch
+sudo -u ubuntu git clone https://github.com/nth10sd/lithium /home/ubuntu/lithium -b nbp-branch --single-branch
 sudo -u ubuntu git clone https://github.com/MozillaSecurity/funfuzz /home/ubuntu/funfuzz
 sudo -u ubuntu git clone https://github.com/MozillaSecurity/FuzzManager /home/ubuntu/FuzzManager
 @import(userdata/misc-funfuzz/location.sh)@
