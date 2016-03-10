@@ -15,7 +15,7 @@ rm -rf /home/ubuntu/
 
 # Format and mount all available instance stores.
 # Adapted from http://stackoverflow.com/a/10792689
-# REOF = Real End Of File because the script already have EOF
+# REOF = Real End Of File because the script already has EOF
 # Quoting of REOF comes from: http://stackoverflow.com/a/8994243
 cat << 'REOF' > /home/mountInstanceStore.sh
 #!/bin/bash
