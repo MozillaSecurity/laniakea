@@ -184,7 +184,6 @@ sudo -u ubuntu git clone https://github.com/MozillaSecurity/FuzzManager /home/ub
 @import(userdata/misc-funfuzz/location.sh)@
 
 # Populate FuzzManager settings
-sudo -u ubuntu mkdir /home/ubuntu/sigcache
 @import(userdata/misc-funfuzz/fmsettings.sh)@
 
 # Populate Mercurial settings.
