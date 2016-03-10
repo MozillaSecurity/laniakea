@@ -13,6 +13,13 @@ cp -pRP /home/ubuntu/.profile /ubuntuUser-old/
 cp -pRP /home/ubuntu/.ssh/authorized_keys /ubuntuUser-old/
 rm -rf /home/ubuntu/
 
+# List of EC2 instance options: http://aws.amazon.com/ec2/pricing/
+# Generally, anything with *4.* (e.g. c4.4xlarge) will be newer and have EBS-only instance storage,
+# so if you're using *4.*, comment out the code between:
+### STARTMOUNTSSDSTORAGE ### and ### ENDMOUNTSSDSTORAGE ###
+# Ideally, use r3.4xlarge for now
+
+### STARTMOUNTSSDSTORAGE ###
 # Format and mount all available instance stores.
 # Adapted from http://stackoverflow.com/a/10792689
 # REOF = Real End Of File because the script already has EOF
@@ -118,6 +125,7 @@ bash /home/mountInstanceStore.sh
 # r3.large with 1 instance-store does not mount it.
 # c3.large with 2 instance-stores only mounts the first one.
 sed -i '/\/dev\/xvd[b-k][0-9]*[ \t]*\/mnt[0-9]*[ \t]*auto[ \t]*defaults,nobootwait,comment=cloudconfig[ \t]*0[ \t]*2/d' /etc/fstab
+### ENDMOUNTSSDSTORAGE ###
 
 sudo chown ubuntu:ubuntu /home/ubuntu/
 mkdir /home/ubuntu/.ssh/
