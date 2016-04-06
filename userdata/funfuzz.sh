@@ -205,6 +205,7 @@ sudo chown ubuntu:ubuntu /home/ubuntu/.hgrc
 
 # Clone m-c repository.
 sudo -u ubuntu hg clone https://hg.mozilla.org/mozilla-central /home/ubuntu/trees/mozilla-central
+sudo -u ubuntu hg clone https://hg.mozilla.org/releases/mozilla-esr45/ /home/ubuntu/trees/mozilla-esr45
 
 cat << EOF > /etc/cron.d/funfuzz
 SHELL=/bin/bash
