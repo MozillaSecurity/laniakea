@@ -6,19 +6,18 @@
 """
 Laniakea is a utility for managing EC2 instances at AWS and aids in setting up a fuzzing cluster.
 """
+import argparse
+import boto.exception
+import json
+import logging
 import os
 import re
-import sys
-import json
 import shlex
-import logging
-import argparse
 import subprocess
+import sys
 
 from core.common import Focus, String
 from core.manager import Laniakea
-
-import boto.exception
 
 
 class LaniakeaCommandLine(object):
@@ -83,12 +82,13 @@ class LaniakeaCommandLine(object):
 
         return parser.parse_args()
 
-    def _convert_pair_to_dict(self, arg):
-        """Utility function which transform k=v strings from the command-line into a dict.
-        """
+    @staticmethod
+    def _convert_pair_to_dict(arg):
+        """Utility function which transform k=v strings from the command-line into a dict."""
         return dict(kv.split('=', 1) for kv in arg)
 
-    def _convert_str_to_int(self, arg):
+    @staticmethod
+    def _convert_str_to_int(arg):
         # FIXME: Convert certain values of keys from images.json to ints.
         for k, v in list(arg.items()):
             try:
@@ -98,27 +98,34 @@ class LaniakeaCommandLine(object):
                 pass
         return arg
 
-    def list_tags(self, userdata):
+    @staticmethod
+    def list_tags(userdata):
         macros = re.findall("@(.*?)@", userdata)
         logging.info("List of available macros:")
         for m in macros:
             logging.info('\t%r', m)
 
-    def handle_tags(self, userdata, raw_macros):
-        macros = {}
-        if raw_macros:
-            macros = self._convert_pair_to_dict(raw_macros)
-
+    @staticmethod
+    def handle_tags(userdata, macros):
         macro_vars = re.findall("@(.*?)@", userdata)
         for macro_var in macro_vars:
-            if macro_var not in macros:
+            if macro_var == "!all_macros_export":
+                macro_var_export_list = []
+                for defined_macro in macros:
+                    macro_var_export_list.append("export %s='%s'" % (defined_macro, macros[defined_macro]))
+                macro_var_exports = "\n".join(macro_var_export_list)
+
+                userdata = userdata.replace('@%s@' % macro_var, macro_var_exports)
+            elif macro_var not in macros:
                 logging.error('Undefined variable @%s@ in UserData script', macro_var)
                 return
-            userdata = userdata.replace('@%s@' % macro_var, macros[macro_var])
+            else:
+                userdata = userdata.replace('@%s@' % macro_var, macros[macro_var])
 
         return userdata
 
-    def handle_import_tags(self, userdata):
+    @staticmethod
+    def handle_import_tags(userdata):
         """Handle @import(filepath)@ tags in a UserData script.
 
         :param userdata: UserData script content.
@@ -170,6 +177,8 @@ class LaniakeaCommandLine(object):
             self.list_tags(userdata)
             return 0
         userdata = self.handle_import_tags(userdata)
+
+        args.userdata_macros = self._convert_pair_to_dict(args.userdata_macros or "")
         userdata = self.handle_tags(userdata, args.userdata_macros)
 
         if args.print_userdata:
@@ -187,7 +196,7 @@ class LaniakeaCommandLine(object):
             images[args.image_name].update(args.image_args)
 
         logging.info('Using Boto configuration profile "%s"', Focus.info(args.profile))
-        
+
         # If a zone has been specified on the command line, use that for all of our images
         if args.zone:
             for image_name in images:
