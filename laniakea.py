@@ -108,10 +108,18 @@ class LaniakeaCommandLine(object):
     def handle_tags(userdata, macros):
         macro_vars = re.findall("@(.*?)@", userdata)
         for macro_var in macro_vars:
-            if macro_var not in macros:
+            if macro_var == "!all_macros_export":
+                macro_var_export_list = []
+                for defined_macro in macros:
+                    macro_var_export_list.append("export %s='%s'" % (defined_macro, macros[defined_macro]))
+                macro_var_exports = "\n".join(macro_var_export_list)
+
+                userdata = userdata.replace('@%s@' % macro_var, macro_var_exports)
+            elif macro_var not in macros:
                 logging.error('Undefined variable @%s@ in UserData script', macro_var)
                 return
-            userdata = userdata.replace('@%s@' % macro_var, macros[macro_var])
+            else:
+                userdata = userdata.replace('@%s@' % macro_var, macros[macro_var])
 
         return userdata
 
@@ -180,7 +188,7 @@ class LaniakeaCommandLine(object):
             images[args.image_name].update(args.image_args)
 
         logging.info('Using Boto configuration profile "%s"', Focus.info(args.profile))
-        
+
         # If a zone has been specified on the command line, use that for all of our images
         if args.zone:
             for image_name in images:
