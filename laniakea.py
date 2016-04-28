@@ -6,19 +6,18 @@
 """
 Laniakea is a utility for managing EC2 instances at AWS and aids in setting up a fuzzing cluster.
 """
+import argparse
+import boto.exception
+import json
+import logging
 import os
 import re
-import sys
-import json
 import shlex
-import logging
-import argparse
 import subprocess
+import sys
 
 from core.common import Focus, String
 from core.manager import Laniakea
-
-import boto.exception
 
 
 class LaniakeaCommandLine(object):
