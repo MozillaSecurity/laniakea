@@ -1,5 +1,5 @@
-Laniakea
-========
+
+![](http://people.mozilla.com/~cdiehl/img/laniakea.png)
 
 [![Build 
 Status](https://api.travis-ci.org/MozillaSecurity/laniakea.svg)](https://travis-ci.org/MozillaSecurity/laniakea)

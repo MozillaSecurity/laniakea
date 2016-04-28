@@ -13,9 +13,16 @@ cp -pRP /home/ubuntu/.profile /ubuntuUser-old/
 cp -pRP /home/ubuntu/.ssh/authorized_keys /ubuntuUser-old/
 rm -rf /home/ubuntu/
 
+# List of EC2 instance options: http://aws.amazon.com/ec2/pricing/
+# Generally, anything with *4.* (e.g. c4.4xlarge) will be newer and have EBS-only instance storage,
+# so if you're using *4.*, comment out the code between:
+### STARTMOUNTSSDSTORAGE ### and ### ENDMOUNTSSDSTORAGE ###
+# Ideally, use r3.4xlarge for now
+
+### STARTMOUNTSSDSTORAGE ###
 # Format and mount all available instance stores.
 # Adapted from http://stackoverflow.com/a/10792689
-# REOF = Real End Of File because the script already have EOF
+# REOF = Real End Of File because the script already has EOF
 # Quoting of REOF comes from: http://stackoverflow.com/a/8994243
 cat << 'REOF' > /home/mountInstanceStore.sh
 #!/bin/bash
@@ -75,7 +82,9 @@ p
 w
 EOF
 # format!
-mkfs -t ext4 $1
+mkfs -t ext4 $1 << EOF
+y
+EOF
 
 if [ ! -e $2 ]; then
     mkdir $2
@@ -115,7 +124,8 @@ bash /home/mountInstanceStore.sh
 # Remove existing lines involving possibly-mounted devices
 # r3.large with 1 instance-store does not mount it.
 # c3.large with 2 instance-stores only mounts the first one.
-sed -i '/\/dev\/xvd[b-k][ \t]*\/mnt[0-9]*[ \t]*auto[ \t]*defaults,nobootwait,comment=cloudconfig[ \t]*0[ \t]*2/d' /etc/fstab
+sed -i '/\/dev\/xvd[b-k][0-9]*[ \t]*\/mnt[0-9]*[ \t]*auto[ \t]*defaults,nobootwait,comment=cloudconfig[ \t]*0[ \t]*2/d' /etc/fstab
+### ENDMOUNTSSDSTORAGE ###
 
 sudo chown ubuntu:ubuntu /home/ubuntu/
 mkdir /home/ubuntu/.ssh/
@@ -131,32 +141,52 @@ rm -rf /ubuntuUser-old
 # -----------------------------------------------------------------------------
 
 # Essential Packages
+# We need this ppa to get at least git 2.7.3 to fix recent exploits.
+add-apt-repository -y ppa:git-core/ppa
 apt-get --yes --quiet update
 apt-get --yes --quiet dist-upgrade
 apt-get --yes --quiet build-dep firefox
-# Retrieved on 2015-02-05 from MDN Linux Prerequisites: http://mzl.la/1CyPyog
-apt-get --yes --quiet install zip unzip mercurial g++ make autoconf2.13 yasm ccache m4 flex
-apt-get --yes --quiet install cmake curl gdb git openssh-server screen silversearcher-ag vim
-apt-get --yes --quiet install libgtk2.0-dev libglib2.0-dev libdbus-1-dev libdbus-glib-1-dev
-apt-get --yes --quiet install libasound2-dev libcurl4-openssl-dev libiw-dev libxt-dev libpulse-dev
-apt-get --yes --quiet install mesa-common-dev libgstreamer0.10-dev libgstreamer-plugins-base0.10-dev
+# Retrieved on 2016-03-07: http://hg.mozilla.org/mozilla-central/file/be593a64d7c6/python/mozboot/mozboot/debian.py
+apt-get --yes --quiet install autoconf2.13 build-essential ccache python-dev python-pip python-setuptools unzip uuid zip
+apt-get --yes --quiet install libasound2-dev libcurl4-openssl-dev libdbus-1-dev libdbus-glib-1-dev libgconf2-dev
+apt-get --yes --quiet install libgtk2.0-dev libgtk-3-dev libiw-dev libnotify-dev libpulse-dev libxt-dev
+apt-get --yes --quiet install mesa-common-dev python-dbus yasm xvfb
+apt-get --yes --quiet install cmake curl gdb git openssh-server python-virtualenv screen silversearcher-ag vim
 apt-get --yes --quiet install lib32z1 gcc-multilib g++-multilib  # For compiling 32-bit in 64-bit OS
-apt-get --yes --quiet install valgrind libc6-dbg # Needed for Valgrind
-apt-get --yes --quiet install mailutils mdadm
-apt-get --yes --quiet install xserver-xorg xsel maven openjdk-7-jdk
+# Needed for Valgrind and for compiling with clang, along with llvm-symbolizer
+apt-get --yes --quiet install valgrind libc6-dbg clang
+LLVMSYMBOLIZER="/usr/bin/llvm-symbolizer-3.6"  # Update this number whenever Clang is updated
+LLVMSYMBOLIZER_DEST="/usr/bin/llvm-symbolizer"
+if [ -f $LLVMSYMBOLIZER ];
+then
+    echo "Creating $LLVMSYMBOLIZER_DEST symlink to file located at: $LLVMSYMBOLIZER"
+    sudo ln -s $LLVMSYMBOLIZER $LLVMSYMBOLIZER_DEST
+else
+    echo "WARNING: File $LLVMSYMBOLIZER does not exist."
+fi
+# Needed for DOMFuzz stuff
+#apt-get --yes --quiet install xserver-xorg xsel maven openjdk-7-jdk
 
 # -----------------------------------------------------------------------------
 
 su ubuntu
 
-# Add GitHub as a known host
-#sudo -u ubuntu ssh-keyscan github.com >> /home/ubuntu/.ssh/known_hosts
-
-# Set up deployment keys for domjsfunfuzz
-@import(userdata/keys/github.domjsfunfuzz.sh)@
+# Set up deployment keys for funfuzz
+@import(userdata/keys/github.funfuzz.sh)@
 
 sudo chown ubuntu:ubuntu /home/ubuntu/.bashrc
 
+# Get more fuzzing prerequisites
+pip install --upgrade boto mercurial numpy requests
+
+# Get the fuzzing harness
+sudo -u ubuntu git clone https://github.com/nth10sd/lithium /home/ubuntu/lithium -b nbp-branch --single-branch
+sudo -u ubuntu git clone https://github.com/MozillaSecurity/funfuzz /home/ubuntu/funfuzz
+sudo -u ubuntu git clone https://github.com/MozillaSecurity/FuzzManager /home/ubuntu/FuzzManager
+@import(userdata/misc-funfuzz/location.sh)@
+
+# Populate FuzzManager settings
+@import(userdata/misc-funfuzz/fmsettings.sh)@
 
 # Populate Mercurial settings.
 cat << EOF > /home/ubuntu/.hgrc
@@ -169,61 +199,26 @@ mq =
 progress =
 purge =
 rebase =
-
-[hostfingerprints]
-hg.mozilla.org = af:27:b9:34:47:4e:e5:98:01:f6:83:2b:51:c9:aa:d8:df:fb:1a:27
 EOF
 
 sudo chown ubuntu:ubuntu /home/ubuntu/.hgrc
 
+# Clone m-c repository.
+sudo -u ubuntu hg clone https://hg.mozilla.org/mozilla-central /home/ubuntu/trees/mozilla-central
+sudo -u ubuntu hg clone https://hg.mozilla.org/releases/mozilla-aurora/ /home/ubuntu/trees/mozilla-aurora
+sudo -u ubuntu hg clone https://hg.mozilla.org/releases/mozilla-beta/ /home/ubuntu/trees/mozilla-beta
+sudo -u ubuntu hg clone https://hg.mozilla.org/releases/mozilla-esr45/ /home/ubuntu/trees/mozilla-esr45
 
-@import(userdata/misc-domjsfunfuzz/location.sh)@
-
-# Download mozilla-central's Mercurial bundle.
-sudo -u ubuntu wget -P /home/ubuntu https://ftp.mozilla.org/pub/mozilla.org/firefox/bundles/mozilla-central.hg
-
-# Set up m-c in ~/trees/
-sudo -u ubuntu mkdir /home/ubuntu/trees/
-sudo -u ubuntu hg --cwd /home/ubuntu/trees/ init mozilla-central
-
-cat << EOF > /home/ubuntu/trees/mozilla-central/.hg/hgrc
-[paths]
-
-default = https://hg.mozilla.org/mozilla-central
-
-EOF
-
-sudo chown ubuntu:ubuntu /home/ubuntu/trees/mozilla-central/.hg/hgrc
-
-# Update m-c repository.
-sudo -u ubuntu hg -R /home/ubuntu/trees/mozilla-central/ unbundle /home/ubuntu/mozilla-central.hg
-sudo -u ubuntu hg -R /home/ubuntu/trees/mozilla-central/ up -C default
-sudo -u ubuntu hg -R /home/ubuntu/trees/mozilla-central/ pull
-sudo -u ubuntu hg -R /home/ubuntu/trees/mozilla-central/ up -C default
-
-cat << EOF > /home/ubuntu/repoUpdateRunBotPy.sh
-#! /bin/bash
-sudo apt-get --yes --quiet update 2>&1 | tee /home/ubuntu/log-aptGetUpdate.txt
-sudo apt-get --yes --quiet upgrade 2>&1 | tee /home/ubuntu/log-aptGetUpgrade.txt
-# Work around lack of disk space in EC2 virtual machines until we have something better with shell-cache
-rm -rf /home/ubuntu/shell-cache 2>&1 | tee /home/ubuntu/log-rmShellCache.txt
-/usr/bin/env python -u /home/ubuntu/fuzzing/util/reposUpdate.py 2>&1 | tee /home/ubuntu/log-reposUpdate.txt
-/usr/bin/env python -u /home/ubuntu/fuzzing/bot.py -b "--random" -t "js" --target-time=26000 2>&1 | tee /home/ubuntu/log-botPy.txt
-EOF
-
-sudo chown ubuntu:ubuntu /home/ubuntu/repoUpdateRunBotPy.sh
-
-cat << EOF > /etc/cron.d/domjsfunfuzz
+cat << EOF > /etc/cron.d/funfuzz
 SHELL=/bin/bash
-#PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games
-@import(userdata/misc-domjsfunfuzz/extra.sh)@
-#USER=ubuntu
-#LOGNAME=ubuntulog
-#HOME=/home/ubuntu
-3 */8 * * *  ubuntu  /usr/bin/env bash /home/ubuntu/repoUpdateRunBotPy.sh
+PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games
+USER=ubuntu
+LOGNAME=ubuntulog
+HOME=/home/ubuntu
+@reboot ubuntu python -u /home/ubuntu/funfuzz/loopBot.py -b "--random" -t "js" --target-time 28800 | tee /home/ubuntu/log-loopBotPy.txt
 EOF
 
-sudo chown root:root /etc/cron.d/domjsfunfuzz
+sudo chown root:root /etc/cron.d/funfuzz
 
 ##############
 
@@ -245,6 +240,7 @@ HISTSIZE=10000
 export PS1="[\u@\h \d \t \W ] $ "
 
 export LD_LIBRARY_PATH=.
+export ASAN_SYMBOLIZER_PATH=~/llvm/build/bin/llvm-symbolizer
 
 ccache -M 4G
 REOF
@@ -252,7 +248,6 @@ EOF
 
 cat << EOF > /etc/cron.d/overwriteCloudInitConfigOnBoot
 SHELL=/bin/bash
-@import(userdata/misc-domjsfunfuzz/extra.sh)@
 @reboot root /usr/bin/env bash /home/ubuntu/overwriteCloudInitConfig.sh
 EOF
 
