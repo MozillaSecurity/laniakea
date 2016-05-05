@@ -13,23 +13,6 @@ except ImportError as msg:
     logging.error(msg)
     sys.exit(-1)
 
-
-def retry_on_ec2_error(method):
-    """Decorator to use with EC2 methods that can temporarily fail.
-    """
-    def decorator(self, *args, **options):
-        exception_retry_count = 3
-        while True:
-            try:
-                return method(self, *args, **options)
-            except boto.exception.EC2ResponseError as e:
-                exception_retry_count -= 1
-                if exception_retry_count <= 0:
-                    raise e
-                time.sleep(1)
-    return decorator 
-
-
 class Laniakea(object):
     """
     Laniakea managing class.
@@ -38,14 +21,26 @@ class Laniakea(object):
     def __init__(self, images):
         self.ec2 = None
         self.images = images
-
-    @retry_on_ec2_error
-    def __create_tags(self, instance, tags):
-        return self.ec2.create_tags([instance.id], tags or {})
-
-    @retry_on_ec2_error
-    def __update(self, instance):
-        return instance.update()
+    
+    def retry_on_ec2_error(self, func, *args, **kwargs):
+        """
+        Call the given method with the given arguments, retrying if the call
+        failed due to an EC2ResponseError. This method will wait at most 30
+        seconds and perform up to 6 retries. If the method still fails, it will
+        propagate the error.
+        
+        :param func: Function to call
+        :type func: function
+        """
+        exception_retry_count = 6
+        while True:
+            try:
+                return func(*args, **kwargs)
+            except boto.exception.EC2ResponseError as e:
+                exception_retry_count -= 1
+                if exception_retry_count <= 0:
+                    raise e
+                time.sleep(5)
 
     def connect(self, region, **kw_params):
         """Connect to a EC2.
@@ -59,20 +54,21 @@ class Laniakea(object):
         if not self.ec2:
             raise Exception("Unable to connect to region '%s'" % region)
         
-        # Resolve AMI names in our configuration to their IDs
-        logging.info('Retrieving available AMIs...')
-        remote_images = self.ec2.get_all_images(owners = ['self'])
-        for i in self.images:
-            if "image_name" in self.images[i] and not 'image_id' in self.images[i]:
-                image_name = self.images[i]['image_name']
-                for ri in remote_images:
-                    if ri.name == image_name:
-                        if 'image_id' in self.images[i]:
-                            raise Exception("Ambiguous AMI name '%s' resolves to multiple IDs" % image_name)
-                        self.images[i]['image_id'] = ri.id
-                        del self.images[i]['image_name']
-                if not 'image_id' in self.images[i]:
-                    raise Exception("Failed to resolve AMI name '%s' to an AMI ID" % image_name)
+        if self.images:
+            # Resolve AMI names in our configuration to their IDs
+            logging.info('Retrieving available AMIs...')
+            remote_images = self.ec2.get_all_images(owners = ['self'])
+            for i in self.images:
+                if "image_name" in self.images[i] and not 'image_id' in self.images[i]:
+                    image_name = self.images[i]['image_name']
+                    for ri in remote_images:
+                        if ri.name == image_name:
+                            if 'image_id' in self.images[i]:
+                                raise Exception("Ambiguous AMI name '%s' resolves to multiple IDs" % image_name)
+                            self.images[i]['image_id'] = ri.id
+                            del self.images[i]['image_name']
+                    if not 'image_id' in self.images[i]:
+                        raise Exception("Failed to resolve AMI name '%s' to an AMI ID" % image_name)
 
     def create_on_demand(self, instance_type='default', tags=None, root_device_type='ebs',
                          size='default', vol_type='gp2', delete_on_termination=False):
@@ -82,6 +78,8 @@ class Laniakea(object):
         :type instance_type: str
         :param tags:
         :type tags: dict
+        :return: List of instances created
+        :rtype: list
         """
         if root_device_type == 'ebs':
             self.images[instance_type]['block_device_map'] = self._configure_ebs_volume(vol_type, size, delete_on_termination)
@@ -90,12 +88,14 @@ class Laniakea(object):
 
         logging.info('Creating requested tags...')
         for i in reservation.instances:
-            self.__create_tags(i, tags)
+            self.retry_on_ec2_error(self.ec2.create_tags, [i.id], tags or {})
 
+        instances = []
         logging.info('Waiting for instances to become ready...')
         while len(reservation.instances):
             for i in reservation.instances:
                 if i.state == 'running':
+                    instances.append(i)
                     reservation.instances.pop(reservation.instances.index(i))
                     logging.info('%s is %s at %s (%s)',
                                  i.id,
@@ -103,10 +103,11 @@ class Laniakea(object):
                                  i.public_dns_name,
                                  i.ip_address)
                 else:
-                    self.__update(i)
+                    self.retry_on_ec2_error(i.update)
+        return instances
 
     def create_spot(self, price, instance_type='default', tags=None, root_device_type='ebs',
-                    size='default', vol_type='gp2', delete_on_termination=False):
+                    size='default', vol_type='gp2', delete_on_termination=False, timeout=None):
         """Create one or more EC2 spot instances.
 
         :param price: Max price to pay for spot instance per hour.
@@ -115,20 +116,35 @@ class Laniakea(object):
         :type instance_type: str
         :param tags:
         :type tags: dict
+        :return: List of instances created
+        :rtype: list
         """
         if root_device_type == 'ebs':
             self.images[instance_type]['block_device_map'] = self._configure_ebs_volume(vol_type, size, delete_on_termination)
 
         requests = self.ec2.request_spot_instances(price, **self.images[instance_type])
         request_ids = [r.id for r in requests]
+        instances = []
         logging.info("Waiting on fulfillment of requested spot instances.")
+        poll_resolution = 5.0
         while len(request_ids):
-            time.sleep(5.0)
+            time.sleep(poll_resolution)
             pending = self.ec2.get_all_spot_instance_requests(request_ids=request_ids)
+            
+            if timeout != None:
+                timeout -= poll_resolution
+                time_exceeded = timeout <= 0
+            
             for r in pending:
                 if r.status.code == 'fulfilled':
-                    instance = self.ec2.get_only_instances(r.instance_id)[0]
-                    self.ec2.create_tags([instance.id], tags or {})
+                    instance = None
+                    instance = self.retry_on_ec2_error(self.ec2.get_only_instances, r.instance_id)[0]
+                            
+                    if not instance:
+                        raise Exception("Failed to get instance with id %s for fulfilled request" % r.instance_id)
+                                                
+                    instances.append(instance)
+                    self.retry_on_ec2_error(self.ec2.create_tags, [instance.id], tags or {})
                     logging.info('Request %s is %s and %s.',
                                  r.id,
                                  r.status.code,
@@ -139,6 +155,13 @@ class Laniakea(object):
                                  instance.public_dns_name,
                                  instance.ip_address)
                     request_ids.pop(request_ids.index(r.id))
+                elif time_exceeded:
+                    r.cancel()
+            
+            if time_exceeded:
+                return instances
+                    
+        return instances
 
     def _scale_down(self, instances, count):
         """Return a list of |count| last created instances by launch time.
@@ -207,16 +230,18 @@ class Laniakea(object):
             instances = self._scale_down(instances, count)
         self.ec2.terminate_instances([i.id for i in instances])
 
-    def find(self, filters=None):
+    def find(self, instance_ids=None, filters=None):
         """Flatten list of reservations to a list of instances.
 
+        :param instance_ids: A list of instance ids to filter by
+        :type instance_ids: list
         :param filters: A dict of |Filter.N| values defined in http://goo.gl/jYNej9
         :type filters: dict
         :return: A flattened list of filtered instances.
         :rtype: list
         """
         instances = []
-        reservations = self.ec2.get_all_instances(filters=filters or {})
+        reservations = self.retry_on_ec2_error(self.ec2.get_all_instances, instance_ids=instance_ids, filters=filters)
         for reservation in reservations:
             instances.extend(reservation.instances)
         return instances
