@@ -2,9 +2,11 @@
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
+import logging
+import ssl
 import sys
 import time
-import logging
+
 
 try:
     import boto.ec2
@@ -36,7 +38,7 @@ class Laniakea(object):
         while True:
             try:
                 return func(*args, **kwargs)
-            except boto.exception.EC2ResponseError as e:
+            except (boto.exception.EC2ResponseError, ssl.SSLError) as e:
                 exception_retry_count -= 1
                 if exception_retry_count <= 0:
                     raise e
