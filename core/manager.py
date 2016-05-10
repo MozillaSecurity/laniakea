@@ -23,7 +23,7 @@ class Laniakea(object):
     def __init__(self, images):
         self.ec2 = None
         self.images = images
-    
+
     def retry_on_ec2_error(self, func, *args, **kwargs):
         """
         Call the given method with the given arguments, retrying if the call
@@ -55,11 +55,11 @@ class Laniakea(object):
         self.ec2 = boto.ec2.connect_to_region(region, **kw_params)
         if not self.ec2:
             raise Exception("Unable to connect to region '%s'" % region)
-        
+
         if self.images:
             # Resolve AMI names in our configuration to their IDs
             logging.info('Retrieving available AMIs...')
-            remote_images = self.ec2.get_all_images(owners = ['self'])
+            remote_images = self.ec2.get_all_images(owners=['self'])
             for i in self.images:
                 if "image_name" in self.images[i] and not 'image_id' in self.images[i]:
                     image_name = self.images[i]['image_name']
@@ -132,19 +132,19 @@ class Laniakea(object):
         while len(request_ids):
             time.sleep(poll_resolution)
             pending = self.ec2.get_all_spot_instance_requests(request_ids=request_ids)
-            
+
             if timeout != None:
                 timeout -= poll_resolution
                 time_exceeded = timeout <= 0
-            
+
             for r in pending:
                 if r.status.code == 'fulfilled':
                     instance = None
                     instance = self.retry_on_ec2_error(self.ec2.get_only_instances, r.instance_id)[0]
-                            
+
                     if not instance:
                         raise Exception("Failed to get instance with id %s for fulfilled request" % r.instance_id)
-                                                
+
                     instances.append(instance)
                     self.retry_on_ec2_error(self.ec2.create_tags, [instance.id], tags or {})
                     logging.info('Request %s is %s and %s.',
@@ -159,10 +159,10 @@ class Laniakea(object):
                     request_ids.pop(request_ids.index(r.id))
                 elif time_exceeded:
                     r.cancel()
-            
+
             if time_exceeded:
                 return instances
-                    
+
         return instances
 
     def _scale_down(self, instances, count):
@@ -203,7 +203,7 @@ class Laniakea(object):
         dev_sda1.delete_on_termination = delete_on_termination
         dev_sda1.volume_type = vol_type
         if size != 'default':
-            dev_sda1.size = size   # change root volume to desired size
+            dev_sda1.size = size  # change root volume to desired size
         bdm = boto.ec2.blockdevicemapping.BlockDeviceMapping()
         bdm['/dev/sda1'] = dev_sda1
         return bdm
