@@ -171,8 +171,11 @@ fi
 
 su ubuntu
 
-# Set up deployment keys for funfuzz
-@import(userdata/keys/github.funfuzz.sh)@
+cat << EOF > /home/ubuntu/.ssh/config
+Host *
+StrictHostKeyChecking no
+EOF
+sudo chown -R ubuntu:ubuntu /home/ubuntu/.ssh
 
 sudo chown ubuntu:ubuntu /home/ubuntu/.bashrc
 
@@ -183,7 +186,6 @@ pip install --upgrade boto mercurial numpy requests
 sudo -u ubuntu git clone https://github.com/nth10sd/lithium /home/ubuntu/lithium -b nbp-branch --single-branch
 sudo -u ubuntu git clone https://github.com/MozillaSecurity/funfuzz /home/ubuntu/funfuzz
 sudo -u ubuntu git clone https://github.com/MozillaSecurity/FuzzManager /home/ubuntu/FuzzManager
-@import(userdata/misc-funfuzz/location.sh)@
 
 # Populate FuzzManager settings
 @import(userdata/misc-funfuzz/fmsettings.sh)@
