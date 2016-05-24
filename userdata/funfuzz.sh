@@ -141,8 +141,7 @@ rm -rf /ubuntuUser-old
 # -----------------------------------------------------------------------------
 
 # Essential Packages
-# We need this ppa to get at least git 2.7.3 to fix recent exploits.
-add-apt-repository -y ppa:git-core/ppa
+add-apt-repository -y ppa:git-core/ppa  # Git PPA needed to get latest security updates
 apt-get --yes --quiet update
 apt-get --yes --quiet dist-upgrade
 apt-get --yes --quiet build-dep firefox
