@@ -155,7 +155,7 @@ apt-get --yes --quiet install cmake curl gdb git openssh-client openssh-server p
 apt-get --yes --quiet install lib32z1 gcc-multilib g++-multilib  # For compiling 32-bit in 64-bit OS
 # Needed for Valgrind and for compiling with clang, along with llvm-symbolizer
 apt-get --yes --quiet install valgrind libc6-dbg clang
-LLVMSYMBOLIZER="/usr/bin/llvm-symbolizer-3.6"  # Update this number whenever Clang is updated
+LLVMSYMBOLIZER="/usr/bin/llvm-symbolizer-3.8"  # Update this number whenever Clang is updated
 LLVMSYMBOLIZER_DEST="/usr/bin/llvm-symbolizer"
 if [ -f $LLVMSYMBOLIZER ];
 then
@@ -241,7 +241,7 @@ HISTSIZE=10000
 export PS1="[\u@\h \d \t \W ] $ "
 
 export LD_LIBRARY_PATH=.
-export ASAN_SYMBOLIZER_PATH=~/llvm/build/bin/llvm-symbolizer
+export ASAN_SYMBOLIZER_PATH=/usr/bin/llvm-symbolizer
 
 ccache -M 4G
 REOF
