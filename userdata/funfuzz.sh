@@ -1,6 +1,144 @@
 #! /bin/bash -ex
-# Use only *4.* instances or *3.* instances with EBS storage.
+# https://help.ubuntu.com/community/CloudInit
+# http://www.knowceantech.com/2014/03/amazon-cloud-bootstrap-with-userdata-cloudinit-github-puppet/
 export DEBIAN_FRONTEND=noninteractive  # Bypass ncurses configuration screens
+
+# -----------------------------------------------------------------------------
+
+# Backup ubuntu user folder files as we will then mount the instance store to it
+mkdir /ubuntuUser-old/
+cp -pRP /home/ubuntu/.bash_logout /ubuntuUser-old/
+cp -pRP /home/ubuntu/.bashrc /ubuntuUser-old/
+cp -pRP /home/ubuntu/.profile /ubuntuUser-old/
+cp -pRP /home/ubuntu/.ssh/authorized_keys /ubuntuUser-old/
+rm -rf /home/ubuntu/
+
+# List of EC2 instance options: http://aws.amazon.com/ec2/pricing/
+# Generally, anything with *4.* (e.g. c4.4xlarge) will be newer and have EBS-only instance storage,
+# so if you're using *4.*, comment out the code between:
+### STARTMOUNTSSDSTORAGE ### and ### ENDMOUNTSSDSTORAGE ###
+# Ideally, use r3.4xlarge for now
+
+### STARTMOUNTSSDSTORAGE ###
+# Format and mount all available instance stores.
+# Adapted from http://stackoverflow.com/a/10792689
+# REOF = Real End Of File because the script already has EOF
+# Quoting of REOF comes from: http://stackoverflow.com/a/8994243
+cat << 'REOF' > /home/mountInstanceStore.sh
+#!/bin/bash
+
+# This script formats and mounts all available Instance Store devices
+
+##### Variables
+devices=( )
+
+##### Functions
+
+function add_device
+{
+    devices=( "${devices[@]}" $1 )
+}
+
+function check_device
+{
+    if [ -e /dev/$1 ]; then
+        add_device $1
+    fi
+}
+
+function check_devices
+{
+    # If these lines are added/removed, make sure to check the sed line dealing with /etc/fstab too.
+    check_device xvdb
+    check_device xvdc
+    check_device xvdd
+    check_device xvde
+    check_device xvdf
+    check_device xvdg
+    check_device xvdh
+    check_device xvdi
+    check_device xvdj
+    check_device xvdk
+}
+
+function print_devices
+{
+    for device in "${devices[@]}"
+    do
+        echo Found device $device
+    done
+}
+
+function do_mount
+{
+    echo Mounting device $1 on $2
+fdisk $1 << EOF
+n
+p
+1
+
+
+
+w
+EOF
+# format!
+mkfs -t ext4 $1 << EOF
+y
+EOF
+
+if [ ! -e $2 ]; then
+    mkdir $2
+fi
+
+mount $1 $2
+
+echo "$1   $2        ext4    defaults,nobootwait,comment=cloudconfig          0 2" >> /etc/fstab
+
+}
+
+function mount_devices
+{
+    for (( i = 0 ; i < ${#devices[@]} ; i++ ))
+    do
+        if [ $i -eq 0 ]; then
+            mountTarget=/home/ubuntu
+            # One of the devices may have been mounted.
+            umount /mnt 2>/dev/null
+        else
+            mountTarget=/mnt$(($i+1))
+        fi
+        do_mount /dev/${devices[$i]} $mountTarget
+    done
+}
+
+
+##### Main
+
+check_devices
+print_devices
+mount_devices
+REOF
+
+bash /home/mountInstanceStore.sh
+
+# Remove existing lines involving possibly-mounted devices
+# r3.large with 1 instance-store does not mount it.
+# c3.large with 2 instance-stores only mounts the first one.
+sed -i '/\/dev\/xvd[b-k][0-9]*[ \t]*\/mnt[0-9]*[ \t]*auto[ \t]*defaults,nobootwait,comment=cloudconfig[ \t]*0[ \t]*2/d' /etc/fstab
+### ENDMOUNTSSDSTORAGE ###
+
+sudo chown ubuntu:ubuntu /home/ubuntu/
+mkdir /home/ubuntu/.ssh/
+sudo chown ubuntu:ubuntu /home/ubuntu/.ssh/
+
+# Move ubuntu user dir files back to its home directory which is now mounted on the instance store.
+cp -pRP /ubuntuUser-old/.bash_logout /home/ubuntu/.bash_logout
+cp -pRP /ubuntuUser-old/.bashrc /home/ubuntu/.bashrc
+cp -pRP /ubuntuUser-old/.profile /home/ubuntu/.profile
+cp -pRP /ubuntuUser-old/authorized_keys /home/ubuntu/.ssh/authorized_keys
+rm -rf /ubuntuUser-old
+
+# -----------------------------------------------------------------------------
 
 # Essential Packages
 add-apt-repository -y ppa:git-core/ppa  # Git PPA needed to get latest security updates
