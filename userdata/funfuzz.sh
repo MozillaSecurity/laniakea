@@ -181,7 +181,7 @@ sudo chown -R ubuntu:ubuntu /home/ubuntu/.ssh
 sudo chown ubuntu:ubuntu /home/ubuntu/.bashrc
 
 # Get more fuzzing prerequisites
-pip install --upgrade boto mercurial numpy requests
+pip install --upgrade pip virtualenv boto mercurial numpy requests
 
 # Get the fuzzing harness
 sudo -u ubuntu git clone https://github.com/nth10sd/lithium /home/ubuntu/lithium -b nbp-branch --single-branch
