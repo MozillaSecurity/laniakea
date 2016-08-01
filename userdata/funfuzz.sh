@@ -127,9 +127,9 @@ bash /home/mountInstanceStore.sh
 sed -i '/\/dev\/xvd[b-k][0-9]*[ \t]*\/mnt[0-9]*[ \t]*auto[ \t]*defaults,nobootwait,comment=cloudconfig[ \t]*0[ \t]*2/d' /etc/fstab
 ### ENDMOUNTSSDSTORAGE ###
 
-sudo chown ubuntu:ubuntu /home/ubuntu/
+chown ubuntu:ubuntu /home/ubuntu/
 mkdir /home/ubuntu/.ssh/
-sudo chown ubuntu:ubuntu /home/ubuntu/.ssh/
+chown ubuntu:ubuntu /home/ubuntu/.ssh/
 
 # Move ubuntu user dir files back to its home directory which is now mounted on the instance store.
 cp -pRP /ubuntuUser-old/.bash_logout /home/ubuntu/.bash_logout
@@ -161,7 +161,7 @@ LLVMSYMBOLIZER_DEST="/usr/bin/llvm-symbolizer"
 if [ -f $LLVMSYMBOLIZER ];
 then
     echo "Creating $LLVMSYMBOLIZER_DEST symlink to file located at: $LLVMSYMBOLIZER"
-    sudo ln -s $LLVMSYMBOLIZER $LLVMSYMBOLIZER_DEST
+    ln -s $LLVMSYMBOLIZER $LLVMSYMBOLIZER_DEST
 else
     echo "WARNING: File $LLVMSYMBOLIZER does not exist."
 fi
