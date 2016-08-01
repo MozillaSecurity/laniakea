@@ -130,12 +130,14 @@ sed -i '/\/dev\/xvd[b-k][0-9]*[ \t]*\/mnt[0-9]*[ \t]*auto[ \t]*defaults,nobootwa
 chown ubuntu:ubuntu /home/ubuntu/
 mkdir /home/ubuntu/.ssh/
 chown ubuntu:ubuntu /home/ubuntu/.ssh/
+chmod 700 /home/ubuntu/.ssh/  # Important to be able to ssh in after restart
 
 # Move ubuntu user dir files back to its home directory which is now mounted on the instance store.
 cp -pRP /ubuntuUser-old/.bash_logout /home/ubuntu/.bash_logout
 cp -pRP /ubuntuUser-old/.bashrc /home/ubuntu/.bashrc
 cp -pRP /ubuntuUser-old/.profile /home/ubuntu/.profile
 cp -pRP /ubuntuUser-old/authorized_keys /home/ubuntu/.ssh/authorized_keys
+chmod 600 /home/ubuntu/.ssh/authorized_keys  # Important to be able to ssh in after restart
 rm -rf /ubuntuUser-old
 
 # -----------------------------------------------------------------------------
