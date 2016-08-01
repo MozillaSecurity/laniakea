@@ -218,7 +218,7 @@ date
 sudo -u ubuntu hg clone https://hg.mozilla.org/releases/mozilla-esr45/ /home/ubuntu/trees/mozilla-esr45
 date
 
-cat << EOF > /etc/cron.d/funfuzz
+cat << EOF > /home/ubuntu/moveToEtcCronDFunfuzz
 SHELL=/bin/bash
 PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games
 USER=ubuntu
@@ -227,7 +227,7 @@ HOME=/home/ubuntu
 @reboot ubuntu python -u /home/ubuntu/funfuzz/loopBot.py -b "--random" -t "js" --target-time 28800 | tee /home/ubuntu/log-loopBotPy.txt
 EOF
 
-sudo chown root:root /etc/cron.d/funfuzz
+sudo chown root:root /home/ubuntu/moveToEtcCronDFunfuzz
 
 ##############
 
