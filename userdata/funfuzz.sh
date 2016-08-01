@@ -236,8 +236,9 @@ cat << EOF > /home/ubuntu/overwriteCloudInitConfig.sh
 # Make sure coredumps have the pid appended
 echo '1' > /proc/sys/kernel/core_uses_pid
 
-# Edit ~/.bashrc
-cat << REOF >> /home/ubuntu/.bashrc
+# Edit ~/.bashrc if it has not yet been done so
+if [[ \$(tac /home/ubuntu/.bashrc | egrep -m 1 .) != 'ccache -M 4G' ]]; then
+cat << 'REOF' >> /home/ubuntu/.bashrc
 
 ulimit -c unlimited
 
@@ -253,6 +254,7 @@ export ASAN_SYMBOLIZER_PATH=/usr/bin/llvm-symbolizer
 
 ccache -M 4G
 REOF
+fi
 EOF
 
 cat << EOF > /etc/cron.d/overwriteCloudInitConfigOnBoot
