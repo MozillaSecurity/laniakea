@@ -140,6 +140,7 @@ rm -rf /ubuntuUser-old
 
 # -----------------------------------------------------------------------------
 
+date
 # Essential Packages
 add-apt-repository -y ppa:git-core/ppa  # Git PPA needed to get latest security updates
 apt-get --yes --quiet update
@@ -168,7 +169,7 @@ fi
 #apt-get --yes --quiet install xserver-xorg xsel maven openjdk-7-jdk
 
 # -----------------------------------------------------------------------------
-
+date
 su ubuntu
 
 cat << EOF > /home/ubuntu/.ssh/config
@@ -206,9 +207,13 @@ EOF
 sudo chown ubuntu:ubuntu /home/ubuntu/.hgrc
 
 # Clone m-c repository.
+date
 sudo -u ubuntu hg clone https://hg.mozilla.org/mozilla-central /home/ubuntu/trees/mozilla-central
+date
 sudo -u ubuntu hg clone https://hg.mozilla.org/releases/mozilla-aurora/ /home/ubuntu/trees/mozilla-aurora
+date
 sudo -u ubuntu hg clone https://hg.mozilla.org/releases/mozilla-esr45/ /home/ubuntu/trees/mozilla-esr45
+date
 
 cat << EOF > /etc/cron.d/funfuzz
 SHELL=/bin/bash
@@ -253,5 +258,5 @@ SHELL=/bin/bash
 EOF
 
 ##############
-
+date
 sudo reboot
