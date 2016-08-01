@@ -184,7 +184,7 @@ sudo chown ubuntu:ubuntu /home/ubuntu/.bashrc
 pip install --upgrade pip virtualenv mercurial
 
 # Get the fuzzing harness
-sudo -u ubuntu git clone https://github.com/nth10sd/lithium /home/ubuntu/lithium -b nbp-branch --single-branch
+sudo -u ubuntu git clone https://github.com/MozillaSecurity/lithium.git /home/ubuntu/lithium
 sudo -u ubuntu git clone https://github.com/MozillaSecurity/funfuzz /home/ubuntu/funfuzz
 sudo -u ubuntu git clone https://github.com/MozillaSecurity/FuzzManager /home/ubuntu/FuzzManager
 
