@@ -153,7 +153,6 @@ apt-get --yes --quiet install libasound2-dev libcurl4-openssl-dev libdbus-1-dev 
 apt-get --yes --quiet install libgtk2.0-dev libgtk-3-dev libiw-dev libnotify-dev libpulse-dev libx11-xcb-dev libxt-dev
 apt-get --yes --quiet install mesa-common-dev python-dbus yasm xvfb
 apt-get --yes --quiet install cmake curl gdb git openssh-client openssh-server python-virtualenv screen silversearcher-ag vim
-systemctl enable ssh  # To automatically start ssh after reboot
 apt-get --yes --quiet install lib32z1 gcc-multilib g++-multilib  # For compiling 32-bit in 64-bit OS
 # Needed for Valgrind and for compiling with clang, along with llvm-symbolizer
 apt-get --yes --quiet install valgrind libc6-dbg clang
