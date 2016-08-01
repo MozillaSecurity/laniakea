@@ -146,11 +146,11 @@ add-apt-repository -y ppa:git-core/ppa  # Git PPA needed to get latest security 
 apt-get --yes --quiet update
 apt-get --yes --quiet dist-upgrade
 apt-get --yes --quiet build-dep firefox
-# Check using `hg diff -r be593a64d7c6:f3f2fa1d7eed python/mozboot/mozboot/debian.py`
-# Retrieved on 2016-05-17: http://hg.mozilla.org/mozilla-central/file/f3f2fa1d7eed/python/mozboot/mozboot/debian.py
+# Check using `hg diff -r f3f2fa1d7eed:2ea3d51ba1bb python/mozboot/mozboot/debian.py`
+# Retrieved on 2016-07-29: http://hg.mozilla.org/mozilla-central/file/2ea3d51ba1bb/python/mozboot/mozboot/debian.py
 apt-get --yes --quiet install autoconf2.13 build-essential ccache python-dev python-pip python-setuptools unzip uuid zip
 apt-get --yes --quiet install libasound2-dev libcurl4-openssl-dev libdbus-1-dev libdbus-glib-1-dev libgconf2-dev
-apt-get --yes --quiet install libgtk2.0-dev libgtk-3-dev libiw-dev libnotify-dev libpulse-dev libxt-dev
+apt-get --yes --quiet install libgtk2.0-dev libgtk-3-dev libiw-dev libnotify-dev libpulse-dev libx11-xcb-dev libxt-dev
 apt-get --yes --quiet install mesa-common-dev python-dbus yasm xvfb
 apt-get --yes --quiet install cmake curl gdb git openssh-client openssh-server python-virtualenv screen silversearcher-ag vim
 apt-get --yes --quiet install lib32z1 gcc-multilib g++-multilib  # For compiling 32-bit in 64-bit OS
