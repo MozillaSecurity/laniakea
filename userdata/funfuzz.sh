@@ -168,6 +168,7 @@ else
 fi
 # Needed for DOMFuzz stuff
 #apt-get --yes --quiet install xserver-xorg xsel maven openjdk-7-jdk
+apt-get --yes --quiet autoremove
 
 # -----------------------------------------------------------------------------
 date
