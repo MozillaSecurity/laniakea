@@ -181,12 +181,15 @@ sudo chown -R ubuntu:ubuntu /home/ubuntu/.ssh
 sudo chown ubuntu:ubuntu /home/ubuntu/.bashrc
 
 # Get more fuzzing prerequisites
-pip install --upgrade pip virtualenv boto mercurial numpy requests
+pip install --upgrade pip virtualenv mercurial
 
 # Get the fuzzing harness
 sudo -u ubuntu git clone https://github.com/nth10sd/lithium /home/ubuntu/lithium -b nbp-branch --single-branch
 sudo -u ubuntu git clone https://github.com/MozillaSecurity/funfuzz /home/ubuntu/funfuzz
 sudo -u ubuntu git clone https://github.com/MozillaSecurity/FuzzManager /home/ubuntu/FuzzManager
+
+# Get FuzzManager pip prerequisites
+pip install --upgrade -r /home/ubuntu/FuzzManager/requirements.txt
 
 # Populate FuzzManager settings
 @import(userdata/misc-funfuzz/fmsettings.sh)@
