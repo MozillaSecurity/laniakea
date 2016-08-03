@@ -158,7 +158,6 @@ apt-get --yes --quiet install cmake curl gdb git openssh-client openssh-server p
 apt-get --yes --quiet install lib32z1 gcc-multilib g++-multilib  # For compiling 32-bit in 64-bit OS
 # Needed for Valgrind and for compiling with clang, along with llvm-symbolizer
 apt-get --yes --quiet install valgrind libc6-dbg clang
-apt-get install default-jdk  # Needed for installing Java for Amazon API & AMI tools
 LLVMSYMBOLIZER="/usr/bin/llvm-symbolizer-3.8"  # Update this number whenever Clang is updated
 LLVMSYMBOLIZER_DEST="/usr/bin/llvm-symbolizer"
 if [ -f $LLVMSYMBOLIZER ];
@@ -243,24 +242,6 @@ echo '1' > /proc/sys/kernel/core_uses_pid
 # Edit ~/.bashrc if it has not yet been done so
 if [[ \$(tac /home/ubuntu/.bashrc | egrep -m 1 .) != 'ccache -M 4G' ]]; then
 cat << 'REOF' >> /home/ubuntu/.bashrc
-
-# Needed for automatically setting JAVA_HOME
-JAVA_PATH=java
-
-while true; do
-    # Examine to see if $JAVA_PATH is a symbolic link
-    JAVA_DESC=`file $(which $JAVA_PATH)`
-    if [[ $JAVA_DESC == *"symbolic link to"* ]]; then
-        # If it is a symbolic link, follow it
-        JAVA_PATH=$(echo $JAVA_DESC | awk -F 'to ' '{print $2}')
-        continue
-    fi
-    break
-done
-
-# Set JAVA_HOME to be the location of the actual java binary
-JAVA_HOME=$(echo $JAVA_PATH | awk -F 'bin/java' '{print $1}')
-export JAVA_HOME=$JAVA_HOME
 
 ulimit -c unlimited
 
