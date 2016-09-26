@@ -174,15 +174,14 @@ apt-get --yes --quiet autoremove
 
 # -----------------------------------------------------------------------------
 date
-su ubuntu
 
 cat << EOF > /home/ubuntu/.ssh/config
 Host *
 StrictHostKeyChecking no
 EOF
-sudo chown -R ubuntu:ubuntu /home/ubuntu/.ssh
+chown -R ubuntu:ubuntu /home/ubuntu/.ssh
 
-sudo chown ubuntu:ubuntu /home/ubuntu/.bashrc
+chown ubuntu:ubuntu /home/ubuntu/.bashrc
 
 # Get more fuzzing prerequisites
 pip install --upgrade pip virtualenv mercurial
@@ -211,7 +210,7 @@ purge =
 rebase =
 EOF
 
-sudo chown ubuntu:ubuntu /home/ubuntu/.hgrc
+chown ubuntu:ubuntu /home/ubuntu/.hgrc
 
 # Clone m-c repository.
 date
@@ -231,7 +230,7 @@ HOME=/home/ubuntu
 @reboot ubuntu python -u /home/ubuntu/funfuzz/loopBot.py -b "--random" -t "js" --target-time 28800 | tee /home/ubuntu/log-loopBotPy.txt
 EOF
 
-sudo chown root:root /etc/cron.d/funfuzz
+chown root:root /etc/cron.d/funfuzz
 
 ##############
 
@@ -268,4 +267,4 @@ EOF
 
 ##############
 date
-sudo reboot
+reboot
