@@ -1,6 +1,7 @@
 #! /bin/bash -ex
-# https://help.ubuntu.com/community/CloudInit
-# http://www.knowceantech.com/2014/03/amazon-cloud-bootstrap-with-userdata-cloudinit-github-puppet/
+# Be in ~/trees/laniakea directory, be sure @import directories are present.
+# ~/trees/boto-awsfuzz/bin/python -u ~/trees/laniakea/laniakea.py -region=us-east-1 -images ~/Downloads/images.json -create-on-demand -tags Name=jsfunfuzz-linux-s3-xenial-ondemand-4 -image-name funfuzz-ondemand-ebs -ebs-volume-delete-on-termination -ebs-size 96 -root-device-type ebs -userdata userdata/funfuzz.sh
+# Stop the instance, create an AMI, copy the AMI, then update EC2SpotManager
 export DEBIAN_FRONTEND=noninteractive  # Bypass ncurses configuration screens
 
 # -----------------------------------------------------------------------------
