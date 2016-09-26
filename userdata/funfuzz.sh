@@ -218,8 +218,6 @@ sudo -u ubuntu hg clone https://hg.mozilla.org/mozilla-central /home/ubuntu/tree
 date
 sudo -u ubuntu hg clone https://hg.mozilla.org/releases/mozilla-aurora/ /home/ubuntu/trees/mozilla-aurora
 date
-sudo -u ubuntu hg clone https://hg.mozilla.org/releases/mozilla-esr45/ /home/ubuntu/trees/mozilla-esr45
-date
 
 cat << EOF > /etc/cron.d/funfuzz
 SHELL=/bin/bash
