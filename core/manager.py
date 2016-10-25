@@ -57,7 +57,7 @@ class Laniakea(object):
         if self.images:
             # Resolve AMI names in our configuration to their IDs
             logging.info('Retrieving available AMIs...')
-            remote_images = self.ec2.get_all_images(owners = ['self'])
+            remote_images = self.ec2.get_all_images(owners = ['self', 'amazon', 'aws-marketplace'])
             for i in self.images:
                 if "image_name" in self.images[i] and not 'image_id' in self.images[i]:
                     image_name = self.images[i]['image_name']
