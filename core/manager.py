@@ -131,7 +131,7 @@ class Laniakea(object):
         poll_resolution = 5.0
         while len(request_ids):
             time.sleep(poll_resolution)
-            pending = self.ec2.get_all_spot_instance_requests(request_ids=request_ids)
+            pending = self.retry_on_ec2_error(self.ec2.get_all_spot_instance_requests, request_ids=request_ids)
 
             if timeout != None:
                 timeout -= poll_resolution
