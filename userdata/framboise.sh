@@ -34,10 +34,8 @@ cd /home/ubuntu
 # Download ASan build of Firefox
 ARTIFACT_NAME="en-US.linux-x86_64-asan.tar.bz2"
 TASK_ID=$(wget -q -O - https://index.taskcluster.net/v1/task/gecko.v2.mozilla-inbound.latest.firefox.linux64-asan-opt | python3 -c "import json,sys; print(json.load(sys.stdin)['taskId'])")
-curl "https://public-artifacts.taskcluster.net/$TASK_ID/0/public/build/target.tar.bz2" | tar -xvja
-
-# Download build information of Firefox
-CHANGESET=$(wget -q -O - "https://public-artifacts.taskcluster.net/$TASK_ID/0/public/build/target.json" | python -c "import sys,json; print(json.load(sys.stdin)['moz_source_stamp'])")
+curl -L "https://queue.taskcluster.net/v1/task/$TASK_ID/artifacts/public/build/target.tar.bz2" | tar -xvja
+CHANGESET=$(curl -Ls "https://queue.taskcluster.net/v1/task/$TASK_ID/artifacts/public/build/target.json" | python -c "import sys,json; print(json.load(sys.stdin)['moz_source_stamp'])")
 
 # Checkout Framboise
 retry git clone -v --depth 1 https://github.com/mozillasecurity/framboise.git
@@ -46,9 +44,6 @@ rm -rf framboise/modules
 # Checkout private Framboise modules
 retry git clone -v --depth 1 git@framboise-modules:mozillasecurity/framboise-modules framboise/modules
 
-# Install Framboise dependencies
-pip3 -q install -r framboise/requirements.txt
-
 # Checkout fuzzing resources
 git clone https://github.com/mozillasecurity/fuzzdata
 
@@ -56,16 +51,8 @@ git clone https://github.com/mozillasecurity/fuzzdata
 retry git clone -v --depth 1 https://github.com/mozillasecurity/FuzzManager.git fuzzmanager
 pip -q install -r fuzzmanager/requirements.txt
 
-# Create base FuzzManager configuration
-cat > /home/ubuntu/.fuzzmanagerconf << EOL
-[Main]
-serverhost = fuzzmanager.fuzzing.mozilla.org
-serverport = 443
-serverproto = https
-serverauthtoken = 798e42d7527d35c54418cfe8f3a3987142ac7e83
-sigdir = /home/ubuntu/signatures
-EOL
-echo "clientid =" `curl --retry 5 -s http://169.254.169.254/latest/meta-data/public-hostname` >> /home/ubuntu/.fuzzmanagerconf
+@import(userdata/loggers/fuzzmanager.sh)@
+@import(userdata/loggers/fuzzmanager.binary.sh)@
 
 # Create binary FuzzManager configuration
 cat > /home/ubuntu/firefox/firefox.fuzzmanagerconf << EOL
@@ -80,5 +67,6 @@ EOL
 chown -R ubuntu:ubuntu /home/ubuntu
 
 # Run Framboise as user "ubuntu"
-su -c "screen -t framboise -dmS framboise xvfb-run python3 ./framboise.py -fuzzer 1:WebGL,1:WebGL2 -with-events -with-set-interval" ubuntu
-
+cd framboise
+python3 setup.py
+su -c "screen -t framboise -dmS framboise xvfb-run -s '-screen 0 1024x768x24' python3 ./framboise.py -settings settings/framboise.linux.aws.yaml -fuzzer 1:WebAudio -with-events -with-set-interval -restart" ubuntu
