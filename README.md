@@ -5,6 +5,7 @@
 Status](https://api.travis-ci.org/MozillaSecurity/laniakea.svg)](https://travis-ci.org/MozillaSecurity/laniakea)
 
 <h3>Setup</h3>
+
 ```
 pip install -r requirements.txt
 ```
@@ -96,6 +97,7 @@ You can use the "-list-userdata-macros" option to print out available macros ins
 
 
 <h3>Help Menu</h3>
+
 ```
 usage: ./laniakea.py
    (-create-on-demand | -create-spot | -stop [n] | -terminate [n] | -status | -run cmd | -list-userdata-macros)
