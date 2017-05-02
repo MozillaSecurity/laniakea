@@ -78,8 +78,6 @@ chown ubuntu:ubuntu /home/ubuntu/.hgrc
 date
 sudo -u ubuntu hg clone https://hg.mozilla.org/mozilla-central /home/ubuntu/trees/mozilla-central
 date
-sudo -u ubuntu hg clone https://hg.mozilla.org/releases/mozilla-aurora/ /home/ubuntu/trees/mozilla-aurora
-date
 
 cat << EOF > /home/ubuntu/funfuzzCronjob
 SHELL=/bin/bash
