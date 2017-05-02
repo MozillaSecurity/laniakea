@@ -115,7 +115,7 @@ export PS1="[\u@\h \d \t \W ] $ "
 export LD_LIBRARY_PATH=.
 export ASAN_SYMBOLIZER_PATH=/usr/bin/llvm-symbolizer
 
-ccache -M 4G
+ccache -M 8G
 REOF
 fi
 EOF
