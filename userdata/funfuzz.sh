@@ -1,6 +1,6 @@
 #! /bin/bash -ex
 # Be in ~/trees/laniakea directory, be sure @import directories are present.
-# ~/trees/boto-awsfuzz/bin/python -u ~/trees/laniakea/laniakea.py -region=us-east-1 -images ~/Downloads/images.json -create-on-demand -tags Name=funfuzz-1604-ondemand-201701 -image-name funfuzz-ondemand-ebs -ebs-volume-delete-on-termination -ebs-size 96 -root-device-type ebs -userdata userdata/funfuzz.sh
+# ~/trees/boto-awsfuzz/bin/python -u ~/trees/laniakea/laniakea.py -region=us-east-1 -images ~/images.json -create-on-demand -tags Name=funfuzz-1604-ondemand-201705 -image-name funfuzz-ondemand-ebs -ebs-volume-delete-on-termination -ebs-size 96 -root-device-type ebs -userdata userdata/funfuzz.sh
 # Stop the instance, create an AMI, copy the AMI, then update EC2SpotManager
 export DEBIAN_FRONTEND=noninteractive  # Bypass ncurses configuration screens
 
@@ -10,8 +10,8 @@ add-apt-repository -y ppa:git-core/ppa  # Git PPA needed to get latest security 
 apt-get --yes --quiet update
 apt-get --yes --quiet dist-upgrade
 apt-get --yes --quiet build-dep firefox
-# Check using `hg --cwd ~/trees/mozilla-central/ diff -r 753433776a5e:8ff550409e1d python/mozboot/mozboot/debian.py`
-# Retrieved on 2017-01-24: https://hg.mozilla.org/mozilla-central/file/8ff550409e1d/python/mozboot/mozboot/debian.py
+# Check using `hg --cwd ~/trees/mozilla-central/ diff -r 8ff550409e1d:bfc7b187005c python/mozboot/mozboot/debian.py`
+# Retrieved on 2017-05-02: https://hg.mozilla.org/mozilla-central/file/bfc7b187005c/python/mozboot/mozboot/debian.py
 apt-get --yes --quiet install autoconf2.13 build-essential ccache python-dev python-pip python-setuptools unzip uuid zip
 apt-get --yes --quiet install libasound2-dev libcurl4-openssl-dev libdbus-1-dev libdbus-glib-1-dev libgconf2-dev
 apt-get --yes --quiet install libgtk2.0-dev libgtk-3-dev libiw-dev libnotify-dev libpulse-dev libx11-xcb-dev libxt-dev
