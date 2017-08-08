@@ -1,5 +1,4 @@
-
-![](http://people.mozilla.com/~cdiehl/img/laniakea.png)
+![Logo](https://github.com/posidron/posidron.github.io/raw/master/static/images/laniakea.png)
 
 [![Build 
 Status](https://api.travis-ci.org/MozillaSecurity/laniakea.svg)](https://travis-ci.org/MozillaSecurity/laniakea)
