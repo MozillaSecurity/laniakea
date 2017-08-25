@@ -52,17 +52,16 @@ chown -R ubuntu:ubuntu /home/ubuntu/.ssh
 
 chown ubuntu:ubuntu /home/ubuntu/.bashrc
 
-# Get more fuzzing prerequisites
-pip install --upgrade pip virtualenv mercurial
-
 # Get the fuzzing harness
 sudo -u ubuntu git clone https://github.com/MozillaSecurity/octo /home/ubuntu/octo
-sudo -u ubuntu git clone https://github.com/MozillaSecurity/lithium /home/ubuntu/lithium
 sudo -u ubuntu git clone https://github.com/MozillaSecurity/funfuzz /home/ubuntu/funfuzz
-sudo -u ubuntu git clone https://github.com/MozillaSecurity/FuzzManager /home/ubuntu/FuzzManager
 
-# Get FuzzManager pip prerequisites
-pip install --upgrade -r /home/ubuntu/FuzzManager/requirements.txt
+# Get more fuzzing prerequisites
+pip install --upgrade pip
+pip install --upgrade virtualenv mercurial
+
+# Get supporting fuzzing libraries via pip
+pip install --upgrade -r /home/ubuntu/funfuzz/requirements.txt
 
 # Populate FuzzManager settings
 @import(userdata/misc-funfuzz/fmsettings.sh)@
