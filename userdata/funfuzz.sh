@@ -5,6 +5,7 @@
 export DEBIAN_FRONTEND=noninteractive  # Bypass ncurses configuration screens
 
 date
+sleep 10  # EC2 takes some time to be able to go online
 # Essential Packages
 add-apt-repository -y ppa:git-core/ppa  # Git PPA needed to get latest security updates
 apt-get --yes --quiet update
