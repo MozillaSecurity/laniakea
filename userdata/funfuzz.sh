@@ -56,6 +56,8 @@ chown ubuntu:ubuntu /home/ubuntu/.bashrc
 # Get the fuzzing harness
 sudo -u ubuntu git clone https://github.com/MozillaSecurity/octo /home/ubuntu/octo
 sudo -u ubuntu git clone https://github.com/MozillaSecurity/funfuzz /home/ubuntu/funfuzz
+# Also clone FuzzManager for potential Collector.py local usage, even though we install it via pip now
+sudo -u ubuntu git clone https://github.com/MozillaSecurity/FuzzManager /home/ubuntu/FuzzManager
 
 # Get more fuzzing prerequisites
 pip install --upgrade pip
