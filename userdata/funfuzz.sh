@@ -65,7 +65,7 @@ pip install --upgrade pip setuptools
 pip install --upgrade virtualenv mercurial
 
 # Get supporting fuzzing libraries via pip
-pip install --upgrade -r /home/ubuntu/funfuzz/requirements.txt
+pip install --upgrade /home/ubuntu/funfuzz
 
 # Populate FuzzManager settings
 @import(userdata/misc-funfuzz/fmsettings.sh)@
@@ -98,7 +98,7 @@ PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/us
 USER=ubuntu
 LOGNAME=ubuntulog
 HOME=/home/ubuntu
-@reboot ubuntu python -u /home/ubuntu/funfuzz/loopBot.py -b "--random" --target-time 28800 | tee /home/ubuntu/log-loopBotPy.txt
+@reboot ubuntu sleep 80 ; pip install --upgrade /home/ubuntu/funfuzz ; python -u -m funfuzz.loop_bot -b "--random" --target-time 28800 | tee /home/ubuntu/log-loopBotPy.txt
 EOF
 
 chown root:root /home/ubuntu/funfuzzCronjob
