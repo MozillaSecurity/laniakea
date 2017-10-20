@@ -88,6 +88,8 @@ chown ubuntu:ubuntu /home/ubuntu/.hgrc
 # Clone m-c repository.
 date
 sudo -u ubuntu hg clone https://hg.mozilla.org/mozilla-central /home/ubuntu/trees/mozilla-central
+sudo -u ubuntu hg clone https://hg.mozilla.org/releases/mozilla-beta /home/ubuntu/trees/mozilla-beta
+sudo -u ubuntu hg clone https://hg.mozilla.org/releases/mozilla-esr52 /home/ubuntu/trees/mozilla-esr52
 date
 
 cat << EOF > /home/ubuntu/funfuzzCronjob
