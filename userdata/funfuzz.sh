@@ -10,8 +10,8 @@ sleep 10  # EC2 takes some time to be able to go online
 add-apt-repository -y ppa:git-core/ppa  # Git PPA needed to get latest security updates
 apt-get --yes --quiet update
 apt-get --yes --quiet dist-upgrade
-# Check using `hg --cwd ~/trees/mozilla-central/ diff -r 56188620cce0:b6ba3e919f56 python/mozboot/mozboot/debian.py`
-# Retrieved on 2017-10-19: https://hg.mozilla.org/mozilla-central/file/b6ba3e919f56/python/mozboot/mozboot/debian.py
+# Check using `hg --cwd ~/trees/mozilla-central/ diff -r b6ba3e919f56:781485c695e1 python/mozboot/mozboot/debian.py`
+# Retrieved on 2017-12-01: https://hg.mozilla.org/mozilla-central/file/781485c695e1/python/mozboot/mozboot/debian.py
 apt-get --yes --quiet install autoconf2.13 build-essential ccache python-dev python-pip python-setuptools unzip uuid zip
 apt-get --yes --quiet install libasound2-dev libcurl4-openssl-dev libdbus-1-dev libdbus-glib-1-dev libgconf2-dev
 apt-get --yes --quiet install libgtk2.0-dev libgtk-3-dev libiw-dev libnotify-dev libpulse-dev libx11-xcb-dev libxt-dev
@@ -90,6 +90,7 @@ date
 sudo -u ubuntu hg clone https://hg.mozilla.org/mozilla-central /home/ubuntu/trees/mozilla-central
 sudo -u ubuntu hg clone https://hg.mozilla.org/releases/mozilla-beta /home/ubuntu/trees/mozilla-beta
 sudo -u ubuntu hg clone https://hg.mozilla.org/releases/mozilla-esr52 /home/ubuntu/trees/mozilla-esr52
+#sudo -u ubuntu hg clone https://hg.mozilla.org/releases/mozilla-esr59 /home/ubuntu/trees/mozilla-esr59
 date
 
 cat << EOF > /home/ubuntu/funfuzzCronjob
