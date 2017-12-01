@@ -24,12 +24,15 @@ apt-get --yes --quiet install valgrind libc6-dbg
 # Fingerprint: 6084 F3CF 814B 57C1 CF12 EFD5 15CF 4D18 AF4F 7421
 wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key|sudo apt-key add -
 
-apt-get --yes --quiet install clang-4.0 clang-4.0-doc libclang-common-4.0-dev libclang-4.0-dev libclang1-4.0
-apt-get --yes --quiet install libclang1-4.0-dbg libllvm-4.0-ocaml-dev libllvm4.0 libllvm4.0-dbg lldb-4.0
-apt-get --yes --quiet install llvm-4.0 llvm-4.0-dev llvm-4.0-doc llvm-4.0-examples llvm-4.0-runtime clang-format-4.0
-apt-get --yes --quiet install python-clang-4.0 libfuzzer-4.0-dev
+echo "deb http://apt.llvm.org/xenial/ llvm-toolchain-xenial-5.0 main" >> /etc/apt/sources.list
+echo "deb-src http://apt.llvm.org/xenial/ llvm-toolchain-xenial-5.0 main" >> /etc/apt/sources.list
 
-LLVMSYMBOLIZER="/usr/bin/llvm-symbolizer-4.0"  # Update this number whenever Clang is updated
+apt-get --yes --quiet install clang-5.0 clang-5.0-doc libclang-common-5.0-dev libclang-5.0-dev libclang1-5.0
+apt-get --yes --quiet install libclang1-5.0-dbg libllvm5.0 libllvm5.0-dbg lldb-5.0 llvm-5.0 llvm-5.0-dev llvm-5.0-doc
+apt-get --yes --quiet install llvm-5.0-examples llvm-5.0-runtime clang-format-5.0 python-clang-5.0 python-lldb-5.0
+apt-get --yes --quiet install liblldb-5.0-dev lld-5.0 libfuzzer-5.0-dev
+
+LLVMSYMBOLIZER="/usr/bin/llvm-symbolizer-5.0"  # Update this number whenever Clang is updated
 LLVMSYMBOLIZER_DEST="/usr/bin/llvm-symbolizer"
 if [ -f $LLVMSYMBOLIZER ];
 then
