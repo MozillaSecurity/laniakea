@@ -102,7 +102,7 @@ PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/us
 USER=ubuntu
 LOGNAME=ubuntulog
 HOME=/home/ubuntu
-@reboot ubuntu sleep 80 ; pip install --upgrade /home/ubuntu/funfuzz ; python -u -m funfuzz.loop_bot -b "--random" --target-time 28800 | tee /home/ubuntu/log-loopBotPy.txt
+@reboot ubuntu sleep 80 ; git -C /home/ubuntu/funfuzz pull --rebase --tags ; pip install --upgrade /home/ubuntu/funfuzz ; python -u -m funfuzz.loop_bot -b "--random" --target-time 28800 | tee /home/ubuntu/log-loopBotPy.txt
 EOF
 
 chown root:root /home/ubuntu/funfuzzCronjob
