@@ -65,7 +65,7 @@ sudo -u ubuntu git clone https://github.com/MozillaSecurity/funfuzz /home/ubuntu
 
 # Get more fuzzing prerequisites
 pip install --upgrade pip setuptools
-pip install --upgrade virtualenv mercurial
+pip install --upgrade mercurial
 
 # Get supporting fuzzing libraries via pip
 pip install --upgrade /home/ubuntu/funfuzz
