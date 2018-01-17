@@ -16,8 +16,8 @@ import shlex
 import subprocess
 import sys
 
-from core.common import Focus, String
-from core.manager import Laniakea
+from .core.common import Focus, String
+from .core.manager import Laniakea
 
 
 class LaniakeaCommandLine(object):
