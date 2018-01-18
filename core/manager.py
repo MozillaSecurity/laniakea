@@ -191,6 +191,7 @@ class Laniakea(object):
         instances = []
         logging.info("Waiting on fulfillment of requested spot instances.")
         poll_resolution = 5.0
+        time_exceeded = False
         while request_ids:
             time.sleep(poll_resolution)
 
@@ -205,7 +206,7 @@ class Laniakea(object):
                     instances.append(instance)
                     request_ids.pop(idx)
 
-            if request_ids and timeout_exceeded:
+            if request_ids and time_exceeded:
                 self.cancel_spot_requests(request_ids)
                 break
 
