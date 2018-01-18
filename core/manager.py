@@ -2,9 +2,11 @@
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
+import logging
+import ssl
 import sys
 import time
-import logging
+
 
 try:
     import boto.ec2
@@ -21,7 +23,7 @@ class Laniakea(object):
     def __init__(self, images):
         self.ec2 = None
         self.images = images
-    
+
     def retry_on_ec2_error(self, func, *args, **kwargs):
         """
         Call the given method with the given arguments, retrying if the call
@@ -36,7 +38,7 @@ class Laniakea(object):
         while True:
             try:
                 return func(*args, **kwargs)
-            except boto.exception.EC2ResponseError as e:
+            except (boto.exception.EC2ResponseError, ssl.SSLError) as e:
                 exception_retry_count -= 1
                 if exception_retry_count <= 0:
                     raise e
@@ -53,11 +55,11 @@ class Laniakea(object):
         self.ec2 = boto.ec2.connect_to_region(region, **kw_params)
         if not self.ec2:
             raise Exception("Unable to connect to region '%s'" % region)
-        
+
         if self.images:
             # Resolve AMI names in our configuration to their IDs
             logging.info('Retrieving available AMIs...')
-            remote_images = self.ec2.get_all_images(owners = ['self', 'amazon', 'aws-marketplace'])
+            remote_images = self.ec2.get_all_images(owners=['self', 'amazon', 'aws-marketplace'])
             for i in self.images:
                 if "image_name" in self.images[i] and not 'image_id' in self.images[i]:
                     image_name = self.images[i]['image_name']
@@ -129,20 +131,20 @@ class Laniakea(object):
         poll_resolution = 5.0
         while len(request_ids):
             time.sleep(poll_resolution)
-            pending = self.ec2.get_all_spot_instance_requests(request_ids=request_ids)
-            
+            pending = self.retry_on_ec2_error(self.ec2.get_all_spot_instance_requests, request_ids=request_ids)
+
             if timeout != None:
                 timeout -= poll_resolution
                 time_exceeded = timeout <= 0
-            
+
             for r in pending:
                 if r.status.code == 'fulfilled':
                     instance = None
                     instance = self.retry_on_ec2_error(self.ec2.get_only_instances, r.instance_id)[0]
-                            
+
                     if not instance:
                         raise Exception("Failed to get instance with id %s for fulfilled request" % r.instance_id)
-                                                
+
                     instances.append(instance)
                     self.retry_on_ec2_error(self.ec2.create_tags, [instance.id], tags or {})
                     logging.info('Request %s is %s and %s.',
@@ -157,10 +159,10 @@ class Laniakea(object):
                     request_ids.pop(request_ids.index(r.id))
                 elif time_exceeded:
                     r.cancel()
-            
+
             if time_exceeded:
                 return instances
-                    
+
         return instances
 
     def _scale_down(self, instances, count):
@@ -201,7 +203,7 @@ class Laniakea(object):
         dev_sda1.delete_on_termination = delete_on_termination
         dev_sda1.volume_type = vol_type
         if size != 'default':
-            dev_sda1.size = size   # change root volume to desired size
+            dev_sda1.size = size  # change root volume to desired size
         bdm = boto.ec2.blockdevicemapping.BlockDeviceMapping()
         bdm['/dev/sda1'] = dev_sda1
         return bdm
