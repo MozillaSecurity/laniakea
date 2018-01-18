@@ -30,7 +30,7 @@ class Laniakea(object):
         failed due to an EC2ResponseError. This method will wait at most 30
         seconds and perform up to 6 retries. If the method still fails, it will
         propagate the error.
-        
+
         :param func: Function to call
         :type func: function
         """
@@ -225,12 +225,12 @@ class Laniakea(object):
         if not i:
             return []
         running = len(i)
-        logging.info("%d instance/s are running." % running)
-        logging.info("Scaling down %d instances of those." % count)
+        logging.info("%d instance/s are running.", running)
+        logging.info("Scaling down %d instances of those.", count)
         if count > running:
-            logging.info("Scale-down value is > than running instance/s - using maximum of %d!" % running)
+            logging.info("Scale-down value is > than running instance/s - using maximum of %d!", running)
             count = running
-        return i[0:count]
+        return i[:count]
 
     def _configure_ebs_volume(self, vol_type, size, delete_on_termination):
         """Sets the desired root EBS size, otherwise the default EC2 value is used.
