@@ -201,10 +201,13 @@ class Laniakea(object):
                 timeout -= poll_resolution
                 time_exceeded = timeout <= 0
 
-            for idx, instance in reversed(enumerate(new_instances)):
+            fulfilled = []
+            for idx, instance in enumerate(new_instances):
                 if instance is not None:
                     instances.append(instance)
-                    request_ids.pop(idx)
+                    fulfilled.append(idx)
+            for idx in reversed(fulfilled):
+                request_ids.pop(idx)
 
             if request_ids and time_exceeded:
                 self.cancel_spot_requests(request_ids)
