@@ -36,4 +36,4 @@ if __name__ == '__main__':
         ]},
         package_dir={'laniakea': 'src'},
         url='https://github.com/MozillaSecurity/laniakea',
-        version='0.5')
+        version='0.6')
