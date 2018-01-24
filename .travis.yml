@@ -1,11 +1,16 @@
 # http://docs.travis-ci.com/user/build-configuration/
 # http://docs.travis-ci.com/user/languages/python/
 language: python
+env:
+    global:
+        # this is needed so we don't load Travis-CI's boto config
+        # see https://github.com/boto/boto/issues/3741
+        - BOTO_CONFIG=/tmp/nowhere
 python:
     - "2.7"
-    - "3.2"
-    - "3.3"
     - "3.4"
+    - "3.5"
+    - "3.6"
     - "nightly"
 branches:
     only:
