@@ -14,3 +14,10 @@ install:
     - pip install -r requirements.txt
 script:
     - pytest
+deploy:
+    provider: pypi
+    user: mozillasecurity
+    password:
+        secure: wYc7AFbw8u0mN0DznvZxOiulZ0Tm1TPAReUni4evVMpaYyv6AcL6yglSoGfF+0qiUMgJxY9JJGTBnhXs5GUZSbH9dZylTHQmkA+IOcyph+iUsJ263l3eAuGYhdxCeLjNXzQGQK6mS20MqVwThZgn5eHUixhgKrHGZIHCjaCMwpI=
+    on:
+        tags: true
