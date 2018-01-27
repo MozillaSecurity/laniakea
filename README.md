@@ -1,23 +1,31 @@
-![Logo](https://github.com/posidron/posidron.github.io/raw/master/static/images/laniakea.png)
+<p align="center">
+  <img src="https://github.com/posidron/posidron.github.io/raw/master/static/images/laniakea.png" alt="Logo" />
+</p>
 
-[![Build 
-Status](https://api.travis-ci.org/MozillaSecurity/laniakea.svg)](https://travis-ci.org/MozillaSecurity/laniakea)
+<p align="center">
+Laniakea is a utility for managing EC2 instances at AWS and aids in setting up a fuzzing cluster.
+</p>
+
+<p align="center">
+<a href="https://travis-ci.org/MozillaSecurity/laniakea"><img src="https://api.travis-ci.org/MozillaSecurity/laniakea.svg?branch=master" alt="Build Status"></a> 
+<a href="https://www.irccloud.com/invite?channel=%23fuzzing&amp;hostname=irc.mozilla.org&amp;port=6697&amp;ssl=1"><img src="https://img.shields.io/badge/IRC-%23fuzzing-1e72ff.svg?style=flat" alt="IRC"></a>
+</p>
 
 <h3>Setup</h3>
 
-```
+```bash
 pip install laniakea
 ```
 
 Add your AWS credentials to a custom profile inside your ~/.boto configuration file.
-```
+```ini
 [profile laniakea]
 aws_access_key_id = <your_access_key_id>
 aws_secret_access_key = <your_secret_key>
 ```
 
 Complement the provided **images.json** file with your AWS AMI information (see `laniakea -h` for location).
-```
+```json
 # Example: an on-demand instance
 "default": {
   "image_id":"ami-<AMI_ID>",
@@ -49,39 +57,39 @@ Please refer to https://help.ubuntu.com/community/CloudInit to learn more about 
 <h3>Basic Usage Examples</h3>
 
 Run N on-demand instances with a custom -userdata script
-```
+```bash
 laniakea -create-on-demand -tags Name=peach -userdata userdata/peach.private.sh
 ```
 
 Run N spot instances with a custom -userdata script and a -max-spot-price of $0.05
-```
+```bash
 laniakea -create-spot -tags Name=peach -image-name peach -userdata userdata/peach.private.sh -image-args count=10
 ```
 
 Show which instances are running and are tagged with the name 'peach'
-```
+```bash
 laniakea -status -only tag:Name=peach instance-state-code=16
 ```
 
 **Hint** Filters support wildcards. Example: "tag:Name=peach-*" would be suitable to list all instances having the  word "peach" as prefix of a tag name. For a list of available filters refer to http://docs.aws.amazon.com/AWSEC2/latest/CommandLineReference/ApiReference-cmd-DescribeInstances.html
 
 Terminate all running instances which are tagged with the name 'peach'
-```
+```bash
 laniakea -terminate -only tag:Name=peach
 ```
 
 Scale down and terminate the oldest N running instances
-```
+```bash
 laniakea -terminate N -only tag:Name=peach
 ```
 
 Terminate a specific instance by id
-```
+```bash
 laniakea -status -only tag:Name=peach instance-id=i-9110fa9e
 ```
 
 List available macros in a UserData script
-```
+```bash
 laniakea -list-userdata-macros -userdata userdata/peach.pit.sh
 ```
 
