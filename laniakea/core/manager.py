@@ -30,7 +30,7 @@ class Laniakea(object):
         failed due to an EC2ResponseError. This method will wait at most 30
         seconds and perform up to 6 retries. If the method still fails, it will
         propagate the error.
-        
+
         :param func: Function to call
         :type func: function
         """
@@ -108,6 +108,71 @@ class Laniakea(object):
                     self.retry_on_ec2_error(i.update)
         return instances
 
+    def create_spot_requests(self, price, instance_type='default', root_device_type='ebs',
+                             size='default', vol_type='gp2', delete_on_termination=False):
+        """Request creation of one or more EC2 spot instances.
+
+        :param price: Max price to pay for spot instance per hour.
+        :type price: float
+        :param instance_type: A section name in images.json
+        :type instance_type: str
+        :param tags:
+        :type tags: dict
+        :return: List of requests created
+        :rtype: list
+        """
+        if root_device_type == 'ebs':
+            self.images[instance_type]['block_device_map'] = self._configure_ebs_volume(vol_type, size, delete_on_termination)
+
+        requests = self.ec2.request_spot_instances(price, **self.images[instance_type])
+        return [r.id for r in requests]
+
+    def check_spot_requests(self, requests, tags=None):
+        """Check status of one or more EC2 spot instance requests.
+
+        :param requests: List of EC2 spot instance request IDs.
+        :type requests: list
+        :param tags:
+        :type tags: dict
+        :return: List of instances created, order corresponding to requests param (None if request still pending)
+        :rtype: list
+        """
+        instances = [None] * len(requests)
+        pending = self.retry_on_ec2_error(self.ec2.get_all_spot_instance_requests, request_ids=requests)
+
+        for r in pending:
+            if r.status.code == 'fulfilled':
+                instance = None
+                instance = self.retry_on_ec2_error(self.ec2.get_only_instances, r.instance_id)[0]
+
+                if not instance:
+                    raise Exception("Failed to get instance with id %s for fulfilled request %s" % (r.instance_id, r.id))
+
+                instances[requests.index(r.id)] = instance
+                self.retry_on_ec2_error(self.ec2.create_tags, [instance.id], tags or {})
+                logging.info('Request %s is %s and %s.',
+                             r.id,
+                             r.status.code,
+                             r.state)
+                logging.info('%s is %s at %s (%s)',
+                             instance.id,
+                             instance.state,
+                             instance.public_dns_name,
+                             instance.ip_address)
+
+        return instances
+
+    def cancel_spot_requests(self, requests):
+        """Cancel one or more EC2 spot instance requests.
+
+        :param requests: List of EC2 spot instance request IDs.
+        :type requests: list
+        """
+        pending = self.retry_on_ec2_error(self.ec2.get_all_spot_instance_requests, request_ids=requests)
+
+        for r in pending:
+            r.cancel()
+
     def create_spot(self, price, instance_type='default', tags=None, root_device_type='ebs',
                     size='default', vol_type='gp2', delete_on_termination=False, timeout=None):
         """Create one or more EC2 spot instances.
@@ -121,47 +186,32 @@ class Laniakea(object):
         :return: List of instances created
         :rtype: list
         """
-        if root_device_type == 'ebs':
-            self.images[instance_type]['block_device_map'] = self._configure_ebs_volume(vol_type, size, delete_on_termination)
-
-        requests = self.ec2.request_spot_instances(price, **self.images[instance_type])
-        request_ids = [r.id for r in requests]
+        request_ids = self.create_spot_requests(price, instance_type=instance_type, root_device_type=root_device_type,
+                                                size=size, vol_type=vol_type, delete_on_termination=delete_on_termination)
         instances = []
         logging.info("Waiting on fulfillment of requested spot instances.")
         poll_resolution = 5.0
-        while len(request_ids):
+        time_exceeded = False
+        while request_ids:
             time.sleep(poll_resolution)
-            pending = self.retry_on_ec2_error(self.ec2.get_all_spot_instance_requests, request_ids=request_ids)
 
-            if timeout != None:
+            new_instances = self.check_spot_requests(request_ids, tags=tags)
+
+            if timeout is not None:
                 timeout -= poll_resolution
                 time_exceeded = timeout <= 0
 
-            for r in pending:
-                if r.status.code == 'fulfilled':
-                    instance = None
-                    instance = self.retry_on_ec2_error(self.ec2.get_only_instances, r.instance_id)[0]
-
-                    if not instance:
-                        raise Exception("Failed to get instance with id %s for fulfilled request" % r.instance_id)
-
+            fulfilled = []
+            for idx, instance in enumerate(new_instances):
+                if instance is not None:
                     instances.append(instance)
-                    self.retry_on_ec2_error(self.ec2.create_tags, [instance.id], tags or {})
-                    logging.info('Request %s is %s and %s.',
-                                 r.id,
-                                 r.status.code,
-                                 r.state)
-                    logging.info('%s is %s at %s (%s)',
-                                 instance.id,
-                                 instance.state,
-                                 instance.public_dns_name,
-                                 instance.ip_address)
-                    request_ids.pop(request_ids.index(r.id))
-                elif time_exceeded:
-                    r.cancel()
+                    fulfilled.append(idx)
+            for idx in reversed(fulfilled):
+                request_ids.pop(idx)
 
-            if time_exceeded:
-                return instances
+            if request_ids and time_exceeded:
+                self.cancel_spot_requests(request_ids)
+                break
 
         return instances
 
@@ -179,12 +229,12 @@ class Laniakea(object):
         if not i:
             return []
         running = len(i)
-        logging.info("%d instance/s are running." % running)
-        logging.info("Scaling down %d instances of those." % count)
+        logging.info("%d instance/s are running.", running)
+        logging.info("Scaling down %d instances of those.", count)
         if count > running:
-            logging.info("Scale-down value is > than running instance/s - using maximum of %d!" % running)
+            logging.info("Scale-down value is > than running instance/s - using maximum of %d!", running)
             count = running
-        return i[0:count]
+        return i[:count]
 
     def _configure_ebs_volume(self, vol_type, size, delete_on_termination):
         """Sets the desired root EBS size, otherwise the default EC2 value is used.

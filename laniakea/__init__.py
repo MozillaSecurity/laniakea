@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 # coding: utf-8
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -6,6 +5,7 @@
 """
 Laniakea is a utility for managing EC2 instances at AWS and aids in setting up a fuzzing cluster.
 """
+import appdirs
 import argparse
 import boto.exception
 import json
@@ -13,6 +13,7 @@ import logging
 import os
 import re
 import shlex
+import shutil
 import subprocess
 import sys
 
@@ -25,14 +26,19 @@ class LaniakeaCommandLine(object):
     Command-line interface for Laniakea.
     """
     HOME = os.path.dirname(os.path.abspath(__file__))
-    VERSION = 0.5
+    VERSION = 0.6
 
-    def parse_args(self):
+    @classmethod
+    def parse_args(cls):
         parser = argparse.ArgumentParser(description='Laniakea Runtime',
-                                         prog=__file__,
+                                         prog='laniakea',
                                          add_help=False,
                                          formatter_class=argparse.ArgumentDefaultsHelpFormatter,
                                          epilog='The exit status is 0 for non-failures and 1 for failures.')
+
+        dirs = appdirs.AppDirs("laniakea", "Mozilla Security")
+        if not os.path.isdir(dirs.user_config_dir):
+            shutil.copytree(os.path.join(cls.HOME, 'examples'), dirs.user_config_dir)
 
         m = parser.add_argument_group('Mandatory Arguments')
 
@@ -48,7 +54,7 @@ class LaniakeaCommandLine(object):
 
         u = parser.add_argument_group('UserData Arguments')
         u.add_argument('-userdata', metavar='path', type=argparse.FileType(),
-                       default=os.path.relpath(os.path.join(self.HOME, 'userdata', 'default.sh')),
+                       default=os.path.join(cls.HOME, 'userdata', 'default.sh'),
                        help='UserData script for cloud-init')
         u.add_argument('-userdata-macros', metavar='k=v', nargs='+', type=str, help='Custom macros')
 
@@ -56,7 +62,7 @@ class LaniakeaCommandLine(object):
         o.add_argument('-tags', metavar='k=v', nargs='+', type=str, help='Assign tags to instances')
         o.add_argument('-only', metavar='k=v', nargs='+', type=str, help='Filter instances')
         o.add_argument('-images', metavar='path', type=argparse.FileType(),
-                       default=os.path.relpath(os.path.join(self.HOME, 'images.json')),
+                       default=os.path.join(dirs.user_config_dir, 'images.json'),
                        help='EC2 image definitions')
         o.add_argument('-image-name', metavar='str', type=str, default='default', help='Name of image definition')
         o.add_argument('-image-args', metavar='k=v', nargs='+', type=str, help='Custom image arguments')
@@ -75,9 +81,9 @@ class LaniakeaCommandLine(object):
                        help='Log level for the logging module')
         o.add_argument('-focus', action='store_true', default=False, help=argparse.SUPPRESS)
         o.add_argument('-settings', metavar='path', type=argparse.FileType(),
-                       default=os.path.relpath(os.path.join(self.HOME, 'laniakea.json')), help='Laniakea settings')
+                       default=os.path.join(dirs.user_config_dir, 'laniakea.json'), help='Laniakea settings')
         o.add_argument('-h', '-help', '--help', action='help', help=argparse.SUPPRESS)
-        o.add_argument('-version', action='version', version='%(prog)s {}'.format(self.VERSION),
+        o.add_argument('-version', action='version', version='%(prog)s {}'.format(cls.VERSION),
                        help=argparse.SUPPRESS)
 
         return parser.parse_args()
@@ -144,8 +150,9 @@ class LaniakeaCommandLine(object):
                 userdata = userdata.replace("@import(%s)@" % filepath, content)
         return userdata
 
-    def main(self):
-        args = self.parse_args()
+    @classmethod
+    def main(cls):
+        args = cls.parse_args()
 
         logging.basicConfig(format='[Laniakea] %(asctime)s %(levelname)s: %(message)s',
                             level=args.verbosity * 10,
@@ -160,9 +167,9 @@ class LaniakeaCommandLine(object):
 
         Focus.init() if args.focus else Focus.disable()
 
-        args.only = self._convert_pair_to_dict(args.only or "")
-        args.tags = self._convert_pair_to_dict(args.tags or "")
-        args.image_args = self._convert_str_to_int(self._convert_pair_to_dict(args.image_args or {}))
+        args.only = cls._convert_pair_to_dict(args.only or "")
+        args.tags = cls._convert_pair_to_dict(args.tags or "")
+        args.image_args = cls._convert_str_to_int(cls._convert_pair_to_dict(args.image_args or {}))
 
         logging.info('Using image definition "%s" from %s', Focus.info(args.image_name), Focus.info(args.images.name))
         try:
@@ -174,12 +181,12 @@ class LaniakeaCommandLine(object):
         logging.info('Reading user data script content from %s', Focus.info(args.userdata.name))
         userdata = args.userdata.read()
         if args.list_userdata_macros:
-            self.list_tags(userdata)
+            cls.list_tags(userdata)
             return 0
-        userdata = self.handle_import_tags(userdata)
+        userdata = cls.handle_import_tags(userdata)
 
-        args.userdata_macros = self._convert_pair_to_dict(args.userdata_macros or "")
-        userdata = self.handle_tags(userdata, args.userdata_macros)
+        args.userdata_macros = cls._convert_pair_to_dict(args.userdata_macros or "")
+        userdata = cls.handle_tags(userdata, args.userdata_macros)
 
         if args.print_userdata:
             logging.info("Combined user-data script:")
@@ -293,7 +300,3 @@ class LaniakeaCommandLine(object):
                     logging.error(msg)
 
         return 0
-
-
-if __name__ == '__main__':
-    sys.exit(LaniakeaCommandLine().main())
