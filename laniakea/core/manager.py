@@ -2,6 +2,7 @@
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
+import datetime
 import logging
 import ssl
 import sys
@@ -109,22 +110,26 @@ class Laniakea(object):
         return instances
 
     def create_spot_requests(self, price, instance_type='default', root_device_type='ebs',
-                             size='default', vol_type='gp2', delete_on_termination=False):
+                             size='default', vol_type='gp2', delete_on_termination=False, timeout=None):
         """Request creation of one or more EC2 spot instances.
 
         :param price: Max price to pay for spot instance per hour.
         :type price: float
         :param instance_type: A section name in images.json
         :type instance_type: str
-        :param tags:
-        :type tags: dict
+        :param timeout: Seconds to keep the request open (cancelled if not fulfilled).
+        :type timeout: int
         :return: List of requests created
         :rtype: list
         """
         if root_device_type == 'ebs':
             self.images[instance_type]['block_device_map'] = self._configure_ebs_volume(vol_type, size, delete_on_termination)
 
-        requests = self.ec2.request_spot_instances(price, **self.images[instance_type])
+        valid_until = None
+        if timeout is not None:
+            valid_until = (datetime.datetime.now() + datetime.timedelta(seconds=timeout)).isoformat()
+
+        requests = self.ec2.request_spot_instances(price, **self.images[instance_type], valid_until=valid_until)
         return [r.id for r in requests]
 
     def check_spot_requests(self, requests, tags=None):
