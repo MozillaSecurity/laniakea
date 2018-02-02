@@ -2,6 +2,7 @@
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
+import datetime
 import logging
 import ssl
 import sys
@@ -109,22 +110,26 @@ class Laniakea(object):
         return instances
 
     def create_spot_requests(self, price, instance_type='default', root_device_type='ebs',
-                             size='default', vol_type='gp2', delete_on_termination=False):
+                             size='default', vol_type='gp2', delete_on_termination=False, timeout=None):
         """Request creation of one or more EC2 spot instances.
 
         :param price: Max price to pay for spot instance per hour.
         :type price: float
         :param instance_type: A section name in images.json
         :type instance_type: str
-        :param tags:
-        :type tags: dict
+        :param timeout: Seconds to keep the request open (cancelled if not fulfilled).
+        :type timeout: int
         :return: List of requests created
         :rtype: list
         """
         if root_device_type == 'ebs':
             self.images[instance_type]['block_device_map'] = self._configure_ebs_volume(vol_type, size, delete_on_termination)
 
-        requests = self.ec2.request_spot_instances(price, **self.images[instance_type])
+        valid_until = None
+        if timeout is not None:
+            valid_until = (datetime.datetime.now() + datetime.timedelta(seconds=timeout)).isoformat()
+
+        requests = self.ec2.request_spot_instances(price, **self.images[instance_type], valid_until=valid_until)
         return [r.id for r in requests]
 
     def check_spot_requests(self, requests, tags=None):
@@ -134,31 +139,35 @@ class Laniakea(object):
         :type requests: list
         :param tags:
         :type tags: dict
-        :return: List of instances created, order corresponding to requests param (None if request still pending)
+        :return: List of boto.ec2.instance.Instance's created, order corresponding to requests param (None if request still open, boto.ec2.instance.Reservation if request is no longer open)
         :rtype: list
         """
         instances = [None] * len(requests)
-        pending = self.retry_on_ec2_error(self.ec2.get_all_spot_instance_requests, request_ids=requests)
+        ec2_requests = self.retry_on_ec2_error(self.ec2.get_all_spot_instance_requests, request_ids=requests)
 
-        for r in pending:
-            if r.status.code == 'fulfilled':
+        for req in ec2_requests:
+            if req.instance_id:
                 instance = None
-                instance = self.retry_on_ec2_error(self.ec2.get_only_instances, r.instance_id)[0]
+                instance = self.retry_on_ec2_error(self.ec2.get_only_instances, req.instance_id)[0]
 
                 if not instance:
-                    raise Exception("Failed to get instance with id %s for fulfilled request %s" % (r.instance_id, r.id))
+                    raise Exception("Failed to get instance with id %s for %s request %s" % (req.instance_id, req.status.code, req.id))
 
-                instances[requests.index(r.id)] = instance
+                instances[requests.index(req.id)] = instance
+
                 self.retry_on_ec2_error(self.ec2.create_tags, [instance.id], tags or {})
                 logging.info('Request %s is %s and %s.',
-                             r.id,
-                             r.status.code,
-                             r.state)
+                             req.id,
+                             req.status.code,
+                             req.state)
                 logging.info('%s is %s at %s (%s)',
                              instance.id,
                              instance.state,
                              instance.public_dns_name,
                              instance.ip_address)
+            elif req.state != "open":
+                # return the request so we don't try again
+                instances[requests.index(req.id)] = req
 
         return instances
 
@@ -168,10 +177,10 @@ class Laniakea(object):
         :param requests: List of EC2 spot instance request IDs.
         :type requests: list
         """
-        pending = self.retry_on_ec2_error(self.ec2.get_all_spot_instance_requests, request_ids=requests)
+        ec2_requests = self.retry_on_ec2_error(self.ec2.get_all_spot_instance_requests, request_ids=requests)
 
-        for r in pending:
-            r.cancel()
+        for req in ec2_requests:
+            req.cancel()
 
     def create_spot(self, price, instance_type='default', tags=None, root_device_type='ebs',
                     size='default', vol_type='gp2', delete_on_termination=False, timeout=None):
@@ -204,8 +213,9 @@ class Laniakea(object):
             fulfilled = []
             for idx, instance in enumerate(new_instances):
                 if instance is not None:
-                    instances.append(instance)
                     fulfilled.append(idx)
+                if isinstance(instance, boto.ec2.instance.Instance):
+                    instances.append(instance)
             for idx in reversed(fulfilled):
                 request_ids.pop(idx)
 
