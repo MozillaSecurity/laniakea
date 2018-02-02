@@ -144,7 +144,7 @@ class LaniakeaCommandLine(object):
             return userdata
 
         for filepath in imports:
-            logging.info('Processing "import" of %s' % filepath)
+            logging.info('Processing "import" of %s', filepath)
             with open(filepath) as fp:
                 content = fp.read()
                 userdata = userdata.replace("@import(%s)@" % filepath, content)
@@ -158,11 +158,11 @@ class LaniakeaCommandLine(object):
                             level=args.verbosity * 10,
                             datefmt='%Y-%m-%d %H:%M:%S')
 
-        logging.info('Loading Laniakea configuration from %s' % args.settings.name)
+        logging.info('Loading Laniakea configuration from %s', args.settings.name)
         try:
             settings = json.loads(args.settings.read())
         except ValueError as msg:
-            logging.error('Unable to parse %s: %s', args.settings.name)
+            logging.error('Unable to parse %s: %s', args.settings.name, msg)
             return 1
 
         Focus.init() if args.focus else Focus.disable()
@@ -199,7 +199,7 @@ class LaniakeaCommandLine(object):
         images[args.image_name]['user_data'] = userdata
 
         if args.image_args:
-            logging.info("Setting custom image parameters for upcoming instances: %r " % args.image_args)
+            logging.info("Setting custom image parameters for upcoming instances: %r ", args.image_args)
             images[args.image_name].update(args.image_args)
 
         logging.info('Using Boto configuration profile "%s"', Focus.info(args.profile))
@@ -257,7 +257,7 @@ class LaniakeaCommandLine(object):
         if args.run:
             ssh = settings.get('SSH')
             if not ssh:
-                logging.error('No SSH settings defined in %s' % args.settings.name)
+                logging.error('No SSH settings defined in %s', args.settings.name)
                 return 1
 
             identity = ssh.get('identity')
@@ -279,7 +279,7 @@ class LaniakeaCommandLine(object):
             except boto.exception.EC2ResponseError as msg:
                 logging.error(msg)
                 return 1
-            logging.info("Executing remote commands on %d instances." % len(hosts))
+            logging.info("Executing remote commands on %d instances.", len(hosts))
 
             # Be able to extend ssh_command from settings.json
             ssh_command = ['ssh',
@@ -293,7 +293,7 @@ class LaniakeaCommandLine(object):
                 command.extend(ssh_command)
                 command.append('%s@%s' % (username, host.ip_address))
                 command.extend(shlex.split(args.run))
-                logging.info('Running remote command [%s]: %s' % (host.ip_address, args.run))
+                logging.info('Running remote command [%s]: %s', host.ip_address, args.run)
                 try:
                     print(subprocess.check_output(command))
                 except subprocess.CalledProcessError as msg:
