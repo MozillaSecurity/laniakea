@@ -129,7 +129,7 @@ class Laniakea(object):
         if timeout is not None:
             valid_until = (datetime.datetime.now() + datetime.timedelta(seconds=timeout)).isoformat()
 
-        requests = self.ec2.request_spot_instances(price, **self.images[instance_type], valid_until=valid_until)
+        requests = self.ec2.request_spot_instances(price, valid_until=valid_until, **self.images[instance_type])
         return [r.id for r in requests]
 
     def check_spot_requests(self, requests, tags=None):
