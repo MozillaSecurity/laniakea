@@ -35,4 +35,4 @@ if __name__ == '__main__':
             'userdata/*',
         ]},
         url='https://github.com/MozillaSecurity/laniakea',
-        version='0.6')
+        version='0.7.1')
