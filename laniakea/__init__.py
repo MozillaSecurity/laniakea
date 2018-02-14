@@ -21,6 +21,9 @@ from .core.common import Focus, String
 from .core.manager import Laniakea
 
 
+logger = logging.getLogger("laniakea")
+
+
 class LaniakeaCommandLine(object):
     """
     Command-line interface for Laniakea.
@@ -107,9 +110,9 @@ class LaniakeaCommandLine(object):
     @staticmethod
     def list_tags(userdata):
         macros = re.findall("@(.*?)@", userdata)
-        logging.info("List of available macros:")
+        logger.info("List of available macros:")
         for m in macros:
-            logging.info('\t%r', m)
+            logger.info('\t%r', m)
 
     @staticmethod
     def handle_tags(userdata, macros):
@@ -123,7 +126,7 @@ class LaniakeaCommandLine(object):
 
                 userdata = userdata.replace('@%s@' % macro_var, macro_var_exports)
             elif macro_var not in macros:
-                logging.error('Undefined variable @%s@ in UserData script', macro_var)
+                logger.error('Undefined variable @%s@ in UserData script', macro_var)
                 return
             else:
                 userdata = userdata.replace('@%s@' % macro_var, macros[macro_var])
@@ -144,7 +147,7 @@ class LaniakeaCommandLine(object):
             return userdata
 
         for filepath in imports:
-            logging.info('Processing "import" of %s', filepath)
+            logger.info('Processing "import" of %s', filepath)
             with open(filepath) as fp:
                 content = fp.read()
                 userdata = userdata.replace("@import(%s)@" % filepath, content)
@@ -158,11 +161,11 @@ class LaniakeaCommandLine(object):
                             level=args.verbosity * 10,
                             datefmt='%Y-%m-%d %H:%M:%S')
 
-        logging.info('Loading Laniakea configuration from %s', args.settings.name)
+        logger.info('Loading Laniakea configuration from %s', args.settings.name)
         try:
             settings = json.loads(args.settings.read())
         except ValueError as msg:
-            logging.error('Unable to parse %s: %s', args.settings.name, msg)
+            logger.error('Unable to parse %s: %s', args.settings.name, msg)
             return 1
 
         Focus.init() if args.focus else Focus.disable()
@@ -171,14 +174,14 @@ class LaniakeaCommandLine(object):
         args.tags = cls._convert_pair_to_dict(args.tags or "")
         args.image_args = cls._convert_str_to_int(cls._convert_pair_to_dict(args.image_args or {}))
 
-        logging.info('Using image definition "%s" from %s', Focus.info(args.image_name), Focus.info(args.images.name))
+        logger.info('Using image definition "%s" from %s', Focus.info(args.image_name), Focus.info(args.images.name))
         try:
             images = json.loads(args.images.read())
         except ValueError as msg:
-            logging.error('Unable to parse %s: %s', args.images.name, msg)
+            logger.error('Unable to parse %s: %s', args.images.name, msg)
             return 1
 
-        logging.info('Reading user data script content from %s', Focus.info(args.userdata.name))
+        logger.info('Reading user data script content from %s', Focus.info(args.userdata.name))
         userdata = args.userdata.read()
         if args.list_userdata_macros:
             cls.list_tags(userdata)
@@ -189,7 +192,7 @@ class LaniakeaCommandLine(object):
         userdata = cls.handle_tags(userdata, args.userdata_macros)
 
         if args.print_userdata:
-            logging.info("Combined user-data script:")
+            logger.info("Combined user-data script:")
             print(userdata)
             return 0
 
@@ -199,10 +202,10 @@ class LaniakeaCommandLine(object):
         images[args.image_name]['user_data'] = userdata
 
         if args.image_args:
-            logging.info("Setting custom image parameters for upcoming instances: %r ", args.image_args)
+            logger.info("Setting custom image parameters for upcoming instances: %r ", args.image_args)
             images[args.image_name].update(args.image_args)
 
-        logging.info('Using Boto configuration profile "%s"', Focus.info(args.profile))
+        logger.info('Using Boto configuration profile "%s"', Focus.info(args.profile))
 
         # If a zone has been specified on the command line, use that for all of our images
         if args.zone:
@@ -213,7 +216,7 @@ class LaniakeaCommandLine(object):
         try:
             cluster.connect(profile_name=args.profile, region=args.region)
         except Exception as msg:
-            logging.error(msg)
+            logger.error(msg)
             return 1
 
         if args.create_on_demand:
@@ -221,7 +224,7 @@ class LaniakeaCommandLine(object):
                 cluster.create_on_demand(args.image_name, args.tags, args.root_device_type, args.ebs_size,
                                          args.ebs_volume_type, args.ebs_volume_delete_on_termination)
             except boto.exception.EC2ResponseError as msg:
-                logging.error(msg)
+                logger.error(msg)
                 return 1
 
         if args.create_spot:
@@ -229,57 +232,57 @@ class LaniakeaCommandLine(object):
                 cluster.create_spot(args.max_spot_price, args.image_name, args.tags, args.root_device_type, args.ebs_size,
                                     args.ebs_volume_type, args.ebs_volume_delete_on_termination)
             except boto.exception.EC2ResponseError as msg:
-                logging.error(msg)
+                logger.error(msg)
                 return 1
 
         if args.stop:
             try:
                 cluster.stop(cluster.find(filters=args.only), int(args.stop))
             except boto.exception.EC2ResponseError as msg:
-                logging.error(msg)
+                logger.error(msg)
                 return 1
 
         if args.terminate:
             try:
                 cluster.terminate(cluster.find(filters=args.only), int(args.terminate))
             except boto.exception.EC2ResponseError as msg:
-                logging.error(msg)
+                logger.error(msg)
                 return 1
 
         if args.status:
             try:
                 for i in cluster.find(filters=args.only):
-                    logging.info('%s is %s at %s - tags: %s', i.id, i.state, i.ip_address, i.tags)
+                    logger.info('%s is %s at %s - tags: %s', i.id, i.state, i.ip_address, i.tags)
             except boto.exception.EC2ResponseError as msg:
-                logging.error(msg)
+                logger.error(msg)
                 return 1
 
         if args.run:
             ssh = settings.get('SSH')
             if not ssh:
-                logging.error('No SSH settings defined in %s', args.settings.name)
+                logger.error('No SSH settings defined in %s', args.settings.name)
                 return 1
 
             identity = ssh.get('identity')
             if not identity:
-                logging.error('Key for SSH is not defined.')
+                logger.error('Key for SSH is not defined.')
                 return 1
             identity = os.path.expanduser(identity)
 
             username = ssh.get('username')
             if not username:
-                logging.error('User for SSH is not defined.')
+                logger.error('User for SSH is not defined.')
                 return 1
 
-            logging.info("Bucketing available instances.")
+            logger.info("Bucketing available instances.")
             hosts = []
             try:
                 for host in cluster.find(filters=args.only):
                     hosts.append(host)
             except boto.exception.EC2ResponseError as msg:
-                logging.error(msg)
+                logger.error(msg)
                 return 1
-            logging.info("Executing remote commands on %d instances.", len(hosts))
+            logger.info("Executing remote commands on %d instances.", len(hosts))
 
             # Be able to extend ssh_command from settings.json
             ssh_command = ['ssh',
@@ -293,10 +296,10 @@ class LaniakeaCommandLine(object):
                 command.extend(ssh_command)
                 command.append('%s@%s' % (username, host.ip_address))
                 command.extend(shlex.split(args.run))
-                logging.info('Running remote command [%s]: %s', host.ip_address, args.run)
+                logger.info('Running remote command [%s]: %s', host.ip_address, args.run)
                 try:
                     print(subprocess.check_output(command))
                 except subprocess.CalledProcessError as msg:
-                    logging.error(msg)
+                    logger.error(msg)
 
         return 0
