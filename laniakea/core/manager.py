@@ -9,12 +9,16 @@ import sys
 import time
 
 
+logger = logging.getLogger("laniakea")
+
+
 try:
     import boto.ec2
     import boto.exception
 except ImportError as msg:
-    logging.error(msg)
+    logger.error(msg)
     sys.exit(-1)
+
 
 class Laniakea(object):
     """
@@ -59,7 +63,7 @@ class Laniakea(object):
 
         if self.images:
             # Resolve AMI names in our configuration to their IDs
-            logging.info('Retrieving available AMIs...')
+            logger.info('Retrieving available AMIs...')
             remote_images = self.ec2.get_all_images(owners=['self', 'amazon', 'aws-marketplace'])
             for i in self.images:
                 if "image_name" in self.images[i] and not 'image_id' in self.images[i]:
@@ -89,22 +93,22 @@ class Laniakea(object):
 
         reservation = self.ec2.run_instances(**self.images[instance_type])
 
-        logging.info('Creating requested tags...')
+        logger.info('Creating requested tags...')
         for i in reservation.instances:
             self.retry_on_ec2_error(self.ec2.create_tags, [i.id], tags or {})
 
         instances = []
-        logging.info('Waiting for instances to become ready...')
+        logger.info('Waiting for instances to become ready...')
         while len(reservation.instances):
             for i in reservation.instances:
                 if i.state == 'running':
                     instances.append(i)
                     reservation.instances.pop(reservation.instances.index(i))
-                    logging.info('%s is %s at %s (%s)',
-                                 i.id,
-                                 i.state,
-                                 i.public_dns_name,
-                                 i.ip_address)
+                    logger.info('%s is %s at %s (%s)',
+                                i.id,
+                                i.state,
+                                i.public_dns_name,
+                                i.ip_address)
                 else:
                     self.retry_on_ec2_error(i.update)
         return instances
@@ -156,15 +160,15 @@ class Laniakea(object):
                 instances[requests.index(req.id)] = instance
 
                 self.retry_on_ec2_error(self.ec2.create_tags, [instance.id], tags or {})
-                logging.info('Request %s is %s and %s.',
-                             req.id,
-                             req.status.code,
-                             req.state)
-                logging.info('%s is %s at %s (%s)',
-                             instance.id,
-                             instance.state,
-                             instance.public_dns_name,
-                             instance.ip_address)
+                logger.info('Request %s is %s and %s.',
+                            req.id,
+                            req.status.code,
+                            req.state)
+                logger.info('%s is %s at %s (%s)',
+                            instance.id,
+                            instance.state,
+                            instance.public_dns_name,
+                            instance.ip_address)
             elif req.state != "open":
                 # return the request so we don't try again
                 instances[requests.index(req.id)] = req
@@ -198,7 +202,7 @@ class Laniakea(object):
         request_ids = self.create_spot_requests(price, instance_type=instance_type, root_device_type=root_device_type,
                                                 size=size, vol_type=vol_type, delete_on_termination=delete_on_termination)
         instances = []
-        logging.info("Waiting on fulfillment of requested spot instances.")
+        logger.info("Waiting on fulfillment of requested spot instances.")
         poll_resolution = 5.0
         time_exceeded = False
         while request_ids:
@@ -239,10 +243,10 @@ class Laniakea(object):
         if not i:
             return []
         running = len(i)
-        logging.info("%d instance/s are running.", running)
-        logging.info("Scaling down %d instances of those.", count)
+        logger.info("%d instance/s are running.", running)
+        logger.info("Scaling down %d instances of those.", count)
         if count > running:
-            logging.info("Scale-down value is > than running instance/s - using maximum of %d!", running)
+            logger.info("Scale-down value is > than running instance/s - using maximum of %d!", running)
             count = running
         return i[:count]
 
