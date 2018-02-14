@@ -15,7 +15,6 @@ import re
 import shlex
 import shutil
 import subprocess
-import sys
 
 from .core.common import Focus, String
 from .core.manager import Laniakea
@@ -75,7 +74,8 @@ class LaniakeaCommandLine(object):
         o.add_argument('-zone', type=str, default=None, help='EC2 placement zone')
         o.add_argument('-root-device-type', type=str, default='ebs', choices=['ebs', 'instance_store'],
                        help='EC2 placement zone')
-        o.add_argument('-ebs-size', type=int, default=None, help='Sets the root disk space size. If unset, the EC2 default is used.')
+        o.add_argument('-ebs-size', type=int, default=None,
+                       help='Sets the root disk space size. If unset, the EC2 default is used.')
         o.add_argument('-ebs-volume-type', type=str, default='gp2', choices=['gp2', 'io1', 'standard'],
                        help='Sets the root disk volume type.')
         o.add_argument('-ebs-volume-delete-on-termination', action='store_true', default=False,
@@ -102,7 +102,7 @@ class LaniakeaCommandLine(object):
         for k, v in list(arg.items()):
             try:
                 arg[String(k)] = int(v)
-            except ValueError as e:
+            except ValueError:
                 # Let's assume it is a str and move on.
                 pass
         return arg
@@ -229,8 +229,8 @@ class LaniakeaCommandLine(object):
 
         if args.create_spot:
             try:
-                cluster.create_spot(args.max_spot_price, args.image_name, args.tags, args.root_device_type, args.ebs_size,
-                                    args.ebs_volume_type, args.ebs_volume_delete_on_termination)
+                cluster.create_spot(args.max_spot_price, args.image_name, args.tags, args.root_device_type,
+                                    args.ebs_size, args.ebs_volume_type, args.ebs_volume_delete_on_termination)
             except boto.exception.EC2ResponseError as msg:
                 logger.error(msg)
                 return 1

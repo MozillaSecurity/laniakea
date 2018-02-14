@@ -66,7 +66,7 @@ class Laniakea(object):
             logger.info('Retrieving available AMIs...')
             remote_images = self.ec2.get_all_images(owners=['self', 'amazon', 'aws-marketplace'])
             for i in self.images:
-                if "image_name" in self.images[i] and not 'image_id' in self.images[i]:
+                if "image_name" in self.images[i] and 'image_id' not in self.images[i]:
                     image_name = self.images[i]['image_name']
                     for ri in remote_images:
                         if ri.name == image_name:
@@ -74,7 +74,7 @@ class Laniakea(object):
                                 raise Exception("Ambiguous AMI name '%s' resolves to multiple IDs" % image_name)
                             self.images[i]['image_id'] = ri.id
                             del self.images[i]['image_name']
-                    if not 'image_id' in self.images[i]:
+                    if 'image_id' not in self.images[i]:
                         raise Exception("Failed to resolve AMI name '%s' to an AMI ID" % image_name)
 
     def create_on_demand(self, instance_type='default', tags=None, root_device_type='ebs',
@@ -89,7 +89,8 @@ class Laniakea(object):
         :rtype: list
         """
         if root_device_type == 'ebs':
-            self.images[instance_type]['block_device_map'] = self._configure_ebs_volume(vol_type, size, delete_on_termination)
+            self.images[instance_type]['block_device_map'] = self._configure_ebs_volume(vol_type, size,
+                                                                                        delete_on_termination)
 
         reservation = self.ec2.run_instances(**self.images[instance_type])
 
@@ -127,7 +128,8 @@ class Laniakea(object):
         :rtype: list
         """
         if root_device_type == 'ebs':
-            self.images[instance_type]['block_device_map'] = self._configure_ebs_volume(vol_type, size, delete_on_termination)
+            self.images[instance_type]['block_device_map'] = self._configure_ebs_volume(vol_type, size,
+                                                                                        delete_on_termination)
 
         valid_until = None
         if timeout is not None:
@@ -143,7 +145,8 @@ class Laniakea(object):
         :type requests: list
         :param tags:
         :type tags: dict
-        :return: List of boto.ec2.instance.Instance's created, order corresponding to requests param (None if request still open, boto.ec2.instance.Reservation if request is no longer open)
+        :return: List of boto.ec2.instance.Instance's created, order corresponding to requests param (None if request
+                 still open, boto.ec2.instance.Reservation if request is no longer open)
         :rtype: list
         """
         instances = [None] * len(requests)
@@ -155,7 +158,8 @@ class Laniakea(object):
                 instance = self.retry_on_ec2_error(self.ec2.get_only_instances, req.instance_id)[0]
 
                 if not instance:
-                    raise Exception("Failed to get instance with id %s for %s request %s" % (req.instance_id, req.status.code, req.id))
+                    raise Exception("Failed to get instance with id %s for %s request %s"
+                                    % (req.instance_id, req.status.code, req.id))
 
                 instances[requests.index(req.id)] = instance
 
@@ -200,7 +204,8 @@ class Laniakea(object):
         :rtype: list
         """
         request_ids = self.create_spot_requests(price, instance_type=instance_type, root_device_type=root_device_type,
-                                                size=size, vol_type=vol_type, delete_on_termination=delete_on_termination)
+                                                size=size, vol_type=vol_type,
+                                                delete_on_termination=delete_on_termination)
         instances = []
         logger.info("Waiting on fulfillment of requested spot instances.")
         poll_resolution = 5.0

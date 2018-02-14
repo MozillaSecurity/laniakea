@@ -68,10 +68,14 @@ export BAZ='BAZVAL'
 # End
 """
 
+
 class LaniakeaTestMacroReplacement(unittest.TestCase):
     def runTest(self):
-        self.assertEqual(LaniakeaCommandLine.handle_tags(userdata_test_macros, test_macros), userdata_test_macros_expected)
+        self.assertEqual(LaniakeaCommandLine.handle_tags(userdata_test_macros, test_macros),
+                         userdata_test_macros_expected)
+
 
 class LaniakeaTestMacroListExport(unittest.TestCase):
     def runTest(self):
-        self.assertEqual(LaniakeaCommandLine.handle_tags(userdata_test_macro_export, test_macros), userdata_test_macro_export_expected)
+        self.assertEqual(LaniakeaCommandLine.handle_tags(userdata_test_macro_export, test_macros),
+                         userdata_test_macro_export_expected)
