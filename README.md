@@ -20,16 +20,16 @@ Laniakea is a utility for managing instances at various cloud providers and aids
 * * [Basic Usage Examples](#BasicUsageExamples)
 * * [EC2 Help Menu](#EC2HelpMenu)
 * [UserData Reference](#UserDataReference)
-* [ExtendingLaniakea](#ExtendingLaniakea)
+* [Extending Laniakea](#ExtendingLaniakea)
 
 
-<a name="Setup"/><h2>Setup</h2></a>
+<a name="Setup"><h2>Setup</h2></a>
 
 ```bash
 pip install laniakea
 ```
 
-<a name="LaniakeaHelpMenu"/><h2>Laniakea Help Menu</h2></a>
+<a name="LaniakeaHelpMenu"><h2>Laniakea Help Menu</h2></a>
 
 ```
 usage: laniakea [-verbosity {1,2,3,4,5}] [-settings path]  ...
@@ -50,7 +50,7 @@ The exit status is 0 for non-failures and 1 for failures.
 ```
 
 
-<a name="AmazonEC2"/><h2>Amazon EC2</h2></a>
+<a name="AmazonEC2"><h2>Amazon EC2</h2></a>
 
 Add your AWS credentials to a custom profile inside your ~/.boto configuration file.
 ```ini
@@ -89,7 +89,7 @@ In the likely case that you want to use a custom UserData script rather than mod
 Please refer to https://help.ubuntu.com/community/CloudInit to learn more about UserData scripts.
 
 
-<a name="BasicUsageExamples"/><h3>Basic Usage Examples</h3></a>
+<a name="BasicUsageExamples"><h3>Basic Usage Examples</h3></a>
 
 Run N on-demand instances with a custom -userdata script
 ```bash
@@ -128,7 +128,7 @@ List available macros in a UserData script
 laniakea ec2 -list-userdata-macros -userdata userdata/peach.pit.sh
 ```
 
-<a name="ECHelpMenu"/><h3>EC2 Help Menu</h3></a>
+<a name="EC2HelpMenu"><h3>EC2 Help Menu</h3></a>
 
 ```bash
 python3 -m laniakea ec2 -h
@@ -183,7 +183,7 @@ Optional Parameters:
                               Delete the root EBS volume on termination. (default: False)
 ```
 
-<a name="UserDataReference"/><h2>UserData Reference</h2></a>
+<a name="UserDataReference"><h2>UserData Reference</h2></a>
 
 Laniakea supports various macros to construct and maintain user-data files.
 ```
@@ -193,7 +193,7 @@ Laniakea supports various macros to construct and maintain user-data files.
 You can use the "-list-userdata-macros" option to print out available macros inside a user-data file. Each of these macros can then be substituted with the -userdata-macros option.
 
 
-<a name="ExtendingLaniakea"/><h2>Extending Laniakea</h2></a>
+<a name="ExtendingLaniakea"><h2>Extending Laniakea</h2></a>
 
 To extend Laniakea with new cloud providers you need to ...
 
