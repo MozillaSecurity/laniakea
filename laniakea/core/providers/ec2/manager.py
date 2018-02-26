@@ -20,9 +20,9 @@ except ImportError as msg:
     sys.exit(-1)
 
 
-class Laniakea(object):
+class EC2Manager(object):
     """
-    Laniakea managing class.
+    Amazon Elastic Cloud Computing manager class.
     """
 
     def __init__(self, images):

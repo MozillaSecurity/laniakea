@@ -12,7 +12,9 @@ from email.mime.multipart import MIMEMultipart
 
 
 class MultipartUserData(object):
-    """Combine different types of user-data scripts into a single multipart file."""
+    """
+    Combine different types of user-data scripts into a single multipart file.
+    """
     MIME = {
         '#include': 'text/x-include-url',
         '#include-once': 'text/x-include-once-url',

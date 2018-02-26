@@ -3,8 +3,8 @@
 language: python
 env:
     global:
-        # this is needed so we don't load Travis-CI's boto config
-        # see https://github.com/boto/boto/issues/3741
+        # This is needed so we don't load Travis-CI's boto config, see:
+        # https://github.com/boto/boto/issues/3741
         - BOTO_CONFIG=/tmp/nowhere
 python:
     - "2.7"
