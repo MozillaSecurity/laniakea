@@ -1,3 +1,7 @@
+# coding: utf-8
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
 '''
 Tests
 
@@ -15,7 +19,7 @@ file, You can obtain one at http://mozilla.org/MPL/2.0/.
 from collections import OrderedDict
 import unittest
 
-from laniakea import LaniakeaCommandLine
+from laniakea.core.userdata import UserData
 
 test_macros = OrderedDict()
 test_macros["FOO"] = "FOOVAL"
@@ -71,11 +75,11 @@ export BAZ='BAZVAL'
 
 class LaniakeaTestMacroReplacement(unittest.TestCase):
     def runTest(self):
-        self.assertEqual(LaniakeaCommandLine.handle_tags(userdata_test_macros, test_macros),
+        self.assertEqual(UserData.handle_tags(userdata_test_macros, test_macros),
                          userdata_test_macros_expected)
 
 
 class LaniakeaTestMacroListExport(unittest.TestCase):
     def runTest(self):
-        self.assertEqual(LaniakeaCommandLine.handle_tags(userdata_test_macro_export, test_macros),
+        self.assertEqual(UserData.handle_tags(userdata_test_macro_export, test_macros),
                          userdata_test_macro_export_expected)
