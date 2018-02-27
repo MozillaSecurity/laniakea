@@ -204,7 +204,6 @@ class Ec2CommandLine(object):
 
         logger.info('Using Boto configuration profile "%s"', Focus.info(args.profile))
 
-        # If a zone has been specified on the command line, use that for all of our images
         if args.zone:
             for image_name in images:
                 images[image_name]['placement'] = args.zone
@@ -218,16 +217,25 @@ class Ec2CommandLine(object):
 
         if args.create_on_demand:
             try:
-                cluster.create_on_demand(args.image_name, args.tags, args.root_device_type, args.ebs_size,
-                                         args.ebs_volume_type, args.ebs_volume_delete_on_termination)
+                cluster.create_on_demand(args.image_name,
+                                         args.tags,
+                                         args.root_device_type,
+                                         args.ebs_size,
+                                         args.ebs_volume_type,
+                                         args.ebs_volume_delete_on_termination)
             except boto.exception.EC2ResponseError as msg:
                 logger.error(msg)
                 return 1
 
         if args.create_spot:
             try:
-                cluster.create_spot(args.max_spot_price, args.image_name, args.tags, args.root_device_type,
-                                    args.ebs_size, args.ebs_volume_type, args.ebs_volume_delete_on_termination)
+                cluster.create_spot(args.max_spot_price,
+                                    args.image_name,
+                                    args.tags,
+                                    args.root_device_type,
+                                    args.ebs_size,
+                                    args.ebs_volume_type,
+                                    args.ebs_volume_delete_on_termination)
             except boto.exception.EC2ResponseError as msg:
                 logger.error(msg)
                 return 1

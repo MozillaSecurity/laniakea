@@ -113,8 +113,14 @@ class EC2Manager(object):
                     self.retry_on_ec2_error(i.update)
         return instances
 
-    def create_spot_requests(self, price, instance_type='default', root_device_type='ebs',
-                             size='default', vol_type='gp2', delete_on_termination=False, timeout=None):
+    def create_spot_requests(self,
+                             price,
+                             instance_type='default',
+                             root_device_type='ebs',
+                             size='default',
+                             vol_type='gp2',
+                             delete_on_termination=False,
+                             timeout=None):
         """Request creation of one or more EC2 spot instances.
 
         :param price: Max price to pay for spot instance per hour.
@@ -127,8 +133,8 @@ class EC2Manager(object):
         :rtype: list
         """
         if root_device_type == 'ebs':
-            self.images[instance_type]['block_device_map'] = self._configure_ebs_volume(vol_type, size,
-                                                                                        delete_on_termination)
+            self.images[instance_type]['block_device_map'] = \
+                self._configure_ebs_volume(vol_type, size, delete_on_termination)
 
         valid_until = None
         if timeout is not None:
@@ -189,8 +195,15 @@ class EC2Manager(object):
         for req in ec2_requests:
             req.cancel()
 
-    def create_spot(self, price, instance_type='default', tags=None, root_device_type='ebs',
-                    size='default', vol_type='gp2', delete_on_termination=False, timeout=None):
+    def create_spot(self,
+                    price,
+                    instance_type='default',
+                    tags=None,
+                    root_device_type='ebs',
+                    size='default',
+                    vol_type='gp2',
+                    delete_on_termination=False,
+                    timeout=None):
         """Create one or more EC2 spot instances.
 
         :param price: Max price to pay for spot instance per hour.
@@ -202,8 +215,11 @@ class EC2Manager(object):
         :return: List of instances created
         :rtype: list
         """
-        request_ids = self.create_spot_requests(price, instance_type=instance_type, root_device_type=root_device_type,
-                                                size=size, vol_type=vol_type,
+        request_ids = self.create_spot_requests(price,
+                                                instance_type=instance_type,
+                                                root_device_type=root_device_type,
+                                                size=size,
+                                                vol_type=vol_type,
                                                 delete_on_termination=delete_on_termination)
         instances = []
         logger.info('Waiting on fulfillment of requested spot instances.')
