@@ -27,7 +27,7 @@ class UserData (object):
         for k, v in list(arg.items()):
             try:
                 arg[String(k)] = int(v)
-            except ValueError as e:
+            except ValueError as e: # noqa: ignore=F841
                 # Let's assume it is a str and move on.
                 pass
         return arg
