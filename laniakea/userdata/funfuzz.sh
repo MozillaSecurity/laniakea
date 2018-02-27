@@ -92,8 +92,7 @@ chown ubuntu:ubuntu /home/ubuntu/.hgrc
 date
 sudo -u ubuntu hg clone https://hg.mozilla.org/mozilla-central /home/ubuntu/trees/mozilla-central
 sudo -u ubuntu hg clone https://hg.mozilla.org/releases/mozilla-beta /home/ubuntu/trees/mozilla-beta
-sudo -u ubuntu hg clone https://hg.mozilla.org/releases/mozilla-esr52 /home/ubuntu/trees/mozilla-esr52
-#sudo -u ubuntu hg clone https://hg.mozilla.org/releases/mozilla-esr59 /home/ubuntu/trees/mozilla-esr59
+sudo -u ubuntu hg clone https://hg.mozilla.org/releases/mozilla-esr60 /home/ubuntu/trees/mozilla-esr60
 date
 
 cat << EOF > /home/ubuntu/funfuzzCronjob
