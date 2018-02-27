@@ -2,22 +2,18 @@
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
-import argparse
-import boto.exception
+import os
 import json
 import logging
-import os
-import re
-import shlex
-import shutil
-import subprocess
+import argparse
 
-from laniakea.core.common import Focus, String
+import boto.exception
+
+from laniakea.core.common import Focus
 from laniakea.core.userdata import UserData
-
 from .manager import EC2Manager
 
-logger = logging.getLogger("laniakea")
+logger = logging.getLogger('laniakea')
 
 
 class Ec2CommandLine(object):
@@ -29,10 +25,11 @@ class Ec2CommandLine(object):
 
     @classmethod
     def add_arguments(cls, subparsers, dirs):
-        parser = subparsers.add_parser('ec2',
-                                       help='Amazon Elastic Cloud Computing',
-                                       formatter_class=lambda prog:
-                                           argparse.ArgumentDefaultsHelpFormatter(prog, max_help_position=30, width=100))
+        parser = subparsers.add_parser(
+            'ec2',
+            help='Amazon Elastic Cloud Computing',
+            formatter_class=lambda prog:
+                argparse.ArgumentDefaultsHelpFormatter(prog, max_help_position=30, width=100))
 
         m = parser.add_argument_group('Mandatory EC2 Parameters')
 
@@ -75,7 +72,6 @@ class Ec2CommandLine(object):
                        action='store_true',
                        help='Print the UserData script to stdout.')
 
-
         u = parser.add_argument_group('UserData Parameters')
         u.add_argument('-userdata',
                        metavar='path',
@@ -88,7 +84,6 @@ class Ec2CommandLine(object):
                        nargs='+',
                        type=str,
                        help='Custom macros for the UserData.')
-
 
         o = parser.add_argument_group('Optional Parameters')
         o.add_argument('-tags',
@@ -171,9 +166,9 @@ class Ec2CommandLine(object):
                        help=argparse.SUPPRESS)
 
     @classmethod
-    def main(cls, args):
-        args.only = UserData.convert_pair_to_dict(args.only or "")
-        args.tags = UserData.convert_pair_to_dict(args.tags or "")
+    def main(cls, args, settings):
+        args.only = UserData.convert_pair_to_dict(args.only or '')
+        args.tags = UserData.convert_pair_to_dict(args.tags or '')
         args.image_args = UserData.convert_str_to_int(UserData.convert_pair_to_dict(args.image_args or {}))
 
         logger.info('Using image definition "%s" from %s', Focus.info(args.image_name), Focus.info(args.images.name))
@@ -190,11 +185,11 @@ class Ec2CommandLine(object):
             return 0
         userdata = UserData.handle_import_tags(userdata)
 
-        args.userdata_macros = UserData.convert_pair_to_dict(args.userdata_macros or "")
+        args.userdata_macros = UserData.convert_pair_to_dict(args.userdata_macros or '')
         userdata = UserData.handle_tags(userdata, args.userdata_macros)
 
         if args.print_userdata:
-            logger.info("Combined user-data script:")
+            logger.info('Combined user-data script:')
             print(userdata)
             return 0
 
@@ -204,7 +199,7 @@ class Ec2CommandLine(object):
         images[args.image_name]['user_data'] = userdata
 
         if args.image_args:
-            logger.info("Setting custom image parameters for upcoming instances: %r ", args.image_args)
+            logger.info('Setting custom image parameters for upcoming instances: %r ', args.image_args)
             images[args.image_name].update(args.image_args)
 
         logger.info('Using Boto configuration profile "%s"', Focus.info(args.profile))
@@ -213,7 +208,6 @@ class Ec2CommandLine(object):
         if args.zone:
             for image_name in images:
                 images[image_name]['placement'] = args.zone
-
 
         cluster = EC2Manager(images)
         try:
@@ -277,7 +271,7 @@ class Ec2CommandLine(object):
                 logger.error('User for SSH is not defined.')
                 return 1
 
-            logger.info("Bucketing available instances.")
+            logger.info('Bucketing available instances.')
             hosts = []
             try:
                 for host in cluster.find(filters=args.only):
@@ -285,4 +279,4 @@ class Ec2CommandLine(object):
             except boto.exception.EC2ResponseError as msg:
                 logger.error(msg)
                 return 1
-            logger.info("Executing remote commands on %d instances.", len(hosts))
+            logger.info('Executing remote commands on %d instances.', len(hosts))

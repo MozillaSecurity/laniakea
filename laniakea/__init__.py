@@ -2,9 +2,9 @@
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
-"""
+'''
 Laniakea is a utility for managing instances at various cloud providers and aids in setting up a fuzzing cluster.
-"""
+'''
 import os
 import json
 import shutil
@@ -16,20 +16,20 @@ from .core.common import Focus
 from .core.providers.ec2 import Ec2CommandLine
 from .core.providers.azure import AzureCommandLine
 
-logger = logging.getLogger("laniakea")
+logger = logging.getLogger('laniakea')
 
 
 class LaniakeaCommandLine(object):
-    """
+    '''
     Command-line interface for Laniakea.
-    """
+    '''
     HOME = os.path.dirname(os.path.abspath(__file__))
     VERSION = '0.8'
 
     @classmethod
     def parse_args(cls):
         # Initialize configuration and userdata directories.
-        dirs = appdirs.AppDirs("laniakea", "Mozilla Security")
+        dirs = appdirs.AppDirs('laniakea', 'Mozilla Security')
         if not os.path.isdir(dirs.user_config_dir):
             shutil.copytree(os.path.join(cls.HOME, 'examples'), dirs.user_config_dir)
             shutil.copytree(os.path.join(cls.HOME, 'userdata'), os.path.join(dirs.user_config_dir, 'userdata'))
@@ -38,7 +38,7 @@ class LaniakeaCommandLine(object):
                                          prog='laniakea',
                                          add_help=False,
                                          formatter_class=lambda prog:
-                                            argparse.ArgumentDefaultsHelpFormatter(prog, max_help_position=30, width=100),
+                                             argparse.ArgumentDefaultsHelpFormatter(prog, max_help_position=30, width=100),
                                          epilog='The exit status is 0 for non-failures and 1 for failures.')
 
         subparsers = parser.add_subparsers(dest='provider',
@@ -50,7 +50,7 @@ class LaniakeaCommandLine(object):
         Ec2CommandLine.add_arguments(subparsers, dirs)
         AzureCommandLine.add_arguments(subparsers)
 
-        base = parser.add_argument_group("Laniakea Base Parameters")
+        base = parser.add_argument_group('Laniakea Base Parameter')
         base.add_argument('-verbosity',
                           default=2,
                           type=int,
@@ -97,4 +97,4 @@ class LaniakeaCommandLine(object):
             return 1
 
         if args.provider:
-            globals()[args.provider.title() + 'CommandLine']().main(args)
+            globals()[args.provider.title() + 'CommandLine']().main(args, settings)
