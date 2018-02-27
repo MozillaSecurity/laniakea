@@ -64,11 +64,11 @@ sudo -u ubuntu git clone https://github.com/MozillaSecurity/octo /home/ubuntu/oc
 sudo -u ubuntu git clone https://github.com/MozillaSecurity/funfuzz /home/ubuntu/funfuzz
 
 # Get more fuzzing prerequisites
-pip install --upgrade pip setuptools
-pip install --upgrade mercurial
+sudo -u ubuntu pip install --user --upgrade pip setuptools
+sudo -u ubuntu pip install --user --upgrade mercurial
 
 # Get supporting fuzzing libraries via pip
-pip install --upgrade /home/ubuntu/funfuzz
+sudo -u ubuntu pip install --user --upgrade /home/ubuntu/funfuzz
 
 # Populate FuzzManager settings
 @import(userdata/misc-funfuzz/fmsettings.sh)@
@@ -102,7 +102,7 @@ PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/us
 USER=ubuntu
 LOGNAME=ubuntulog
 HOME=/home/ubuntu
-@reboot ubuntu sleep 80 ; git -C /home/ubuntu/funfuzz pull --rebase --tags ; pip install --upgrade /home/ubuntu/funfuzz ; python -u -m funfuzz.loop_bot -b "--random" --target-time 28800 | tee /home/ubuntu/log-loopBotPy.txt
+@reboot ubuntu sleep 80 ; git -C /home/ubuntu/funfuzz pull --rebase --tags ; pip install --user --upgrade /home/ubuntu/funfuzz ; python -u -m funfuzz.loop_bot -b "--random" --target-time 28800 | tee /home/ubuntu/log-loopBotPy.txt
 EOF
 
 chown root:root /home/ubuntu/funfuzzCronjob
