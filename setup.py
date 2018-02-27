@@ -6,6 +6,9 @@
 # file, You can obtain one at https://mozilla.org/MPL/2.0/.
 from setuptools import setup
 
+from laniakea import LaniakeaCommandLine
+
+
 if __name__ == '__main__':
     setup(
         classifiers=[
@@ -37,4 +40,4 @@ if __name__ == '__main__':
             ]
         },
         url='https://github.com/MozillaSecurity/laniakea',
-        version='0.8')
+        version=LaniakeaCommandLine.VERSION)
