@@ -17,8 +17,8 @@ Laniakea is a utility for managing instances at various cloud providers and aids
 * [Setup](#Setup)
 * [Laniakea Help Menu](#LaniakeaHelpMenu)
 * [Amazon EC2](#AmazonEC2)
-* * [Basic Usage Examples](#BasicUsageExamples)
-* * [EC2 Help Menu](#EC2HelpMenu)
+  * [Basic Usage Examples](#BasicUsageExamples)
+  * [EC2 Help Menu](#EC2HelpMenu)
 * [UserData Reference](#UserDataReference)
 * [Extending Laniakea](#ExtendingLaniakea)
 
@@ -59,7 +59,7 @@ aws_access_key_id = <your_access_key_id>
 aws_secret_access_key = <your_secret_key>
 ```
 
-Complement the provided **images.json** file with your AWS AMI information (see `laniakea -h` for location).
+Complement the provided `images.json` file with your AWS AMI information (see `laniakea -h` for location).
 ```json
 # Example: an on-demand instance
 "default": {
@@ -81,10 +81,10 @@ Complement the provided **images.json** file with your AWS AMI information (see 
 }
 ```
 
-Add your UserData script - which is going to be used for provisioning your EC2 instances - to the "userdata/" folder.
+Add your UserData script - which is going to be used for provisioning your EC2 instances - to the `userdata/` folder.
 
 **NOTE**
-In the likely case that you want to use a custom UserData script rather than modifying the "default.sh" file, then you need to point the "-userdata" parameter to that file.
+In the likely case that you want to use a custom UserData script rather than modifying the `default.sh` file, then you need to point the `-userdata` parameter to that file.
 
 Please refer to https://help.ubuntu.com/community/CloudInit to learn more about UserData scripts.
 
@@ -190,15 +190,15 @@ Laniakea supports various macros to construct and maintain user-data files.
 @import(path_to_other_userdata_file)@
 @macro_name@
 ```
-You can use the "-list-userdata-macros" option to print out available macros inside a user-data file. Each of these macros can then be substituted with the -userdata-macros option.
+You can use the `-list-userdata-macros` option to print out available macros inside a user-data file. Each of these macros can then be substituted with the `-userdata-macros` option.
 
 
 <a name="ExtendingLaniakea"><h2>Extending Laniakea</h2></a>
 
 To extend Laniakea with new cloud providers you need to ...
 
-* Add a new folder in **laniakea/core/providers/<cloud_provider>**
-* Write a command-line interface and place it into the **__init__.py**
-* Write a manager class and name it **manager.py**
-* Add additional files, like userdata scripts, to **laniakea/userdata/**
-* Add additional configuration files to **laniakea/examples/**
+* Add a new folder in `laniakea/core/providers/<cloud_provider>`
+* Write a command-line interface and put it into the `__init__.py`
+* Write an API manager class and name it `manager.py`
+* Add additional files (i.e userdata scripts) to `laniakea/userdata/`
+* Add additional configuration files to `laniakea/examples/`
