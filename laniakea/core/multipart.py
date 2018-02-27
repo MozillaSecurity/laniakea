@@ -29,7 +29,7 @@ class MultipartUserData(object):
     def __init__(self):
         self.container = MIMEMultipart()
 
-    def add(self, path, custom_mime_type="text/plain"):
+    def add(self, path, custom_mime_type='text/plain'):
         maintype, subtype = self.get_mime_type(path, custom_mime_type)
         if maintype == 'text':
             msg = self._add_text(path, subtype)
@@ -49,7 +49,7 @@ class MultipartUserData(object):
             encoders.encode_base64(msg)
             return msg
 
-    def get_mime_type(self, path, default="text/plain"):
+    def get_mime_type(self, path, default='text/plain'):
         with open(path, 'rb') as fo:
             line = fo.readline()
         mime_type = default

@@ -6,11 +6,11 @@ import os
 import logging
 import argparse
 
-from laniakea.core.common import Focus, String
+from laniakea.core.common import Focus
 
 from .manager import AzureManager
 
-logger = logging.getLogger("Laniakea")
+logger = logging.getLogger('Laniakea')
 
 
 class AzureCommandLine(object):
@@ -22,14 +22,15 @@ class AzureCommandLine(object):
 
     @classmethod
     def add_arguments(cls, subparsers):
-        parser = subparsers.add_parser('azure',
-                                       help='Microsoft Azure',
-                                       formatter_class=lambda prog:
-                                           argparse.ArgumentDefaultsHelpFormatter(prog, max_help_position=30, width=100))
+        parser = subparsers.add_parser(
+            'azure',
+            help='Microsoft Azure',
+            formatter_class=lambda prog:
+                argparse.ArgumentDefaultsHelpFormatter(prog, max_help_position=30, width=100))
 
         parser.add_argument('-version', action='version', version='%(prog)s {}'.format(cls.VERSION),
                             help=argparse.SUPPRESS)
 
     @classmethod
-    def main(self, args):
+    def main(self, args, settings):
         cluster = AzureManager()

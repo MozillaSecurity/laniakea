@@ -8,8 +8,7 @@ import ssl
 import sys
 import time
 
-
-logger = logging.getLogger("laniakea")
+logger = logging.getLogger('laniakea')
 
 
 try:
@@ -59,7 +58,7 @@ class EC2Manager(object):
         """
         self.ec2 = boto.ec2.connect_to_region(region, **kw_params)
         if not self.ec2:
-            raise Exception("Unable to connect to region '%s'" % region)
+            raise Exception('Unable to connect to region "%s"' % region)
 
         if self.images:
             # Resolve AMI names in our configuration to their IDs
@@ -71,11 +70,11 @@ class EC2Manager(object):
                     for ri in remote_images:
                         if ri.name == image_name:
                             if 'image_id' in self.images[i]:
-                                raise Exception("Ambiguous AMI name '%s' resolves to multiple IDs" % image_name)
+                                raise Exception('Ambiguous AMI name "%s" resolves to multiple IDs' % image_name)
                             self.images[i]['image_id'] = ri.id
                             del self.images[i]['image_name']
                     if 'image_id' not in self.images[i]:
-                        raise Exception("Failed to resolve AMI name '%s' to an AMI ID" % image_name)
+                        raise Exception('Failed to resolve AMI name "%s" to an AMI ID' % image_name)
 
     def create_on_demand(self, instance_type='default', tags=None, root_device_type='ebs',
                          size='default', vol_type='gp2', delete_on_termination=False):
@@ -158,7 +157,7 @@ class EC2Manager(object):
                 instance = self.retry_on_ec2_error(self.ec2.get_only_instances, req.instance_id)[0]
 
                 if not instance:
-                    raise Exception("Failed to get instance with id %s for %s request %s"
+                    raise Exception('Failed to get instance with id %s for %s request %s'
                                     % (req.instance_id, req.status.code, req.id))
 
                 instances[requests.index(req.id)] = instance
@@ -207,7 +206,7 @@ class EC2Manager(object):
                                                 size=size, vol_type=vol_type,
                                                 delete_on_termination=delete_on_termination)
         instances = []
-        logger.info("Waiting on fulfillment of requested spot instances.")
+        logger.info('Waiting on fulfillment of requested spot instances.')
         poll_resolution = 5.0
         time_exceeded = False
         while request_ids:
@@ -248,10 +247,10 @@ class EC2Manager(object):
         if not i:
             return []
         running = len(i)
-        logger.info("%d instance/s are running.", running)
-        logger.info("Scaling down %d instances of those.", count)
+        logger.info('%d instance/s are running.', running)
+        logger.info('Scaling down %d instances of those.', count)
         if count > running:
-            logger.info("Scale-down value is > than running instance/s - using maximum of %d!", running)
+            logger.info('Scale-down value is > than running instance/s - using maximum of %d!', running)
             count = running
         return i[:count]
 

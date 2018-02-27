@@ -56,6 +56,7 @@ class Focus(type):
     def data(msg):
         return Focus.format('data', msg)
 
+
 class String(object):
-    def __new__(self, u_or_str, encoding="utf-8"):
+    def __new__(self, u_or_str, encoding='utf-8'):
         return u_or_str if isinstance(u_or_str, str) else u_or_str.decode(encoding)

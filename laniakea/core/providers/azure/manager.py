@@ -4,8 +4,7 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 import logging
 
-
-logger = logging.getLogger("laniakea")
+logger = logging.getLogger('laniakea')
 
 
 class AzureManager(object):
