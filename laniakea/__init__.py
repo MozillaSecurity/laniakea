@@ -34,12 +34,13 @@ class LaniakeaCommandLine(object):
             shutil.copytree(os.path.join(cls.HOME, 'examples'), dirs.user_config_dir)
             shutil.copytree(os.path.join(cls.HOME, 'userdata'), os.path.join(dirs.user_config_dir, 'userdata'))
 
-        parser = argparse.ArgumentParser(description='Laniakea Runtime v{}'.format(cls.VERSION),
-                                         prog='laniakea',
-                                         add_help=False,
-                                         formatter_class=lambda prog:
-                                             argparse.ArgumentDefaultsHelpFormatter(prog, max_help_position=30, width=100),
-                                         epilog='The exit status is 0 for non-failures and 1 for failures.')
+        parser = argparse.ArgumentParser(
+            description='Laniakea Runtime v{}'.format(cls.VERSION),
+            prog='laniakea',
+            add_help=False,
+            formatter_class=lambda prog:
+                argparse.ArgumentDefaultsHelpFormatter(prog, max_help_position=30, width=100),
+            epilog='The exit status is 0 for non-failures and 1 for failures.')
 
         subparsers = parser.add_subparsers(dest='provider',
                                            description='Use -h to see the help menu of each provider.',
