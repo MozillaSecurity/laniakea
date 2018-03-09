@@ -88,8 +88,10 @@ class Laniakea(object):
         :return: List of instances created
         :rtype: list
         """
+        name, size = self._get_default_name_size(instance_type, size)
+
         if root_device_type == 'ebs':
-            self.images[instance_type]['block_device_map'] = self._configure_ebs_volume(vol_type, size,
+            self.images[instance_type]['block_device_map'] = self._configure_ebs_volume(vol_type, name, size,
                                                                                         delete_on_termination)
 
         reservation = self.ec2.run_instances(**self.images[instance_type])
@@ -127,8 +129,10 @@ class Laniakea(object):
         :return: List of requests created
         :rtype: list
         """
+        name, size = self._get_default_name_size(instance_type, size)
+
         if root_device_type == 'ebs':
-            self.images[instance_type]['block_device_map'] = self._configure_ebs_volume(vol_type, size,
+            self.images[instance_type]['block_device_map'] = self._configure_ebs_volume(vol_type, name, size,
                                                                                         delete_on_termination)
 
         valid_until = None
@@ -255,7 +259,26 @@ class Laniakea(object):
             count = running
         return i[:count]
 
-    def _configure_ebs_volume(self, vol_type, size, delete_on_termination):
+    def _get_default_name_size(self, instance_type, size):
+        """Checks if root device name/size were specified in the image definition.
+        :param instance_type: A section name in images.json.
+        :type instance_type: str
+        :param size:
+        :type size: int
+        :return: Root device name and size
+        :rtype: tuple(str, int)
+        """
+        if 'root_size' in self.images[instance_type]:
+            size = self.images[instance_type].pop('root_size')
+
+        if 'root_device' in self.images[instance_type]:
+            name = self.images[instance_type].pop('root_device')
+        else:
+            name = '/dev/sda1'
+
+        return (name, size)
+
+    def _configure_ebs_volume(self, vol_type, name, size, delete_on_termination):
         """Sets the desired root EBS size, otherwise the default EC2 value is used.
 
         :param vol_type: Type of EBS storage - gp2 (SSD), io1 or standard (magnetic)
@@ -268,13 +291,13 @@ class Laniakea(object):
         :rtype: object
         """
         # From GitHub boto docs: http://git.io/veyDv
-        dev_sda1 = boto.ec2.blockdevicemapping.BlockDeviceType()
-        dev_sda1.delete_on_termination = delete_on_termination
-        dev_sda1.volume_type = vol_type
+        root_dev = boto.ec2.blockdevicemapping.BlockDeviceType()
+        root_dev.delete_on_termination = delete_on_termination
+        root_dev.volume_type = vol_type
         if size != 'default':
-            dev_sda1.size = size  # change root volume to desired size
+            root_dev.size = size  # change root volume to desired size
         bdm = boto.ec2.blockdevicemapping.BlockDeviceMapping()
-        bdm['/dev/sda1'] = dev_sda1
+        bdm[name] = root_dev
         return bdm
 
     def stop(self, instances, count=0):
