@@ -69,6 +69,27 @@ export BAZ='BAZVAL'
 """
 
 
+userdata_test_macro_docker = """
+#!/bin/bash
+
+# This is a sample userdata script with macro export to arguments
+
+docker run @!all_macros_docker@ image
+
+# End
+"""
+
+userdata_test_macro_docker_expected = """
+#!/bin/bash
+
+# This is a sample userdata script with macro export to arguments
+
+docker run -e 'FOO=FOOVAL' -e 'BAR=BARVAL' -e 'BAZ=BAZVAL' image
+
+# End
+"""
+
+
 class LaniakeaTestMacroReplacement(unittest.TestCase):
     def runTest(self):
         self.assertEqual(LaniakeaCommandLine.handle_tags(userdata_test_macros, test_macros),
@@ -79,3 +100,9 @@ class LaniakeaTestMacroListExport(unittest.TestCase):
     def runTest(self):
         self.assertEqual(LaniakeaCommandLine.handle_tags(userdata_test_macro_export, test_macros),
                          userdata_test_macro_export_expected)
+
+
+class LaniakeaTestMacroListDocker(unittest.TestCase):
+    def runTest(self):
+        self.assertEqual(LaniakeaCommandLine.handle_tags(userdata_test_macro_docker, test_macros),
+                         userdata_test_macro_docker_expected)
