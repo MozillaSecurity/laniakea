@@ -67,6 +67,7 @@ Complement the provided `images.json` file with your AWS AMI information (see `l
   "instance_type": "<INSTANCE_TYPE>",
   "security_groups": ["laniakea"],
   "key_name": "<AWS_KEY_NAME>",
+  "instance_profile_name": "<name-of-role>",
   "min_count": 3,
   "max_count": 3
 }
@@ -77,6 +78,7 @@ Complement the provided `images.json` file with your AWS AMI information (see `l
   "instance_type": "<INSTANCE_TYPE>",
   "security_groups": ["laniakea"],
   "key_name": "<AWS_KEY_NAME>",
+  "instance_profile_name": "<name-of-role>",
   "count": 3
 }
 ```
