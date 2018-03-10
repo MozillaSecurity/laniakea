@@ -52,7 +52,7 @@ The exit status is 0 for non-failures and 1 for failures.
 
 <a name="AmazonEC2"><h2>Amazon EC2</h2></a>
 
-Add your AWS credentials to a custom profile inside your ~/.boto configuration file.
+Add your AWS credentials to a custom profile inside your `~/.boto` configuration file.
 ```ini
 [profile laniakea]
 aws_access_key_id = <your_access_key_id>
@@ -83,8 +83,8 @@ Complement the provided `images.json` file with your AWS AMI information (see `l
 
 Add your UserData script - which is going to be used for provisioning your EC2 instances - to the `userdata/` folder.
 
-**NOTE**
-In the likely case that you want to use a custom UserData script rather than modifying the `default.sh` file, then you need to point the `-userdata` parameter to that file.
+
+> In the likely case that you want to use a custom UserData script rather than modifying the `default.sh` file, then you need to point the `-userdata` parameter to that file.
 
 Please refer to https://help.ubuntu.com/community/CloudInit to learn more about UserData scripts.
 
@@ -106,7 +106,7 @@ Show which instances are running and are tagged with the name 'peach'
 laniakea ec2 -status -only tag:Name=peach instance-state-code=16
 ```
 
-**Hint** Filters support wildcards. Example: "tag:Name=peach-*" would be suitable to list all instances having the  word "peach" as prefix of a tag name. For a list of available filters refer to http://docs.aws.amazon.com/AWSEC2/latest/CommandLineReference/ApiReference-cmd-DescribeInstances.html
+> Filters support wildcards. Example: "tag:Name=peach-*" would be suitable to list all instances having the  word "peach" as prefix of a tag name. For a list of available filters refer to http://docs.aws.amazon.com/AWSEC2/latest/CommandLineReference/ApiReference-cmd-DescribeInstances.html
 
 Terminate all running instances which are tagged with the name 'peach'
 ```bash

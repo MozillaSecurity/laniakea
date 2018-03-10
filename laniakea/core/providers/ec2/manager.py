@@ -76,8 +76,13 @@ class EC2Manager(object):
                     if 'image_id' not in self.images[i]:
                         raise Exception('Failed to resolve AMI name "%s" to an AMI ID' % image_name)
 
-    def create_on_demand(self, instance_type='default', tags=None, root_device_type='ebs',
-                         size='default', vol_type='gp2', delete_on_termination=False):
+    def create_on_demand(self,
+                         instance_type='default',
+                         tags=None,
+                         root_device_type='ebs',
+                         size='default',
+                         vol_type='gp2',
+                         delete_on_termination=False):
         """Create one or more EC2 on-demand instances.
 
         :param instance_type: A section name in images.json
@@ -88,8 +93,8 @@ class EC2Manager(object):
         :rtype: list
         """
         if root_device_type == 'ebs':
-            self.images[instance_type]['block_device_map'] = self._configure_ebs_volume(vol_type, size,
-                                                                                        delete_on_termination)
+            self.images[instance_type]['block_device_map'] = \
+                self._configure_ebs_volume(vol_type, size, delete_on_termination)
 
         reservation = self.ec2.run_instances(**self.images[instance_type])
 
