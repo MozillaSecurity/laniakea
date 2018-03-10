@@ -64,9 +64,6 @@ target/
 # Platform
 .DS_Store
 
-# Private
-laniakea-notes/
-
 laniakea/userdata/dharma.private.sh
 laniakea/userdata/keys/
 laniakea/userdata/loggers/fuzzmanager.sh
