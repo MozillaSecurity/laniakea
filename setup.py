@@ -6,6 +6,9 @@
 # file, You can obtain one at https://mozilla.org/MPL/2.0/.
 from setuptools import setup
 
+from laniakea import LaniakeaCommandLine
+
+
 if __name__ == '__main__':
     setup(
         classifiers=[
@@ -20,7 +23,7 @@ if __name__ == '__main__':
             'Programming Language :: Python :: 3.5',
             'Programming Language :: Python :: 3.6'
         ],
-        description='Utility to automate creating EC2 instances.',
+        description='Laniakea is a utility for managing instances at various cloud providers and aids in setting up a fuzzing cluster.',
         entry_points={
             "console_scripts": ["laniakea = laniakea:LaniakeaCommandLine.main"]
         },
@@ -30,9 +33,11 @@ if __name__ == '__main__':
         maintainer_email='cdiehl@mozilla.com',
         name='laniakea',
         packages=['laniakea', 'laniakea.core'],
-        package_data={'laniakea': [
-            'examples/*',
-            'userdata/*',
-        ]},
+        package_data={
+            'laniakea': [
+                'examples/*',
+                'userdata/*',
+            ]
+        },
         url='https://github.com/MozillaSecurity/laniakea',
-        version='0.8')
+        version=LaniakeaCommandLine.VERSION)

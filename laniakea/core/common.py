@@ -15,6 +15,7 @@ class Focus(type):
         'warn': '\033[93m',
         'fail': '\033[91m',
         'repr': '\033[35m',
+        'data': '\033[92m',
         'none': '\033[0m'
     }
 
@@ -51,7 +52,11 @@ class Focus(type):
     def info(msg):
         return Focus.format('info', msg)
 
+    @staticmethod
+    def data(msg):
+        return Focus.format('data', msg)
+
 
 class String(object):
-    def __new__(self, u_or_str, encoding="utf-8"):
+    def __new__(self, u_or_str, encoding='utf-8'):
         return u_or_str if isinstance(u_or_str, str) else u_or_str.decode(encoding)

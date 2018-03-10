@@ -8,8 +8,7 @@ import ssl
 import sys
 import time
 
-
-logger = logging.getLogger("laniakea")
+logger = logging.getLogger('laniakea')
 
 
 try:
@@ -20,9 +19,9 @@ except ImportError as msg:
     sys.exit(-1)
 
 
-class Laniakea(object):
+class EC2Manager(object):
     """
-    Laniakea managing class.
+    Amazon Elastic Cloud Computing manager class.
     """
 
     def __init__(self, images):
@@ -59,7 +58,7 @@ class Laniakea(object):
         """
         self.ec2 = boto.ec2.connect_to_region(region, **kw_params)
         if not self.ec2:
-            raise Exception("Unable to connect to region '%s'" % region)
+            raise Exception('Unable to connect to region "%s"' % region)
 
         if self.images:
             # Resolve AMI names in our configuration to their IDs
@@ -71,14 +70,19 @@ class Laniakea(object):
                     for ri in remote_images:
                         if ri.name == image_name:
                             if 'image_id' in self.images[i]:
-                                raise Exception("Ambiguous AMI name '%s' resolves to multiple IDs" % image_name)
+                                raise Exception('Ambiguous AMI name "%s" resolves to multiple IDs' % image_name)
                             self.images[i]['image_id'] = ri.id
                             del self.images[i]['image_name']
                     if 'image_id' not in self.images[i]:
-                        raise Exception("Failed to resolve AMI name '%s' to an AMI ID" % image_name)
+                        raise Exception('Failed to resolve AMI name "%s" to an AMI ID' % image_name)
 
-    def create_on_demand(self, instance_type='default', tags=None, root_device_type='ebs',
-                         size='default', vol_type='gp2', delete_on_termination=False):
+    def create_on_demand(self,
+                         instance_type='default',
+                         tags=None,
+                         root_device_type='ebs',
+                         size='default',
+                         vol_type='gp2',
+                         delete_on_termination=False):
         """Create one or more EC2 on-demand instances.
 
         :param instance_type: A section name in images.json
@@ -91,8 +95,8 @@ class Laniakea(object):
         name, size = self._get_default_name_size(instance_type, size)
 
         if root_device_type == 'ebs':
-            self.images[instance_type]['block_device_map'] = self._configure_ebs_volume(vol_type, name, size,
-                                                                                        delete_on_termination)
+            self.images[instance_type]['block_device_map'] = \
+                self._configure_ebs_volume(vol_type, name, size, delete_on_termination)
 
         reservation = self.ec2.run_instances(**self.images[instance_type])
 
@@ -116,8 +120,14 @@ class Laniakea(object):
                     self.retry_on_ec2_error(i.update)
         return instances
 
-    def create_spot_requests(self, price, instance_type='default', root_device_type='ebs',
-                             size='default', vol_type='gp2', delete_on_termination=False, timeout=None):
+    def create_spot_requests(self,
+                             price,
+                             instance_type='default',
+                             root_device_type='ebs',
+                             size='default',
+                             vol_type='gp2',
+                             delete_on_termination=False,
+                             timeout=None):
         """Request creation of one or more EC2 spot instances.
 
         :param price: Max price to pay for spot instance per hour.
@@ -132,8 +142,8 @@ class Laniakea(object):
         name, size = self._get_default_name_size(instance_type, size)
 
         if root_device_type == 'ebs':
-            self.images[instance_type]['block_device_map'] = self._configure_ebs_volume(vol_type, name, size,
-                                                                                        delete_on_termination)
+            self.images[instance_type]['block_device_map'] = \
+                self._configure_ebs_volume(vol_type, name, size, delete_on_termination)
 
         valid_until = None
         if timeout is not None:
@@ -162,7 +172,7 @@ class Laniakea(object):
                 instance = self.retry_on_ec2_error(self.ec2.get_only_instances, req.instance_id)[0]
 
                 if not instance:
-                    raise Exception("Failed to get instance with id %s for %s request %s"
+                    raise Exception('Failed to get instance with id %s for %s request %s'
                                     % (req.instance_id, req.status.code, req.id))
 
                 instances[requests.index(req.id)] = instance
@@ -194,8 +204,15 @@ class Laniakea(object):
         for req in ec2_requests:
             req.cancel()
 
-    def create_spot(self, price, instance_type='default', tags=None, root_device_type='ebs',
-                    size='default', vol_type='gp2', delete_on_termination=False, timeout=None):
+    def create_spot(self,
+                    price,
+                    instance_type='default',
+                    tags=None,
+                    root_device_type='ebs',
+                    size='default',
+                    vol_type='gp2',
+                    delete_on_termination=False,
+                    timeout=None):
         """Create one or more EC2 spot instances.
 
         :param price: Max price to pay for spot instance per hour.
@@ -207,11 +224,14 @@ class Laniakea(object):
         :return: List of instances created
         :rtype: list
         """
-        request_ids = self.create_spot_requests(price, instance_type=instance_type, root_device_type=root_device_type,
-                                                size=size, vol_type=vol_type,
+        request_ids = self.create_spot_requests(price,
+                                                instance_type=instance_type,
+                                                root_device_type=root_device_type,
+                                                size=size,
+                                                vol_type=vol_type,
                                                 delete_on_termination=delete_on_termination)
         instances = []
-        logger.info("Waiting on fulfillment of requested spot instances.")
+        logger.info('Waiting on fulfillment of requested spot instances.')
         poll_resolution = 5.0
         time_exceeded = False
         while request_ids:
@@ -252,10 +272,10 @@ class Laniakea(object):
         if not i:
             return []
         running = len(i)
-        logger.info("%d instance/s are running.", running)
-        logger.info("Scaling down %d instances of those.", count)
+        logger.info('%d instance/s are running.', running)
+        logger.info('Scaling down %d instances of those.', count)
         if count > running:
-            logger.info("Scale-down value is > than running instance/s - using maximum of %d!", running)
+            logger.info('Scale-down value is > than running instance/s - using maximum of %d!', running)
             count = running
         return i[:count]
 
