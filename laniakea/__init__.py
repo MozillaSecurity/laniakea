@@ -125,6 +125,13 @@ class LaniakeaCommandLine(object):
                 macro_var_exports = "\n".join(macro_var_export_list)
 
                 userdata = userdata.replace('@%s@' % macro_var, macro_var_exports)
+            elif macro_var == "!all_macros_docker":
+                macro_var_export_list = []
+                for defined_macro in macros:
+                    macro_var_export_list.append("-e '%s=%s'" % (defined_macro, macros[defined_macro]))
+                macro_var_exports = " ".join(macro_var_export_list)
+
+                userdata = userdata.replace('@%s@' % macro_var, macro_var_exports)
             elif macro_var not in macros:
                 logger.error('Undefined variable @%s@ in UserData script', macro_var)
                 return
