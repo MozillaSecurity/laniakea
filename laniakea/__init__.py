@@ -49,7 +49,7 @@ class LaniakeaCommandLine(object):
 
         # Todo (posidron): Add modules dynamically.
         Ec2CommandLine.add_arguments(subparsers, dirs)
-        AzureCommandLine.add_arguments(subparsers)
+        AzureCommandLine.add_arguments(subparsers, dirs)
 
         base = parser.add_argument_group('Laniakea Base Parameter')
         base.add_argument('-verbosity',
