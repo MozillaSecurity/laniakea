@@ -7,11 +7,16 @@ export DEBIAN_FRONTEND=noninteractive  # Bypass ncurses configuration screens
 date
 sleep 10  # EC2 takes some time to be able to go online
 # Essential Packages
-# PPAs for newest nodejs, Git, Rust and GCC 6
+# PPAs for newest nodejs, Git, Rust, GCC 6, LLVM/Clang 6
 curl -sL https://deb.nodesource.com/setup_8.x | sudo -E bash -  # For nodejs
 add-apt-repository -y ppa:git-core/ppa  # Git PPA needed to get latest security updates
 add-apt-repository -y ppa:ubuntu-mozilla-security/rust-next
 add-apt-repository -y ppa:ubuntu-toolchain-r/test
+# Fingerprint: 6084 F3CF 814B 57C1 CF12 EFD5 15CF 4D18 AF4F 7421
+wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key|sudo apt-key add -
+echo "deb http://apt.llvm.org/xenial/ llvm-toolchain-xenial-6.0 main" >> /etc/apt/sources.list
+echo "deb-src http://apt.llvm.org/xenial/ llvm-toolchain-xenial-6.0 main" >> /etc/apt/sources.list
+
 apt-get --yes --quiet update
 apt-get --yes --quiet dist-upgrade
 # Check using `hg --cwd ~/trees/mozilla-central/ diff -r 781485c695e1:00bdc9451be6 python/mozboot/mozboot/debian.py`
@@ -40,18 +45,13 @@ apt-get --yes --quiet install valgrind libc6-dbg
 # Install rust
 apt-get --yes --quiet install cargo rustc
 
-# Fingerprint: 6084 F3CF 814B 57C1 CF12 EFD5 15CF 4D18 AF4F 7421
-wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key|sudo apt-key add -
+# Install LLVM/Clang 6
+apt-get --yes --quiet install clang-6.0 clang-tools-6.0 clang-6.0-doc libclang-common-6.0-dev libclang-6.0-dev
+apt-get --yes --quiet install libclang1-6.0 libclang1-6.0-dbg libllvm6.0 libllvm6.0-dbg
+apt-get --yes --quiet install lldb-6.0 llvm-6.0 llvm-6.0-dev llvm-6.0-doc llvm-6.0-examples llvm-6.0-runtime 
+apt-get --yes --quiet install clang-format-6.0 python-clang-6.0 lld-6.0 libfuzzer-6.0-dev
 
-echo "deb http://apt.llvm.org/xenial/ llvm-toolchain-xenial-5.0 main" >> /etc/apt/sources.list
-echo "deb-src http://apt.llvm.org/xenial/ llvm-toolchain-xenial-5.0 main" >> /etc/apt/sources.list
-
-apt-get --yes --quiet install clang-5.0 clang-5.0-doc libclang-common-5.0-dev libclang-5.0-dev libclang1-5.0
-apt-get --yes --quiet install libclang1-5.0-dbg libllvm5.0 libllvm5.0-dbg lldb-5.0 llvm-5.0 llvm-5.0-dev llvm-5.0-doc
-apt-get --yes --quiet install llvm-5.0-examples llvm-5.0-runtime clang-format-5.0 python-clang-5.0 python-lldb-5.0
-apt-get --yes --quiet install liblldb-5.0-dev lld-5.0 libfuzzer-5.0-dev
-
-LLVMSYMBOLIZER="/usr/bin/llvm-symbolizer-5.0"  # Update this number whenever Clang is updated
+LLVMSYMBOLIZER="/usr/bin/llvm-symbolizer-6.0"  # Update this number whenever Clang is updated
 LLVMSYMBOLIZER_DEST="/usr/bin/llvm-symbolizer"
 if [ -f $LLVMSYMBOLIZER ];
 then
