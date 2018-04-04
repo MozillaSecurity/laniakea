@@ -7,7 +7,11 @@ export DEBIAN_FRONTEND=noninteractive  # Bypass ncurses configuration screens
 date
 sleep 10  # EC2 takes some time to be able to go online
 # Essential Packages
+# PPAs for newest nodejs, Git, Rust and GCC 6
+curl -sL https://deb.nodesource.com/setup_8.x | sudo -E bash -  # For nodejs
 add-apt-repository -y ppa:git-core/ppa  # Git PPA needed to get latest security updates
+add-apt-repository -y ppa:ubuntu-mozilla-security/rust-next
+add-apt-repository -y ppa:ubuntu-toolchain-r/test
 apt-get --yes --quiet update
 apt-get --yes --quiet dist-upgrade
 # Check using `hg --cwd ~/trees/mozilla-central/ diff -r b6ba3e919f56:781485c695e1 python/mozboot/mozboot/debian.py`
