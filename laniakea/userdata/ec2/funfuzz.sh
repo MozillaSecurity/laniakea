@@ -79,6 +79,8 @@ chown -R ubuntu:ubuntu /home/ubuntu/.ssh
 chown ubuntu:ubuntu /home/ubuntu/.bashrc
 
 # Get the fuzzing harness
+sudo -u ubuntu git clone https://github.com/MozillaSecurity/autobisect /home/ubuntu/autobisect
+sudo -u ubuntu git clone https://github.com/MozillaSecurity/ffpuppet /home/ubuntu/ffpuppet
 sudo -u ubuntu git clone https://github.com/MozillaSecurity/octo /home/ubuntu/octo
 sudo -u ubuntu git clone https://github.com/MozillaSecurity/funfuzz /home/ubuntu/funfuzz
 
