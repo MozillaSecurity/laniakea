@@ -1,6 +1,6 @@
 #! /bin/bash -ex
 # Be in ~/trees/laniakea directory, be sure @import directories are present.
-# python -u -m laniakea -region=us-east-1 -images ~/images.json -create-on-demand -tags Name=funfuzz-1604-ondemand-201710 -image-name funfuzz-ondemand-ebs -ebs-volume-delete-on-termination -ebs-size 96 -root-device-type ebs -userdata laniakea/userdata/funfuzz.sh
+# python -u -m laniakea ec2 -region=us-east-1 -images ~/images.json -create-on-demand -tags Name=funfuzz-1604-ondemand-201804 -image-name funfuzz-ondemand-ebs -ebs-volume-delete-on-termination -ebs-size 96 -root-device-type ebs -userdata laniakea/userdata/ec2/funfuzz.sh
 # Stop the instance, create an AMI, copy the AMI, then update EC2SpotManager
 export DEBIAN_FRONTEND=noninteractive  # Bypass ncurses configuration screens
 
