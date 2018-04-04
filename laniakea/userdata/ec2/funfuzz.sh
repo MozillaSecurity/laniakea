@@ -84,11 +84,12 @@ sudo -u ubuntu git clone https://github.com/MozillaSecurity/ffpuppet /home/ubunt
 sudo -u ubuntu git clone https://github.com/MozillaSecurity/octo /home/ubuntu/octo
 sudo -u ubuntu git clone https://github.com/MozillaSecurity/funfuzz /home/ubuntu/funfuzz
 
-# Get more fuzzing prerequisites
-sudo -u ubuntu pip install --user --upgrade pip setuptools
-sudo -u ubuntu pip install --user --upgrade mercurial
+# Get more fuzzing prerequisites - have to install as root, else `hg` is not found by the rest of this script
+pip install --upgrade pip setuptools virtualenv
+pip install --upgrade pip setuptools
+pip install --upgrade mercurial
 
-# Get supporting fuzzing libraries via pip
+# Get supporting fuzzing libraries via pip, funfuzz will be used as the "ubuntu" user later
 sudo -u ubuntu pip install --user --upgrade /home/ubuntu/funfuzz
 
 # Populate FuzzManager settings
