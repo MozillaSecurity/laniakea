@@ -67,4 +67,5 @@ target/
 laniakea/userdata/dharma.private.sh
 laniakea/userdata/keys/
 laniakea/userdata/loggers/fuzzmanager.sh
-laniakea/userdata/misc-funfuzz/
+laniakea/userdata/ec2/keys/
+laniakea/userdata/ec2/misc-funfuzz/
