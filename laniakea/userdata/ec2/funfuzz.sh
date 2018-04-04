@@ -92,7 +92,7 @@ sudo -u ubuntu pip install --user --upgrade mercurial
 sudo -u ubuntu pip install --user --upgrade /home/ubuntu/funfuzz
 
 # Populate FuzzManager settings
-@import(userdata/misc-funfuzz/fmsettings.sh)@
+@import(laniakea/userdata/ec2/misc-funfuzz/fmsettings.sh)@
 
 # Populate Mercurial settings.
 cat << EOF > /home/ubuntu/.hgrc
