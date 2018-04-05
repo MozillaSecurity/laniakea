@@ -27,6 +27,7 @@ class EC2Manager(object):
     def __init__(self, images):
         self.ec2 = None
         self.images = images
+        self.remote_images = {}
 
     def retry_on_ec2_error(self, func, *args, **kwargs):
         """
@@ -59,22 +60,32 @@ class EC2Manager(object):
         self.ec2 = boto.ec2.connect_to_region(region, **kw_params)
         if not self.ec2:
             raise Exception('Unable to connect to region "%s"' % region)
+        self.remote_images.clear()
 
-        if self.images:
-            # Resolve AMI names in our configuration to their IDs
-            logger.info('Retrieving available AMIs...')
-            remote_images = self.ec2.get_all_images(owners=['self', 'amazon', 'aws-marketplace'])
-            for i in self.images:
-                if "image_name" in self.images[i] and 'image_id' not in self.images[i]:
-                    image_name = self.images[i]['image_name']
-                    for ri in remote_images:
-                        if ri.name == image_name:
-                            if 'image_id' in self.images[i]:
-                                raise Exception('Ambiguous AMI name "%s" resolves to multiple IDs' % image_name)
-                            self.images[i]['image_id'] = ri.id
-                            del self.images[i]['image_name']
-                    if 'image_id' not in self.images[i]:
-                        raise Exception('Failed to resolve AMI name "%s" to an AMI ID' % image_name)
+        if self.images and any(('image_name' in img and 'image_id' not in img) for img in self.images.values()):
+            for img in self.images.values():
+                if 'image_name' in img and 'image_id' not in img:
+                    img['image_id'] = self.resolve_image_name(img.pop('image_name'))
+
+    def resolve_image_name(self, image_name):
+        """Look up an AMI for the connected region based on an image name.
+
+        :param image_name: The name of the image to resolve.
+        :type image_name: str
+        :return: The AMI for the given image.
+        :rtype: str
+        """
+        # look at each scope in order of size
+        scopes = ['self', 'amazon', 'aws-marketplace']
+        if image_name in self.remote_images:
+            return self.remote_images[image_name]
+        for scope in scopes:
+            logger.info('Retrieving available AMIs owned by %s...', scope)
+            remote_images = self.ec2.get_all_images(owners=[scope], filters={'name': image_name})
+            self.remote_images.update({ri.name: ri.id for ri in remote_images})
+            if image_name in self.remote_images:
+                return self.remote_images[image_name]
+        raise Exception('Failed to resolve AMI name "%s" to an AMI' % image_name)
 
     def create_on_demand(self,
                          instance_type='default',
