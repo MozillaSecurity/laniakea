@@ -29,7 +29,18 @@ apt-get --yes --quiet install cmake curl gdb git openssh-client openssh-server s
 apt-get --yes --quiet install gcc-6 g++-6
 apt-get --yes --quiet install lib32z1 gcc-6-multilib g++-6-multilib  # For compiling 32-bit in 64-bit OS
 
-# Switch to GCC 6
+# Needed for Valgrind and for compiling with clang, along with llvm-symbolizer
+apt-get --yes --quiet install valgrind libc6-dbg
+# Install rust
+apt-get --yes --quiet install cargo rustc
+
+# Install LLVM/Clang 6
+apt-get --yes --quiet install clang-6.0 clang-tools-6.0 clang-6.0-doc libclang-common-6.0-dev libclang-6.0-dev
+apt-get --yes --quiet install libclang1-6.0 libclang1-6.0-dbg libllvm6.0 libllvm6.0-dbg
+apt-get --yes --quiet install lldb-6.0 llvm-6.0 llvm-6.0-dev llvm-6.0-doc llvm-6.0-examples llvm-6.0-runtime
+apt-get --yes --quiet install clang-format-6.0 python-clang-6.0 lld-6.0 libfuzzer-6.0-dev
+
+# Switch to GCC 6 and LLVM/Clang 6
 update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-5 10
 update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-6 20
 update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-5 10
@@ -40,26 +51,10 @@ update-alternatives --set cc /usr/bin/gcc
 update-alternatives --install /usr/bin/c++ c++ /usr/bin/g++ 30
 update-alternatives --set c++ /usr/bin/g++
 
-# Needed for Valgrind and for compiling with clang, along with llvm-symbolizer
-apt-get --yes --quiet install valgrind libc6-dbg
-# Install rust
-apt-get --yes --quiet install cargo rustc
+update-alternatives --install /usr/bin/clang clang /usr/bin/clang-6.0 8
+update-alternatives --install /usr/bin/clang++ clang++ /usr/bin/clang++-6.0 8
+update-alternatives --install /usr/bin/llvm-symbolizer llvm-symbolizer /usr/bin/llvm-symbolizer-6.0 8
 
-# Install LLVM/Clang 6
-apt-get --yes --quiet install clang-6.0 clang-tools-6.0 clang-6.0-doc libclang-common-6.0-dev libclang-6.0-dev
-apt-get --yes --quiet install libclang1-6.0 libclang1-6.0-dbg libllvm6.0 libllvm6.0-dbg
-apt-get --yes --quiet install lldb-6.0 llvm-6.0 llvm-6.0-dev llvm-6.0-doc llvm-6.0-examples llvm-6.0-runtime 
-apt-get --yes --quiet install clang-format-6.0 python-clang-6.0 lld-6.0 libfuzzer-6.0-dev
-
-LLVMSYMBOLIZER="/usr/bin/llvm-symbolizer-6.0"  # Update this number whenever Clang is updated
-LLVMSYMBOLIZER_DEST="/usr/bin/llvm-symbolizer"
-if [ -f $LLVMSYMBOLIZER ];
-then
-    echo "Creating $LLVMSYMBOLIZER_DEST symlink to file located at: $LLVMSYMBOLIZER"
-    ln -s $LLVMSYMBOLIZER $LLVMSYMBOLIZER_DEST
-else
-    echo "WARNING: File $LLVMSYMBOLIZER does not exist."
-fi
 apt-get --yes --quiet autoremove
 apt-get --yes --quiet upgrade
 
