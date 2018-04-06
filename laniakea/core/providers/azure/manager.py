@@ -44,6 +44,8 @@ class AzureManager(object):
             'storageAccountName': '{}group'.format(args.storage_name),
             'adminUsername': self.settings['credentials']['username'],
             'adminPassword': self.settings['credentials']['password'],
+            'aws_key_id': self.settings['aws-credentials']['aws_key_id']
+            'aws_secret': self.settings['aws-credentials']['aws_secret']
             'count': args.count
         }
         return {k: {'value': v} for k, v in parameters.items()}
