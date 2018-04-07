@@ -36,7 +36,7 @@ apt-get --yes --quiet install cargo rustc
 
 # Install LLVM/Clang 6
 apt-get --yes --quiet install clang-6.0 clang-tools-6.0 clang-6.0-doc libclang-common-6.0-dev libclang-6.0-dev
-apt-get --yes --quiet install libclang1-6.0 libclang1-6.0-dbg libllvm6.0 libllvm6.0-dbg
+apt-get --yes --quiet install libclang1-6.0 libllvm6.0
 apt-get --yes --quiet install lldb-6.0 llvm-6.0 llvm-6.0-dev llvm-6.0-doc llvm-6.0-examples llvm-6.0-runtime
 apt-get --yes --quiet install clang-format-6.0 python-clang-6.0 lld-6.0 libfuzzer-6.0-dev
 
