@@ -10,12 +10,14 @@ import os.path
 import logging
 
 import appdirs
-
 try:
     import azure
 except ImportError:
     import pip
-    pip.main(['install', 'azure'])
+    try:
+        pip.main(['install', 'azure'])
+    except ValueError as msg:
+        sys.exit("Unable to install azure module")
 
 from azure.common.credentials import ServicePrincipalCredentials
 from azure.mgmt.resource import ResourceManagementClient
