@@ -8,8 +8,7 @@ import json
 import random
 import os.path
 import logging
-import argparse
-import unicodedata
+
 import appdirs
 
 try:
@@ -90,5 +89,7 @@ class AzureManager(object):
         raise NotImplementedError
 
     def terminate(self, resource_group):
+        if self.client is None:
+            raise Exception("Not connected to a Resource Management Client.")
         delete_async_operation = self.client.resource_groups.delete(resource_group)
         delete_async_operation.wait()
