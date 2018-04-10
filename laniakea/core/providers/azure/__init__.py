@@ -106,13 +106,14 @@ class AzureCommandLine(object):
             return 1
 
         if args.create:
-            cluster.create(parameters, args.storage_name, template)
+            try:
+                cluster.create(parameters, args.storage_name, template)
+            except ValueError as msg:
+                return 1
 
         if args.delete:
-            if args.group_name:
-                cluster.terminate(args.group_name)
-                return 0
-            else:
-                logging.error("A group name must be provided.")
-                return 1
+                try:
+                    cluster.terminate(args.group_name)
+                except ValueError as msg:
+                    return 1
 
