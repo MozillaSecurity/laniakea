@@ -1,0 +1,16 @@
+{
+    "keys": {
+        "subscription_id":  "370afef1-4baa-4be1-bf96-a13e72f2dffc",
+        "client_id": "0192d81d-180c-4997-aa6e-4c1700a0d113",
+        "client_secret": "kpAZCdiySMZetdOTdi8K5qAoSpuFMtWHBbeX/hI6GbA=",
+        "tenant_id": "86194446-99e8-499e-9f07-f981d5f7d05e"
+    },
+    "credentials": {
+        "username": "fuzzer",
+        "password": "3241234qewrSFSDF!!23"
+    },
+    "aws-credentials": {
+        "aws_key_id":"",
+        "aws_secret":""
+    }
+}
