@@ -194,7 +194,98 @@ Laniakea supports various macros to construct and maintain user-data files.
 ```
 You can use the `-list-userdata-macros` option to print out available macros inside a user-data file. Each of these macros can then be substituted with the `-userdata-macros` option.
 
+<a name="Azure"><h2>Azure</h2></a>
 
+Laniakea supports supports Azure by creating Virtual Machine instances using Azure Resource Management (ARM) Templates. These are JSON files that describe how a Virtual Machine should be
+set up and deployed. This includes parameters such as: machine size, OS parameters, configuration scripts, etc. An example template can be found in the laniaka/examples/azure/template.json. An example 
+configuration script can be found at http://www.github.com/rforbes/azure-configs/deploy-domino.ps1
+
+We keep keys and other secrets in AWS using credstash.
+
+Add your AWS credentials to a custom profile inside your `~/.boto` configuration file.
+```ini
+[profile laniakea]
+aws_access_key_id = <your_access_key_id>
+aws_secret_access_key = <your_secret_key>
+```
+
+Create a azure.json file. This file contains the secrets required for accessing and launching in Azure, the username and password of the VMs being created, and the AWS credentials for accessing
+credstash. Below is example:
+
+Complement the provided `images.json` file with your AWS AMI information (see `laniakea -h` for location).
+```json
+{
+    "keys": {
+        "subscription_id":  "",
+        "client_id": "",
+        "client_secret": "",
+        "tenant_id": ""
+    },
+    "credentials": {
+        "username": "",
+        "password": ""
+    },
+    "aws-credentials": {
+        "aws_key_id":"",
+        "aws_secret":""
+    }
+}
+```
+The subscription ID, client ID, client secret, and tenant ID are all found in the Azure portal.
+
+Virtual Machine configuration happens using a powershell script that is called in the ARM template. 
+
+THe following section of the ARM template is where the script is set.
+
+```json
+"properties": {
+    "publisher": "Microsoft.Compute",
+    "type": "CustomScriptExtension",
+    "typeHandlerVersion": "1.9",
+    "autoUpgradeMinorVersion": true,
+    "settings": {
+        "fileUris": [
+            "https://raw.githubusercontent.com/rforbes/azure-configs/master/deploy-domino.ps1"
+        ]
+    },
+```
+<a name="BasicUsageExamples"><h3>Basic Usage Examples</h3></a>
+
+Run 3 instances
+```bash
+laniakea azure -create -fuzzer domino -region eastus count 3
+```
+Terminate all running instances
+```bash
+laniakea azure -terminate -group-name domino
+```
+<a name="AzureHelpMenu"><h3>Azure Help Menu</h3></a>
+
+```bash
+python3 -m laniakea azure -h
+```
+
+```
+usage: laniakea azure [-h] [-region name] [-count n] [-create] [-delete] [-group-name name]
+                      [-azure path] [-template path]
+
+optional arguments:
+  -h, --help        show this help message and exit
+
+Mandatory Azure Parameters:
+  -region name      Azure region. (default: None)
+  -count n          Number of instances to launch. (default: None)
+  -create           Create an instance pool. (default: False)
+  -delete           Delete an instance pool. (default: False)
+  -group-name name  Group name to be deleted. (default: None)
+  -azure path       Deployment template for Windows Azure (default:
+                    C:\Users\rforbes\AppData\Local\Mozilla Security\laniakea\azure.json)
+
+UserData Parameters:
+  -template path    Deployment template for Windows Azure (default:
+                    C:\Users\rforbes\AppData\Local\Mozilla
+                    Security\laniakea\userdata\azure\template.json)
+```
 <a name="ExtendingLaniakea"><h2>Extending Laniakea</h2></a>
 
 To extend Laniakea with new cloud providers you need to ...
