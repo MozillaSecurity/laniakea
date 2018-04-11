@@ -20,6 +20,9 @@ Laniakea is a utility for managing instances at various cloud providers and aids
   * [Basic Usage Examples](#BasicUsageExamples)
   * [EC2 Help Menu](#EC2HelpMenu)
 * [UserData Reference](#UserDataReference)
+* [Azure](#Azure)
+  *[Basic usage Examples](#BasicAzureUsageExamples)
+  *[Azure Help Menu](#AzureHelpMenu)
 * [Extending Laniakea](#ExtendingLaniakea)
 
 
@@ -249,7 +252,7 @@ THe following section of the ARM template is where the script is set.
         ]
     },
 ```
-<a name="BasicUsageExamples"><h3>Basic Usage Examples</h3></a>
+<a name="BasicAzureUsageExamples"><h3>Basic Usage Examples</h3></a>
 
 Run 3 instances
 ```bash
