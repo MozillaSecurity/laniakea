@@ -21,8 +21,8 @@ Laniakea is a utility for managing instances at various cloud providers and aids
   * [EC2 Help Menu](#EC2HelpMenu)
 * [UserData Reference](#UserDataReference)
 * [Azure](#Azure)
-  *[Basic usage Examples](#BasicAzureUsageExamples)
-  *[Azure Help Menu](#AzureHelpMenu)
+  * [Basic usage Examples](#BasicAzureUsageExamples)
+  * [Azure Help Menu](#AzureHelpMenu)
 * [Extending Laniakea](#ExtendingLaniakea)
 
 
