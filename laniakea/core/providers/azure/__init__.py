@@ -43,10 +43,6 @@ class AzureCommandLine(object):
         m.add_argument('-delete',
                        action='store_true',
                        help='Delete an instance pool.')
-        m.add_argument('-storage-name',
-                       type=str,
-                       metavar='name',
-                       help='Storage name.')
         m.add_argument('-group-name',
                        type=str,
                        metavar='name',
