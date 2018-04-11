@@ -1,0 +1,161 @@
+{
+    "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "location": {
+            "type": "string"
+        },
+        "storageAccountName": {
+            "type": "string"
+        },
+        "adminUsername": {
+            "type": "string"
+        },
+        "adminPassword": {
+            "type": "string"
+        },
+        "count": {
+            "type": "int",
+            "defaultValue": 1
+        }
+    },
+    "variables": {
+        "resourceGroupName": "[resourceGroup().name]",
+        "vnetId": "[resourceId('network_resources','Microsoft.Network/virtualNetworks', 'fuzzing_network')]",
+        "subnetRef": "[concat(variables('vnetId'), '/subnets/', 'default')]",
+        "publicIpAddressName": "[concat(variables('resourceGroupName'), '-ip')]",
+        "networkSecurityGroupName": "allow-rdp",
+        "networkInterfaceName": "[concat(variables('resourceGroupName'), '-nic')]",
+        "storageAccountName": "[concat(variables('resourceGroupName'), 'storage')]",
+        "virtualMachineName": "[concat(variables('resourceGroupName'), 'VM')]",
+        "fuzzingImage": "fuzzingImagev2"
+    },
+    "resources": [
+        {
+            "name": "[parameters('storageAccountName')]",
+            "type": "Microsoft.Storage/storageAccounts",
+            "apiVersion": "2016-01-01",
+            "location": "[parameters('location')]",
+            "sku": {
+                "name": "Standard_LRS"
+            },
+            "kind": "Storage",
+            "properties": {}
+        },
+        {
+            "name": "[concat(variables('publicIpAddressName'), copyIndex())]",
+            "type": "Microsoft.Network/publicIPAddresses",
+            "apiVersion": "2017-08-01",
+            "location": "[parameters('location')]",
+            "properties": {
+                "publicIPAllocationMethod": "Dynamic"
+            },
+            "sku": {
+                "name": "Basic"
+            },
+            "copy": {
+                "name": "addresscopy",
+                "count": "[parameters('count')]"
+            }
+
+        },
+        {
+            "name": "[concat(variables('networkInterfaceName'), copyIndex())]",
+            "type": "Microsoft.Network/networkInterfaces",
+            "apiVersion": "2016-09-01",
+            "location": "[parameters('location')]",
+            "dependsOn": [
+                "[concat('Microsoft.Network/publicIpAddresses/', variables('publicIpAddressName'), copyIndex())]"
+            ],
+            "properties": {
+                "ipConfigurations": [
+                    {
+                        "name": "ipconfig1",
+                        "properties": {
+                            "subnet": {
+                                "id": "[variables('subnetRef')]"
+                            },
+                            "privateIPAllocationMethod": "Dynamic",
+                            "publicIpAddress": {
+                                "id": "[resourceId('Microsoft.Network/publicIpAddresses', concat(variables('publicIpAddressName'), copyIndex()))]"
+                            }
+                        }
+                    }
+                ],
+                "networkSecurityGroup": {
+                    "id": "[resourceId('network_resources', 'Microsoft.Network/networkSecurityGroups', variables('networkSecurityGroupName'))]"
+                }
+            },
+            "copy": {
+                "name": "interfacecopy",
+                "count": "[parameters('count')]"
+            }
+        },
+        {
+            "apiVersion": "2016-04-30-preview",
+            "type": "Microsoft.Compute/virtualMachines",
+            "name": "[concat(variables('virtualMachineName'), copyIndex())]",
+            "location": "[parameters('location')]",
+            "dependsOn": [
+                "[concat('Microsoft.Network/networkInterfaces/', variables('networkInterfaceName'), copyIndex())]"
+            ],
+            "properties": {
+                "hardwareProfile": {
+                    "vmSize": "Standard_DS11_v2"
+                },
+                "osProfile": {
+                    "computerName": "[concat(variables('virtualMachineName'), copyIndex())]",
+                    "adminUsername": "[parameters('adminUsername')]",
+                    "adminPassword": "[parameters('adminPassword')]"
+                },
+                "storageProfile": {
+                    "imageReference": {
+                        "id": "[resourceID('fuzzing_images', 'Microsoft.Compute/images', variables('fuzzingImage'))]"
+                    }
+                },
+                "networkProfile": {
+                    "networkInterfaces": [
+                        {
+                            "id": "[resourceId('Microsoft.Network/networkInterfaces', concat(variables('networkInterfaceName'), copyIndex()))]"
+                        }
+                    ]
+                }
+            },
+            "copy": {
+                "name": "vmcopy",
+                "count": "[parameters('count')]"
+            }
+        },
+        {
+            "apiVersion": "2015-06-15",
+            "type": "Microsoft.Compute/virtualMachines/extensions",
+            "name": "[concat(variables('virtualMachineName'), copyIndex(),'/CustomScriptExtension')]",
+            "location": "[parameters('location')]",
+            "dependsOn": [
+                "[concat('Microsoft.Compute/virtualMachines/', variables('virtualMachineName'), copyindex())]"
+            ],
+            "tags": {
+                "displayName": "[concat(variables('resourceGroupName'), '-app')]"
+            },
+            "properties": {
+                "publisher": "Microsoft.Compute",
+                "type": "CustomScriptExtension",
+                "typeHandlerVersion": "1.9",
+                "autoUpgradeMinorVersion": true,
+                "settings": {
+                    "fileUris": [
+                        "https://raw.githubusercontent.com/rforbes/azure-configs/master/testscript.ps1"
+                    ]
+                },
+                "protectedSettings": {
+                    "commandToExecute": "[concat('powershell -ExecutionPolicy Unrestricted -File testscript.ps1 -vmAdminUsername ', parameters('adminUsername'), ' -vmAdminPassword \"', parameters('adminPassword'), '\"')]"
+                }
+            },
+            "copy": {
+                "name": "extensioncopy",
+                "count": "[parameters('count')]"
+            }
+        }
+    ],
+    "outputs": {}
+}
