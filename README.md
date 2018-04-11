@@ -203,6 +203,8 @@ Laniakea supports supports Azure by creating Virtual Machine instances using Azu
 set up and deployed. This includes parameters such as: machine size, OS parameters, configuration scripts, etc. An example template can be found in the laniaka/examples/azure/template.json. An example 
 configuration script can be found at http://www.github.com/rforbes/azure-configs/deploy-domino.ps1
 
+When we create resources in Azure we start by creating a Resource Group. Azure uses the Resource Group to store all the resources that are created. This includes, the Virtual machine, any storage for the VM, network interfaces, and IP addresses. We use the -fuzzer flag to set the name of the Resource Group. The name cannot be longer than 12 characters. In order to delete a pool, we delete the Resource Group.
+
 We keep keys and other secrets in AWS using credstash.
 
 Add your AWS credentials to a custom profile inside your `~/.boto` configuration file.
