@@ -144,7 +144,7 @@
                 "autoUpgradeMinorVersion": true,
                 "settings": {
                     "fileUris": [
-                        "https://raw.githubusercontent.com/rforbes/azure-configs/master/testscript.ps1"
+                        "https://raw.githubusercontent.com/MozillaSecurity/laniakea/master/laniakea/userdata/azure/config-scripts/domino-launch.ps1"
                     ]
                 },
                 "protectedSettings": {
