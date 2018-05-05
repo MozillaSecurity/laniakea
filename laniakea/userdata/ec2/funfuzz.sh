@@ -1,6 +1,6 @@
 #! /bin/bash -ex
 # Be in ~/trees/laniakea directory, be sure @import directories are present.
-# python -u -m laniakea ec2 -region=us-east-1 -images ~/images.json -create-on-demand -tags Name=funfuzz-1604-ondemand-201804 -image-name funfuzz-ondemand-ebs -ebs-volume-delete-on-termination -ebs-size 96 -root-device-type ebs -userdata laniakea/userdata/ec2/funfuzz.sh
+# python -u -m laniakea ec2 -region=us-east-1 -images ~/images.json -create-on-demand -tags Name=funfuzz-1604-ondemand-201805 -image-name funfuzz-ondemand-ebs -ebs-volume-delete-on-termination -ebs-size 96 -root-device-type ebs -userdata laniakea/userdata/ec2/funfuzz.sh
 # Stop the instance, create an AMI, copy the AMI, then update EC2SpotManager
 export DEBIAN_FRONTEND=noninteractive  # Bypass ncurses configuration screens
 
@@ -19,8 +19,8 @@ echo "deb-src http://apt.llvm.org/xenial/ llvm-toolchain-xenial-6.0 main" >> /et
 
 apt-get --yes --quiet update
 apt-get --yes --quiet dist-upgrade
-# Check using `hg --cwd ~/trees/mozilla-central/ diff -r 781485c695e1:00bdc9451be6 python/mozboot/mozboot/debian.py`
-# Retrieved on 2018-04-03: https://hg.mozilla.org/mozilla-central/file/00bdc9451be6/python/mozboot/mozboot/debian.py
+# Check using `hg --cwd ~/trees/mozilla-central/ diff -r 00bdc9451be6:a91ca6e5ca82 python/mozboot/mozboot/debian.py`
+# Retrieved on 2018-05-04: https://hg.mozilla.org/mozilla-central/file/a91ca6e5ca82/python/mozboot/mozboot/debian.py
 apt-get --yes --quiet install autoconf2.13 build-essential ccache python-dev python-pip python-setuptools unzip uuid zip
 apt-get --yes --quiet install libasound2-dev libcurl4-openssl-dev libdbus-1-dev libdbus-glib-1-dev libgconf2-dev
 apt-get --yes --quiet install libgtk2.0-dev libgtk-3-dev libpulse-dev libx11-xcb-dev libxt-dev
@@ -41,9 +41,9 @@ apt-get --yes --quiet install lldb-6.0 llvm-6.0 llvm-6.0-dev llvm-6.0-doc llvm-6
 apt-get --yes --quiet install clang-format-6.0 python-clang-6.0 lld-6.0 libfuzzer-6.0-dev
 
 # Switch to GCC 6 and LLVM/Clang 6
-update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-5 10
+update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-5 10 || true  # Ignore exit code if GCC 5 does not exist
 update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-6 20
-update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-5 10
+update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-5 10 || true  # Ignore exit code if GCC 5 does not exist
 update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-6 20
 
 update-alternatives --install /usr/bin/cc cc /usr/bin/gcc 30
@@ -80,12 +80,14 @@ sudo -u ubuntu git clone https://github.com/MozillaSecurity/octo /home/ubuntu/oc
 sudo -u ubuntu git clone https://github.com/MozillaSecurity/funfuzz /home/ubuntu/funfuzz
 
 # Get more fuzzing prerequisites - have to install as root, else `hg` is not found by the rest of this script
-pip install --upgrade pip setuptools virtualenv
-pip install --upgrade pip setuptools
-pip install --upgrade mercurial
+python -m pip install --upgrade pip setuptools virtualenv
+python -m pip install --upgrade pip setuptools
+python -m pip install --upgrade mercurial
 
 # Get supporting fuzzing libraries via pip, funfuzz will be used as the "ubuntu" user later
-sudo -u ubuntu pip install --user --upgrade /home/ubuntu/funfuzz
+pushd /home/ubuntu/funfuzz/  # For requirements.txt to work properly, we have to be in the repository directory
+sudo -u ubuntu python -m pip install --user --upgrade -r /home/ubuntu/funfuzz/requirements.txt
+pushd /home/ubuntu/funfuzz/
 
 # Populate FuzzManager settings
 @import(laniakea/userdata/ec2/misc-funfuzz/fmsettings.sh)@
@@ -107,18 +109,18 @@ chown ubuntu:ubuntu /home/ubuntu/.hgrc
 
 # Clone m-c repository.
 date
-sudo -u ubuntu hg clone https://hg.mozilla.org/mozilla-central /home/ubuntu/trees/mozilla-central
-sudo -u ubuntu hg clone https://hg.mozilla.org/releases/mozilla-beta /home/ubuntu/trees/mozilla-beta
-sudo -u ubuntu hg clone https://hg.mozilla.org/releases/mozilla-esr60 /home/ubuntu/trees/mozilla-esr60
+sudo -u ubuntu hg clone --uncompressed https://hg.mozilla.org/mozilla-central /home/ubuntu/trees/mozilla-central
+sudo -u ubuntu hg clone --uncompressed https://hg.mozilla.org/releases/mozilla-beta /home/ubuntu/trees/mozilla-beta
+sudo -u ubuntu hg clone --uncompressed https://hg.mozilla.org/releases/mozilla-esr60 /home/ubuntu/trees/mozilla-esr60
 date
 
 cat << EOF > /home/ubuntu/funfuzzCronjob
 SHELL=/bin/bash
-PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games
+PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/home/ubuntu/.cargo/bin:/home/ubuntu/.local/bin
 USER=ubuntu
 LOGNAME=ubuntulog
 HOME=/home/ubuntu
-@reboot ubuntu sleep 80 ; git -C /home/ubuntu/funfuzz pull --rebase --tags ; pip install --user --upgrade /home/ubuntu/funfuzz ; python -u -m funfuzz.loop_bot -b "--random" --target-time 28800 | tee /home/ubuntu/log-loopBotPy.txt
+@reboot ubuntu sleep 80 ; git -C /home/ubuntu/funfuzz pull --rebase --tags ; pushd /home/ubuntu/funfuzz ; pip install --user --upgrade -r /home/ubuntu/funfuzz/requirements.txt ; popd ; python -u -m funfuzz.loop_bot -b "--random" --target-time 28800 | tee /home/ubuntu/log-loopBotPy.txt
 EOF
 
 chown root:root /home/ubuntu/funfuzzCronjob
@@ -148,8 +150,6 @@ export PS1="[\u@\h \d \t \W ] $ "
 
 export LD_LIBRARY_PATH=.
 export ASAN_SYMBOLIZER_PATH=/usr/bin/llvm-symbolizer
-
-PATH=$PATH:/home/ubuntu/.cargo/bin
 
 ccache -M 8G
 REOF
