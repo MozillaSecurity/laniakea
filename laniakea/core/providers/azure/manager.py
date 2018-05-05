@@ -9,15 +9,8 @@ import random
 import os.path
 import logging
 
+import azure
 import appdirs
-try:
-    import azure
-except ImportError:
-    import pip
-    try:
-        pip.main(['install', 'azure'])
-    except ValueError as msg:
-        sys.exit("Unable to install azure module")
 
 from azure.common.credentials import ServicePrincipalCredentials
 from azure.mgmt.resource import ResourceManagementClient
