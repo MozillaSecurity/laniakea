@@ -1,0 +1,16 @@
+{
+    "keys": {
+        "subscription_id":"",
+        "client_id":"",
+        "client_secret":"",
+        "tenant_id":""
+    },
+    "credentials": {
+        "username":"fuzzer",
+        "password":""
+    },
+    "aws-credentials": {
+        "aws_key_id":"",
+        "aws_secret":""
+    }
+}

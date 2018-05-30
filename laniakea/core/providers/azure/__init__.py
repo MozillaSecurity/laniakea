@@ -47,11 +47,15 @@ class AzureCommandLine(object):
                        type=str,
                        metavar='name',
                        help='Group name to be deleted.')
+        m.add_argument('-fuzzer',
+                       type=str,
+                       dest='storage_name',
+                       help='Name of fuzzer. Used to create group name.')
         m.add_argument('-azure',
                        metavar='path',
                        type=argparse.FileType(),
                        default=os.path.join(dirs.user_config_dir, 'azure.json'),
-                       help='Deployment template for Windows Azure')
+                       help='Credential configuration file.')
 
         u = parser.add_argument_group('UserData Parameters')
         u.add_argument('-template',

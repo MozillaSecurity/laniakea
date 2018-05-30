@@ -17,6 +17,12 @@
         "count": {
             "type": "int",
             "defaultValue": 1
+        },
+        "aws_key_id": {
+            "type": "string"
+        },
+        "aws_secret": {
+            "type": "string"
         }
     },
     "variables": {
@@ -148,7 +154,7 @@
                     ]
                 },
                 "protectedSettings": {
-                    "commandToExecute": "[concat('powershell -ExecutionPolicy Unrestricted -File testscript.ps1 -vmAdminUsername ', parameters('adminUsername'), ' -vmAdminPassword \"', parameters('adminPassword'), '\"')]"
+                    "commandToExecute": "[concat('powershell -ExecutionPolicy Unrestricted -File domino-launch.ps1 -vmAdminUsername ', parameters('adminUsername'), ' -vmAdminPassword \"', parameters('adminPassword'), '\"')]"
                 }
             },
             "copy": {
