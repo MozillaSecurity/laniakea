@@ -5,16 +5,28 @@
 '''
 Laniakea is a utility for managing instances at various cloud providers and aids in setting up a fuzzing cluster.
 '''
-import os
-import json
-import shutil
-import logging
-import appdirs
 import argparse
+import json
+import logging
+import os
+import shutil
 
 from .core.common import Focus
-from .core.providers.ec2 import Ec2CommandLine
-from .core.providers.azure import AzureCommandLine
+
+
+# Todo (posidron): Add modules dynamically.
+MODULES = []
+try:
+    from .core.providers.ec2 import Ec2CommandLine
+    MODULES.append(Ec2CommandLine)
+except ImportError:
+    pass
+try:
+    from .core.providers.azure import AzureCommandLine
+    MODULES.append(AzureCommandLine)
+except ImportError:
+    pass
+
 
 logger = logging.getLogger('laniakea')
 
@@ -28,6 +40,8 @@ class LaniakeaCommandLine(object):
 
     @classmethod
     def parse_args(cls):
+        import appdirs
+
         # Initialize configuration and userdata directories.
         dirs = appdirs.AppDirs('laniakea', 'Mozilla Security')
         if not os.path.isdir(dirs.user_config_dir):
@@ -47,9 +61,8 @@ class LaniakeaCommandLine(object):
                                            title='Laniakea Cloud Providers',
                                            metavar='')
 
-        # Todo (posidron): Add modules dynamically.
-        Ec2CommandLine.add_arguments(subparsers, dirs)
-        AzureCommandLine.add_arguments(subparsers, dirs)
+        for module in MODULES:
+            module.add_arguments(subparsers, dirs)
 
         base = parser.add_argument_group('Laniakea Base Parameter')
         base.add_argument('-verbosity',
