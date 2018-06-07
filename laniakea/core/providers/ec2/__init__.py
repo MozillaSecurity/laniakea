@@ -21,7 +21,7 @@ class Ec2CommandLine(object):
     Sub command-line interface for the Amazon EC2 provider.
     """
     HOME = os.path.dirname(os.path.abspath(__file__))
-    VERSION = 0.8
+    VERSION = 1.0.0
 
     @classmethod
     def add_arguments(cls, subparsers, dirs):
