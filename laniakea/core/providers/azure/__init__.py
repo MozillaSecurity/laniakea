@@ -17,7 +17,7 @@ class AzureCommandLine(object):
     Sub command-line interface for the Microsoft Azure provider.
     """
     HOME = os.path.dirname(os.path.abspath(__file__))
-    VERSION = 0.1
+    VERSION = 1.0.0
 
     @classmethod
     def add_arguments(cls, subparsers, dirs):
