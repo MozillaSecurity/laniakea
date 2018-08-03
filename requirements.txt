@@ -1,4 +1,6 @@
 appdirs==1.4.3
 azure==3.0.0
 boto==2.48.0
+packet-python
+requests
 pytest

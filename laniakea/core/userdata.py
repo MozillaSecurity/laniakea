@@ -3,11 +3,19 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 import re
+import os
 import logging
 
 from laniakea.core.common import String
 
 logger = logging.getLogger("laniakea")
+
+
+class UserDataException(Exception):
+    """Exception class for Packet Manager."""
+
+    def __init(self, message):
+        super().__init__(message)
 
 
 class UserData (object):
@@ -18,6 +26,17 @@ class UserData (object):
         """Utility function which transform k=v strings from the command-line into a dict.
         """
         return dict(kv.split('=', 1) for kv in arg)
+
+    @staticmethod
+    def parse_only_criterias(conditions):
+        result = {}
+        for kv in conditions:
+            k, v = kv.split('=', 1)
+            if "," in v:
+                result[k] = v.split(',', 1)
+            else:
+                result[k] = [v]
+        return result
 
     @staticmethod
     def convert_str_to_int(arg):
@@ -70,7 +89,7 @@ class UserData (object):
         return userdata
 
     @staticmethod
-    def handle_import_tags(userdata):
+    def handle_import_tags(userdata, import_root):
         """Handle @import(filepath)@ tags in a UserData script.
 
         :param userdata: UserData script content.
@@ -84,7 +103,12 @@ class UserData (object):
 
         for filepath in imports:
             logger.info('Processing "import" of %s', filepath)
-            with open(filepath) as fp:
-                content = fp.read()
-                userdata = userdata.replace('@import(%s)@' % filepath, content)
+            import_path = os.path.join(import_root, filepath)
+            try:
+                with open(import_path) as fo:
+                    content = fo.read()
+                    userdata = userdata.replace('@import(%s)@' % filepath, content)
+            except FileNotFoundError:
+                raise UserDataException('Import path {} not found.'.format(import_path))
+
         return userdata
