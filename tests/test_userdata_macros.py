@@ -2,24 +2,15 @@
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
-'''
-Tests
-
-@author:     Christian Holler (:decoder)
-
-@license:
-
-This Source Code Form is subject to the terms of the Mozilla Public
-License, v. 2.0. If a copy of the MPL was not distributed with this
-file, You can obtain one at http://mozilla.org/MPL/2.0/.
-
-@contact:    choller@mozilla.com
-'''
-
+"""
+Tests for UserData.
+"""
 from collections import OrderedDict
-import unittest
+
+import pytest
 
 from laniakea.core.userdata import UserData
+
 
 test_macros = OrderedDict()
 test_macros["FOO"] = "FOOVAL"
@@ -72,7 +63,6 @@ export BAZ="BAZVAL"
 # End
 """
 
-
 userdata_test_macro_docker = """
 #!/bin/bash
 
@@ -94,19 +84,11 @@ docker run -e 'FOO=FOOVAL' -e 'BAR=BARVAL' -e 'BAZ=BAZVAL' image
 """
 
 
-class LaniakeaTestMacroReplacement(unittest.TestCase):
-    def runTest(self):
-        self.assertEqual(UserData.handle_tags(userdata_test_macros, test_macros),
-                         userdata_test_macros_expected)
+def test_macro_replacement():
+    assert UserData.handle_tags(userdata_test_macros, test_macros) == userdata_test_macros_expected
 
+def test_macro_list_export():
+    assert UserData.handle_tags(userdata_test_macro_export, test_macros) == userdata_test_macro_export_expected
 
-class LaniakeaTestMacroListExport(unittest.TestCase):
-    def runTest(self):
-        self.assertEqual(UserData.handle_tags(userdata_test_macro_export, test_macros),
-                         userdata_test_macro_export_expected)
-
-
-class LaniakeaTestMacroListDocker(unittest.TestCase):
-    def runTest(self):
-        self.assertEqual(UserData.handle_tags(userdata_test_macro_docker, test_macros),
-                         userdata_test_macro_docker_expected)
+def test_macro_list_docker():
+    assert UserData.handle_tags(userdata_test_macro_docker, test_macros) == userdata_test_macro_docker_expected
