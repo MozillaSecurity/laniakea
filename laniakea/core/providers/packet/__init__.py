@@ -15,7 +15,7 @@ from .manager import PacketManager, PacketManagerException
 logger = logging.getLogger('laniakea')
 
 
-class PacketCommandLine(object):
+class PacketCommandLine:
     """
     Sub command-line interface for the Packet provider.
     """
@@ -31,9 +31,9 @@ class PacketCommandLine(object):
             help='Packet Bare Metal',
             formatter_class=lambda prog: argparse.ArgumentDefaultsHelpFormatter(prog, max_help_position=40, width=120))
 
-        m = parser.add_argument_group('Mandatory Packet Parameters')
+        m = parser.add_argument_group('Mandatory Packet Parameters') # pylint: disable=invalid-name
 
-        g = m.add_mutually_exclusive_group(required=False)
+        g = m.add_mutually_exclusive_group(required=False) # pylint: disable=invalid-name
         g.add_argument('-create-demand',
                        action='store_true',
                        help='Create an on demand based bare metal device instance.')
@@ -60,7 +60,7 @@ class PacketCommandLine(object):
                        metavar='n',
                        help='Terminate active instances.')
 
-        o = parser.add_argument_group('Optional Parameters')
+        o = parser.add_argument_group('Optional Parameters') # pylint: disable=invalid-name
         o.add_argument('-create-volume',
                        nargs='+',
                        type=str,
@@ -106,7 +106,7 @@ class PacketCommandLine(object):
                        metavar='seq',
                        nargs='+',
                        type=str,
-                       help='Tags associtated with the instance.')
+                       help='Tags associated with the instance.')
         o.add_argument('-region',
                        metavar='region',
                        type=str,
@@ -143,7 +143,7 @@ class PacketCommandLine(object):
                        help=argparse.SUPPRESS)
 
     @classmethod
-    def main(cls, args, settings=None, userdata=None):
+    def main(cls, args, settings=None, userdata=None): # pylint: disable=too-many-branches,too-many-statements
         """Main entry point of this module.
         """
         # Packet Configuration
@@ -206,7 +206,7 @@ class PacketCommandLine(object):
 
         # Device Pre-Checks
         if (args.create_spot or args.create_demand) \
-            and (args.region and args.plan):
+                and (args.region and args.plan):
             logging.info('Validating requested remote capacities ...')
             try:
                 status = cluster.validate_capacity([
@@ -220,10 +220,10 @@ class PacketCommandLine(object):
 
         # Device Creation
         if args.create_spot \
-            and args.region \
-            and args.plan \
-            and args.max_spot_price \
-            and args.os:
+                and args.region \
+                and args.plan \
+                and args.max_spot_price \
+                and args.os:
             try:
                 devices = cluster.create_spot(project_id=project,
                                               facility=args.region,
@@ -239,9 +239,9 @@ class PacketCommandLine(object):
                 return 1
 
         if args.create_demand \
-            and args.region \
-            and args.plan \
-            and args.os:
+                and args.region \
+                and args.plan \
+                and args.os:
             try:
                 devices = cluster.create_demand(project_id=project,
                                                 facility=args.region,
@@ -276,3 +276,5 @@ class PacketCommandLine(object):
             except PacketManagerException as msg:
                 logger.error(msg)
                 return 1
+
+        return 0

@@ -18,7 +18,7 @@ class UserDataException(Exception):
         super().__init__(message)
 
 
-class UserData (object):
+class UserData:
     """Utility functions for dealing with UserData scripts.
     """
     @staticmethod
@@ -30,8 +30,8 @@ class UserData (object):
     @staticmethod
     def parse_only_criterias(conditions):
         result = {}
-        for kv in conditions:
-            k, v = kv.split('=', 1)
+        for kv in conditions: # pylint: disable=invalid-name
+            k, v = kv.split('=', 1) # pylint: disable=invalid-name
             if "," in v:
                 result[k] = v.split(',', 1)
             else:
@@ -42,12 +42,10 @@ class UserData (object):
     def convert_str_to_int(arg):
         """
         """
-        # Todo: Convert certain values of keys from images.json to ints.
-        for k, v in list(arg.items()):
+        for k, v in list(arg.items()): # pylint: disable=invalid-name
             try:
                 arg[String(k)] = int(v)
-            except ValueError as e: # noqa: ignore=F841
-                # Let's assume it is a str and move on.
+            except ValueError:
                 pass
         return arg
 
@@ -57,8 +55,8 @@ class UserData (object):
         """
         macros = re.findall('@(.*?)@', userdata)
         logging.info('List of available macros:')
-        for m in macros:
-            logging.info('\t%r', m)
+        for macro in macros:
+            logging.info('\t%r', macro)
 
     @staticmethod
     def handle_tags(userdata, macros):
@@ -82,7 +80,7 @@ class UserData (object):
                 userdata = userdata.replace('@%s@' % macro_var, macro_var_exports)
             elif macro_var not in macros:
                 logging.error('Undefined variable @%s@ in UserData script', macro_var)
-                return
+                return None
             else:
                 userdata = userdata.replace('@%s@' % macro_var, macros[macro_var])
 
@@ -92,12 +90,14 @@ class UserData (object):
     def handle_import_tags(userdata, import_root):
         """Handle @import(filepath)@ tags in a UserData script.
 
+        :param import_root: Location for imports.
+        :type import_root: str
         :param userdata: UserData script content.
         :type userdata: str
         :return: UserData script with the contents of the imported files.
         :rtype: str
         """
-        imports = re.findall('@import\((.*?)\)@', userdata)
+        imports = re.findall('@import\((.*?)\)@', userdata) # pylint: disable=anomalous-backslash-in-string
         if not imports:
             return userdata
 

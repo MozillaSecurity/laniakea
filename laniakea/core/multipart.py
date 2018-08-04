@@ -11,7 +11,7 @@ from email.mime.base import MIMEBase
 from email.mime.multipart import MIMEMultipart
 
 
-class MultipartUserData(object):
+class MultipartUserData:
     """
     Combine different types of user-data scripts into a single multipart file.
     """
@@ -38,22 +38,25 @@ class MultipartUserData(object):
         msg.add_header('Content-Disposition', 'attachment', filename=os.path.basename(path))
         self.container.attach(msg)
 
-    def _add_text(self, path, subtype):
+    @staticmethod
+    def _add_text(path, subtype):
         with open(path) as fo:
             return MIMEText(fo.read(), _subtype=subtype)
 
-    def _add_base(self, path, maintype, subtype):
+    @staticmethod
+    def _add_base(path, maintype, subtype):
         with open(path, 'rb') as fo:
             msg = MIMEBase(maintype, subtype)
             msg.set_payload(fo.read())
             encoders.encode_base64(msg)
             return msg
 
-    def get_mime_type(self, path, default='text/plain'):
+    @staticmethod
+    def get_mime_type(path, default='text/plain'):
         with open(path, 'rb') as fo:
             line = fo.readline()
         mime_type = default
-        for shebang in MultipartUserData.MIME.keys():
+        for shebang in MultipartUserData.MIME:
             if line.startswith(shebang):
                 mime_type = MultipartUserData.MIME[shebang]
                 break
@@ -62,8 +65,8 @@ class MultipartUserData(object):
     def save(self, path, compress=False):
         with open(path, 'wb') as fo:
             if compress:
-                with gzip.GzipFile(fileobj=fo, filename=path) as gz:
-                    gz.write(self.container.as_string())
+                with gzip.GzipFile(fileobj=fo, filename=path) as packer:
+                    packer.write(self.container.as_string())
             else:
                 fo.write(self.container.as_string())
 

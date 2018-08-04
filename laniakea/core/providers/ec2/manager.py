@@ -2,6 +2,7 @@
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
+"""Amazon Elastic Cloud Computing API"""
 import datetime
 import logging
 import ssl
@@ -9,7 +10,6 @@ import sys
 import time
 
 logger = logging.getLogger('laniakea')
-
 
 try:
     import boto.ec2
@@ -19,7 +19,14 @@ except ImportError as msg:
     sys.exit(-1)
 
 
-class EC2Manager(object):
+class EC2ManagerException(Exception):
+    """Exception class for Azure Manager."""
+
+    def __init(self, message):
+        super().__init__(message)
+
+
+class EC2Manager:
     """
     Amazon Elastic Cloud Computing manager class.
     """
@@ -43,10 +50,10 @@ class EC2Manager(object):
         while True:
             try:
                 return func(*args, **kwargs)
-            except (boto.exception.EC2ResponseError, ssl.SSLError) as e:
+            except (boto.exception.EC2ResponseError, ssl.SSLError) as msg:
                 exception_retry_count -= 1
                 if exception_retry_count <= 0:
-                    raise e
+                    raise msg
                 time.sleep(5)
 
     def connect(self, region, **kw_params):
@@ -59,7 +66,7 @@ class EC2Manager(object):
         """
         self.ec2 = boto.ec2.connect_to_region(region, **kw_params)
         if not self.ec2:
-            raise Exception('Unable to connect to region "%s"' % region)
+            raise EC2ManagerException('Unable to connect to region "%s"' % region)
         self.remote_images.clear()
 
         if self.images and any(('image_name' in img and 'image_id' not in img) for img in self.images.values()):
@@ -85,7 +92,7 @@ class EC2Manager(object):
             self.remote_images.update({ri.name: ri.id for ri in remote_images})
             if image_name in self.remote_images:
                 return self.remote_images[image_name]
-        raise Exception('Failed to resolve AMI name "%s" to an AMI' % image_name)
+        raise EC2ManagerException('Failed to resolve AMI name "%s" to an AMI' % image_name)
 
     def create_on_demand(self,
                          instance_type='default',
@@ -96,7 +103,15 @@ class EC2Manager(object):
                          delete_on_termination=False):
         """Create one or more EC2 on-demand instances.
 
-        :param instance_type: A section name in images.json
+        :param size: Size of root device
+        :type size: int
+        :param delete_on_termination:
+        :type delete_on_termination: boolean
+        :param vol_type:
+        :type vol_type: str
+        :param root_device_type: The type of the root device.
+        :type root_device_type: str
+        :param instance_type: A section name in amazon.json
         :type instance_type: str
         :param tags:
         :type tags: dict
@@ -117,7 +132,7 @@ class EC2Manager(object):
 
         instances = []
         logger.info('Waiting for instances to become ready...')
-        while len(reservation.instances):
+        while len(reservation.instances): # pylint: disable=len-as-condition
             for i in reservation.instances:
                 if i.state == 'running':
                     instances.append(i)
@@ -141,9 +156,14 @@ class EC2Manager(object):
                              timeout=None):
         """Request creation of one or more EC2 spot instances.
 
+        :param size:
+        :param vol_type:
+        :param delete_on_termination:
+        :param root_device_type: The type of the root device.
+        :type root_device_type: str
         :param price: Max price to pay for spot instance per hour.
         :type price: float
-        :param instance_type: A section name in images.json
+        :param instance_type: A section name in amazon.json
         :type instance_type: str
         :param timeout: Seconds to keep the request open (cancelled if not fulfilled).
         :type timeout: int
@@ -179,12 +199,11 @@ class EC2Manager(object):
 
         for req in ec2_requests:
             if req.instance_id:
-                instance = None
                 instance = self.retry_on_ec2_error(self.ec2.get_only_instances, req.instance_id)[0]
 
                 if not instance:
-                    raise Exception('Failed to get instance with id %s for %s request %s'
-                                    % (req.instance_id, req.status.code, req.id))
+                    raise EC2ManagerException('Failed to get instance with id %s for %s request %s'
+                                              % (req.instance_id, req.status.code, req.id))
 
                 instances[requests.index(req.id)] = instance
 
@@ -226,9 +245,14 @@ class EC2Manager(object):
                     timeout=None):
         """Create one or more EC2 spot instances.
 
+        :param root_device_type:
+        :param size:
+        :param vol_type:
+        :param delete_on_termination:
+        :param timeout:
         :param price: Max price to pay for spot instance per hour.
         :type price: float
-        :param instance_type: A section name in images.json
+        :param instance_type: A section name in amazon.json
         :type instance_type: str
         :param tags:
         :type tags: dict
@@ -292,7 +316,8 @@ class EC2Manager(object):
 
     def _get_default_name_size(self, instance_type, size):
         """Checks if root device name/size were specified in the image definition.
-        :param instance_type: A section name in images.json.
+
+        :param instance_type: A section name in amazon.json.
         :type instance_type: str
         :param size:
         :type size: int
@@ -307,7 +332,7 @@ class EC2Manager(object):
         else:
             name = '/dev/sda1'
 
-        return (name, size)
+        return name, size
 
     def _configure_ebs_volume(self, vol_type, name, size, delete_on_termination):
         """Sets the desired root EBS size, otherwise the default EC2 value is used.
@@ -334,6 +359,7 @@ class EC2Manager(object):
     def stop(self, instances, count=0):
         """Stop each provided running instance.
 
+        :param count:
         :param instances: A list of instances.
         :type instances: list
         """
@@ -346,6 +372,7 @@ class EC2Manager(object):
     def terminate(self, instances, count=0):
         """Terminate each provided running or stopped instance.
 
+        :param count:
         :param instances: A list of instances.
         :type instances: list
         """

@@ -24,7 +24,7 @@ class PacketManagerException(Exception):
         super().__init__(message)
 
 
-class PacketConfiguration():
+class PacketConfiguration:
     """Packet configuration class.
     """
 
@@ -52,7 +52,7 @@ class PacketConfiguration():
                     raise PacketManagerException('One or more projects are not setup appropriately.')
 
 
-class PacketManager():
+class PacketManager:
     """PacketManager base class.
     """
 
@@ -90,7 +90,7 @@ class PacketManager():
         return self.manager.list_operating_systems(params)
 
     def print_operating_systems(self, operating_systems):
-        """Print method for operatin systems.
+        """Print method for operating systems.
         """
         for _os in operating_systems:
             print('{}: {}'.format(_os.name, _os.slug))
@@ -151,21 +151,21 @@ class PacketManager():
         """
         for device in devices:
             print('ID: {} OS: {} IP: {} State: {} ({}) Tags: {}' \
-                .format(device.id,
-                        device.operating_system.slug,
-                        self.get_public_ip(device.ip_addresses),
-                        device.state,
-                        'spot' if device.spot_instance else 'on-demand',
-                        device.tags))
+                  .format(device.id,
+                          device.operating_system.slug,
+                          self.get_public_ip(device.ip_addresses),
+                          device.state,
+                          'spot' if device.spot_instance else 'on-demand',
+                          device.tags))
 
     @staticmethod
-    def filter(criterias, devices):
+    def filter(criterias, devices): # pylint: disable=too-many-branches
         """Filter a device by criterias on the root level of the dictionary.
         """
         if not criterias:
             return devices
         result = []
-        for device in devices:
+        for device in devices: # pylint: disable=too-many-nested-blocks
             for criteria_name, criteria_values in criterias.items():
                 if criteria_name in device.keys():
                     if isinstance(device[criteria_name], list):
@@ -197,7 +197,8 @@ class PacketManager():
         """
         for addr in addresses:
             if addr['public'] and addr['address_family'] == version:
-                return addr['address']
+                return addr.get('address')
+        return None # pylint would complain about inconsistent-return-statements.
 
     def validate_capacity(self, servers):
         """Validates if a deploy can be fulfilled.
@@ -239,8 +240,8 @@ class PacketManager():
         tags = {} if tags is None else tags
         hostname = self.get_random_hostname() if hostname is None else hostname
         devices = []
-        for i in range(1, count+1):
-            new_hostname = hostname if count == 1 else hostname  + '-' + str(i)
+        for i in range(1, count + 1):
+            new_hostname = hostname if count == 1 else hostname + '-' + str(i)
             self.logger.info('Adding to project %s: %s, %s, %s, %s, %r',
                              project_id,
                              new_hostname,
@@ -276,8 +277,8 @@ class PacketManager():
         tags = {} if tags is None else tags
         hostname = self.get_random_hostname() if hostname is None else hostname
         devices = []
-        for i in range(1, count+1):
-            new_hostname = hostname if count == 1 else hostname  + '-' + str(i)
+        for i in range(1, count + 1):
+            new_hostname = hostname if count == 1 else hostname + '-' + str(i)
             try:
                 self.logger.info('Adding to project %s: %s, %s, %f, %s, %s, %r',
                                  project_id,

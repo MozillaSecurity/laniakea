@@ -2,15 +2,7 @@
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
-import re
-import sys
-import json
-import random
-import os.path
 import logging
-
-import azure
-import appdirs
 
 from azure.common.credentials import ServicePrincipalCredentials
 from azure.mgmt.resource import ResourceManagementClient
@@ -19,7 +11,14 @@ from azure.mgmt.resource.resources.models import DeploymentMode
 logger = logging.getLogger('laniakea')
 
 
-class AzureManager(object):
+class AzureManagerException(Exception):
+    """Exception class for Azure Manager."""
+
+    def __init(self, message):
+        super().__init__(message)
+
+
+class AzureManager:
     """
     Microsoft Azure manager class.
     """
@@ -46,7 +45,7 @@ class AzureManager(object):
 
     def connect(self):
         if self.settings is None:
-            raise Exception('No configuration attached.')
+            raise AzureManagerException('No configuration attached.')
 
         credentials = ServicePrincipalCredentials(
             client_id=self.settings['keys']['client_id'],
@@ -54,11 +53,14 @@ class AzureManager(object):
             tenant=self.settings['keys']['tenant_id']
         )
 
-        self.client = ResourceManagementClient(credentials, self.settings['keys']['subscription_id'])
+        try:
+            self.client = ResourceManagementClient(credentials, self.settings['keys']['subscription_id'])
+        except Exception as msg:
+            raise AzureManagerException(msg)
 
     def create(self, parameters, group_name, template):
         if self.client is None:
-            raise Exception("No connected to a Resource Management Client.")
+            raise Exception('No connected to a Resource Management Client.')
 
         deployment_properties = {
             'mode': DeploymentMode.incremental,
@@ -74,7 +76,7 @@ class AzureManager(object):
 
         deployment_async_operation = self.client.deployments.create_or_update(
             group_name,
-            "{}-deploy1".format(group_name),
+            '{}-deploy1'.format(group_name),
             deployment_properties
         )
 
@@ -85,6 +87,6 @@ class AzureManager(object):
 
     def terminate(self, resource_group):
         if self.client is None:
-            raise Exception("Not connected to a Resource Management Client.")
+            raise Exception('Not connected to a Resource Management Client.')
         delete_async_operation = self.client.resource_groups.delete(resource_group)
         delete_async_operation.wait()

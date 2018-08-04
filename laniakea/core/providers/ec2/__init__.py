@@ -2,6 +2,7 @@
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
+"""Amazon Elastic Cloud Computing CLI"""
 import os
 import json
 import logging
@@ -9,14 +10,14 @@ import argparse
 
 import boto.exception
 
-from laniakea.core.common import Focus
+from laniakea.core.common import Focus, String
 from laniakea.core.userdata import UserData
-from .manager import EC2Manager
+from .manager import EC2Manager, EC2ManagerException
 
 logger = logging.getLogger('laniakea')
 
 
-class Ec2CommandLine(object):
+class Ec2CommandLine:
     """
     Sub command-line interface for the Amazon EC2 provider.
     """
@@ -25,15 +26,16 @@ class Ec2CommandLine(object):
 
     @classmethod
     def add_arguments(cls, subparsers, dirs):
+        """Argument parser of this module.
+        """
         parser = subparsers.add_parser(
             'ec2',
             help='Amazon Elastic Cloud Computing',
-            formatter_class=lambda prog:
-                argparse.ArgumentDefaultsHelpFormatter(prog, max_help_position=30, width=100))
+            formatter_class=lambda prog: argparse.ArgumentDefaultsHelpFormatter(prog, max_help_position=40, width=120))
 
-        m = parser.add_argument_group('Mandatory EC2 Parameters')
+        m = parser.add_argument_group('Mandatory EC2 Parameters') # pylint: disable=invalid-name
 
-        g = m.add_mutually_exclusive_group(required=False)
+        g = m.add_mutually_exclusive_group(required=False) # pylint: disable=invalid-name
         g.add_argument('-create-on-demand',
                        action='store_true',
                        help='Create on-demand instances.')
@@ -72,7 +74,7 @@ class Ec2CommandLine(object):
                        action='store_true',
                        help='Print the UserData script to stdout.')
 
-        u = parser.add_argument_group('UserData Parameters')
+        u = parser.add_argument_group('UserData Parameters') # pylint: disable=invalid-name
         u.add_argument('-userdata',
                        metavar='path',
                        type=argparse.FileType(),
@@ -85,7 +87,7 @@ class Ec2CommandLine(object):
                        type=str,
                        help='Custom macros for the UserData.')
 
-        o = parser.add_argument_group('Optional Parameters')
+        o = parser.add_argument_group('Optional Parameters') # pylint: disable=invalid-name
         o.add_argument('-tags',
                        metavar='k=v',
                        nargs='+',
@@ -101,7 +103,7 @@ class Ec2CommandLine(object):
         o.add_argument('-images',
                        metavar='path',
                        type=argparse.FileType(),
-                       default=os.path.join(dirs.user_config_dir, 'images.json'),
+                       default=os.path.join(dirs.user_config_dir, 'amazon.json'),
                        help='EC2 image definitions.')
 
         o.add_argument('-image-name',
@@ -166,7 +168,7 @@ class Ec2CommandLine(object):
                        help=argparse.SUPPRESS)
 
     @classmethod
-    def main(cls, args, settings):
+    def main(cls, args, settings=None, userdata=None): # pylint: disable=too-many-branches,too-many-statements
         args.only = UserData.convert_pair_to_dict(args.only or '')
         args.tags = UserData.convert_pair_to_dict(args.tags or '')
         args.image_args = UserData.convert_str_to_int(UserData.convert_pair_to_dict(args.image_args or {}))
@@ -178,25 +180,10 @@ class Ec2CommandLine(object):
             logger.error('Unable to parse %s: %s', args.images.name, msg)
             return 1
 
-        logger.info('Reading user data script content from %s', Focus.info(args.userdata.name))
-        userdata = args.userdata.read()
-        if args.list_userdata_macros:
-            UserData.list_tags(userdata)
-            return 0
-        userdata = UserData.handle_import_tags(userdata)
-
-        args.userdata_macros = UserData.convert_pair_to_dict(args.userdata_macros or '')
-        userdata = UserData.handle_tags(userdata, args.userdata_macros)
-
-        if args.print_userdata:
-            logger.info('Combined user-data script:')
-            print(userdata)
-            return 0
-
         if not userdata:
             return 1
 
-        images[args.image_name]['user_data'] = userdata
+        images[args.image_name]['user_data'] = userdata.encode('utf-8')
 
         if args.image_args:
             logger.info('Setting custom image parameters for upcoming instances: %r ', args.image_args)
@@ -211,7 +198,7 @@ class Ec2CommandLine(object):
         cluster = EC2Manager(images)
         try:
             cluster.connect(profile_name=args.profile, region=args.region)
-        except Exception as msg:
+        except EC2ManagerException as msg:
             logger.error(msg)
             return 1
 
@@ -288,3 +275,5 @@ class Ec2CommandLine(object):
                 logger.error(msg)
                 return 1
             logger.info('Executing remote commands on %d instances.', len(hosts))
+
+        return 0
