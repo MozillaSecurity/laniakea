@@ -12,6 +12,7 @@ branches:
   only:
   - master
 install:
+- pip install pylint
 - pip install -r requirements.txt
 - pip install -e .
 script:
