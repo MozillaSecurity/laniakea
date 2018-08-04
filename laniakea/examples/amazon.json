@@ -1,17 +1,17 @@
 {
     "default": {
-        "image_id":"ami-6794b657",
+        "image_id": "ami-",
         "instance_type": "c3.2xlarge",
         "security_groups": ["laniakea"],
-        "key_name": "cdiehlAWSFuzz",
+        "key_name": "",
         "min_count": 3,
         "max_count": 3
     },
     "peach": {
-        "image_id":"ami-6794b657",
+        "image_id": "ami-",
         "instance_type": "c3.2xlarge",
         "security_groups": ["laniakea"],
-        "key_name": "cdiehlAWSFuzz",
+        "key_name": "",
         "count": 3
     }
 }
