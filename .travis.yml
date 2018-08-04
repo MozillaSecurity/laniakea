@@ -1,29 +1,29 @@
 language: python
 env:
-    global:
-        # This is needed so we don't load Travis-CI's boto config, see:
-        # https://github.com/boto/boto/issues/3741
-        - BOTO_CONFIG=/tmp/nowhere
+  global:
+  - BOTO_CONFIG=/tmp/nowhere
 matrix:
-    include:
-        - python: 2.7
-          env: TOXENV=py27
-        - python: 3.7
-          env: TOXENV=py37
+  include:
+  - python: 2.7
+    env: TOXENV=py27
+  - python: 3.7
+    env: TOXENV=py37
 branches:
-    only:
-        - master
+  only:
+  - master
 install:
-    - pip install tox
-    - pip install -r requirements.txt
-    - pip install -e .
+- pip install -r requirements.txt
+- pip install -e .
 script:
-    - pylint laniakea
-    - tox
+- pylint laniakea
+- tox
 deploy:
-    provider: pypi
-    user: mozillasecurity
-    password:
-        secure: wYc7AFbw8u0mN0DznvZxOiulZ0Tm1TPAReUni4evVMpaYyv6AcL6yglSoGfF+0qiUMgJxY9JJGTBnhXs5GUZSbH9dZylTHQmkA+IOcyph+iUsJ263l3eAuGYhdxCeLjNXzQGQK6mS20MqVwThZgn5eHUixhgKrHGZIHCjaCMwpI=
-    on:
-        tags: true
+  provider: pypi
+  user: mozillasecurity
+  password:
+    secure: wYc7AFbw8u0mN0DznvZxOiulZ0Tm1TPAReUni4evVMpaYyv6AcL6yglSoGfF+0qiUMgJxY9JJGTBnhXs5GUZSbH9dZylTHQmkA+IOcyph+iUsJ263l3eAuGYhdxCeLjNXzQGQK6mS20MqVwThZgn5eHUixhgKrHGZIHCjaCMwpI=
+  on:
+    tags: true
+notifications:
+  slack:
+    secure: duNeJwuDMG1ZVi26dipUzullK+Dd6nsBIq4d+72KWKD2R7qjyZP4bFBFRFzkSHVqohl/meD3EYPXZICy6RoDWaxPQcBK9oL6KZAlEnsyueRWhunsMDAyOuhyAaRD1FhL717eeyB0dygU0iaTDujpOghDfRY99C9KeWXkzmqD0ss=
