@@ -16,13 +16,16 @@ Laniakea is a utility for managing instances at various cloud providers and aids
 
 * [Setup](#Setup)
 * [Laniakea Help Menu](#LaniakeaHelpMenu)
+* [Packet Bare Metal](#PacketBareMetal)
+  * [Basic Usage Example](#BasicPacketUsageExamples)
+  * [Packet Help Menu](#PacketHelpMenu)
 * [Amazon EC2](#AmazonEC2)
   * [Basic Usage Examples](#BasicUsageExamples)
   * [EC2 Help Menu](#EC2HelpMenu)
-* [UserData Reference](#UserDataReference)
 * [Azure](#Azure)
-  * [Basic usage Examples](#BasicAzureUsageExamples)
+  * [Basic Usage Examples](#BasicAzureUsageExamples)
   * [Azure Help Menu](#AzureHelpMenu)
+* [UserData Reference](#UserDataReference)
 * [Extending Laniakea](#ExtendingLaniakea)
 
 
@@ -32,26 +35,112 @@ Laniakea is a utility for managing instances at various cloud providers and aids
 pip install laniakea
 ```
 
+or
+
+```bash
+python3 -m pip install -r requirements.txt
+python3 -m laniakea -h
+```
+
 <a name="LaniakeaHelpMenu"><h2>Laniakea Help Menu</h2></a>
 
 ```
-usage: laniakea [-verbosity {1,2,3,4,5}] [-settings path]  ...
+usage: laniakea [-verbosity {1,2,3,4,5}] [-settings path] [-userdata path] [-list-userdata-macros] [-print-userdata]
+                [-userdata-macros k=v [k=v ...]]
+                ...
 
-Laniakea Runtime v0.8
+Laniakea Runtime v0.9
 
 Laniakea Cloud Providers:
   Use -h to see the help menu of each provider.
 
-    ec2                   Amazon Elastic Cloud Computing
-    azure                 Microsoft Azure
+
+    azure                         Microsoft Azure
+    packet                        Packet Bare Metal
+    ec2                           Amazon Elastic Cloud Computing
 
 Laniakea Base Parameters:
-  -verbosity {1,2,3,4,5}  Log sensitivity. (default: 2)
-  -settings path          Laniakea core settings.
+  -verbosity {1,2,3,4,5}          Log sensitivity. (default: 2)
+  -settings path                  Laniakea core settings. (default: /Users/posidron/Library/Application
+                                  Support/laniakea/laniakea.json)
+
+UserData Parameters:
+  -userdata path                  UserData script for the provisioning process. (default: None)
+  -list-userdata-macros           List available macros. (default: False)
+  -print-userdata                 Print the UserData script to stdout. (default: False)
+  -userdata-macros k=v [k=v ...]  Custom macros for the UserData. (default: None)
 
 The exit status is 0 for non-failures and 1 for failures.
 ```
 
+<a name="PacketBareMetal"><h2>Packet Bare Metal</h2></a>
+
+Add your Packet auth token and a project name with the associated project id to the `packet.json` configuration file.
+
+```json
+cat laniakea/examples/packet.json
+{
+    "auth_token": "YOUR_AUTH_TOKEN",
+    "projects": {
+        "fuzzing": "YOUR_PROJECT_ID"
+    }
+}
+```
+<a name="BasicPacketUsageExamples"><h3>Basic Usage Examples</h3></a>
+
+Creating either on-demand (`-create-demand`) or spot (`-create-spot`) devices:
+```bash
+laniakea packet -project fuzzing -create-demand -tags fuzzers -count 3
+```
+
+Show created devices by applying a tag based filter:
+```bash
+laniakea packet -project fuzzing -list-devices -only tags=fuzzers
+```
+
+Terminate all devices, matching the filter criteria:
+```bash
+laniakea packet -project fuzzing -terminate -only tags=fuzzers
+```
+
+
+<a name="PacketHelpMenu"><h3>Packet Help Menu</h3></a>
+
+```
+usage: laniakea packet [-h] [-create-demand | -create-spot | -reboot [n] | -stop [n] | -terminate [n]]
+                       [-create-volume s [s ...]] [-conf path] [-list-projects] [-list-plans] [-list-operating-systems]
+                       [-list-spot-prices] [-list-facilities] [-list-devices] [-project project] [-tags seq [seq ...]]
+                       [-region region] [-os name] [-plan name] [-max-spot-price #] [-count #] [-only k=v [k=v ...]]
+
+optional arguments:
+  -h, --help                show this help message and exit
+
+Mandatory Packet Parameters:
+  -create-demand            Create an on demand based bare metal device instance. (default: False)
+  -create-spot              Create a spot price based bare metal device instance. (default: False)
+  -reboot [n]               Reboot active instances. (default: None)
+  -stop [n]                 Stop active instances. (default: None)
+  -terminate [n]            Terminate active instances. (default: None)
+
+Optional Parameters:
+  -create-volume s [s ...]  Create storage: <plan> <size> <region> <description> (default: None)
+  -conf path                Packet configuration (default: /Users/posidron/Library/Application
+                            Support/laniakea/examples/packet/packet.json)
+  -list-projects            List available projects. (default: False)
+  -list-plans               List available plans. (default: False)
+  -list-operating-systems   List available operating systems. (default: False)
+  -list-spot-prices         List spot prices. (default: False)
+  -list-facilities          List available facilities. (default: False)
+  -list-devices             List devices under given project name. (default: False)
+  -project project          The project to perform operations on. (default: fuzzing)
+  -tags seq [seq ...]       Tags associated with the instance. (default: None)
+  -region region            The facility in which the instance is going to run. (default: nrt1)
+  -os name                  The operating system for the created instance. (default: ubuntu_18_04)
+  -plan name                The instance type to run. (default: baremetal_0)
+  -max-spot-price #         Max price for spot instances. (default: 0.05)
+  -count #                  The amount of devices to be spawned. (default: 1)
+  -only k=v [k=v ...]       Filter instances by criterias. (default: None)
+```
 
 <a name="AmazonEC2"><h2>Amazon EC2</h2></a>
 
@@ -62,7 +151,7 @@ aws_access_key_id = <your_access_key_id>
 aws_secret_access_key = <your_secret_key>
 ```
 
-Complement the provided `images.json` file with your AWS AMI information (see `laniakea -h` for location).
+Complement the provided `amazon.json` file with your AWS AMI information (see `laniakea -h` for location).
 ```json
 # Example: an on-demand instance
 "default": {
@@ -140,52 +229,47 @@ python3 -m laniakea ec2 -h
 ```
 
 ```
-usage: laniakea ec2 [-h] [-create-on-demand | -create-spot | -stop [n] | -terminate [n] | -status |
-                    -run cmd | -list-userdata-macros | -print-userdata] [-userdata path]
-                    [-userdata-macros k=v [k=v ...]] [-tags k=v [k=v ...]] [-only k=v [k=v ...]]
-                    [-images path] [-image-name str] [-image-args k=v [k=v ...]] [-profile str]
-                    [-max-spot-price #] [-region REGION] [-zone ZONE]
-                    [-root-device-type {ebs,instance_store}] [-ebs-size EBS_SIZE]
-                    [-ebs-volume-type {gp2,io1,standard}] [-ebs-volume-delete-on-termination]
+usage: laniakea ec2 [-h] [-create-on-demand | -create-spot | -stop [n] | -terminate [n] | -status | -run cmd |
+                    -list-userdata-macros | -print-userdata] [-userdata path] [-userdata-macros k=v [k=v ...]]
+                    [-tags k=v [k=v ...]] [-only k=v [k=v ...]] [-images path] [-image-name str]
+                    [-image-args k=v [k=v ...]] [-profile str] [-max-spot-price #] [-region REGION] [-zone ZONE]
+                    [-root-device-type {ebs,instance_store}] [-ebs-size EBS_SIZE] [-ebs-volume-type {gp2,io1,standard}]
+                    [-ebs-volume-delete-on-termination]
 
 optional arguments:
-  -h, --help                  show this help message and exit
+  -h, --help                            show this help message and exit
 
 Mandatory EC2 Parameters:
-  -create-on-demand           Create on-demand instances. (default: False)
-  -create-spot                Create spot instances. (default: False)
-  -stop [n]                   Stop active instances. (default: None)
-  -terminate [n]              Terminate active instances. (default: None)
-  -status                     List current state of instances. (default: False)
-  -run cmd                    Execute commands via SSH (default: )
-  -list-userdata-macros       List available macros. (default: False)
-  -print-userdata             Print the UserData script to stdout. (default: False)
+  -create-on-demand                     Create on-demand instances. (default: False)
+  -create-spot                          Create spot instances. (default: False)
+  -stop [n]                             Stop active instances. (default: None)
+  -terminate [n]                        Terminate active instances. (default: None)
+  -status                               List current state of instances. (default: False)
+  -run cmd                              Execute commands via SSH (default: )
+  -list-userdata-macros                 List available macros. (default: False)
+  -print-userdata                       Print the UserData script to stdout. (default: False)
 
 UserData Parameters:
-  -userdata path              UserData script for cloud-init process. (default:
-                              /Users/posidron/Library/Application
-                              Support/laniakea/userdata/ec2/default.sh)
-  -userdata-macros k=v [k=v ...]
-                              Custom macros for the UserData. (default: None)
+  -userdata path                        UserData script for cloud-init process. (default:
+                                        /Users/posidron/Library/Application Support/laniakea/userdata/ec2/default.sh)
+  -userdata-macros k=v [k=v ...]        Custom macros for the UserData. (default: None)
 
 Optional Parameters:
-  -tags k=v [k=v ...]         Assign tags to instances. (default: None)
-  -only k=v [k=v ...]         Filter instances by criterias. (default: None)
-  -images path                EC2 image definitions. (default: /Users/posidron/Library/Application
-                              Support/laniakea/images.json)
-  -image-name str             Name of image definition. (default: default)
-  -image-args k=v [k=v ...]   Custom image arguments. (default: None)
-  -profile str                AWS profile name in the .boto configuration. (default: laniakea)
-  -max-spot-price #           Max price for spot instances. (default: 0.05)
-  -region REGION              EC2 region name. (default: us-west-2)
-  -zone ZONE                  EC2 placement zone. (default: None)
+  -tags k=v [k=v ...]                   Assign tags to instances. (default: None)
+  -only k=v [k=v ...]                   Filter instances by criterias. (default: None)
+  -images path                          EC2 image definitions. (default: /Users/posidron/Library/Application
+                                        Support/laniakea/amazon.json)
+  -image-name str                       Name of image definition. (default: default)
+  -image-args k=v [k=v ...]             Custom image arguments. (default: None)
+  -profile str                          AWS profile name in the .boto configuration. (default: laniakea)
+  -max-spot-price #                     Max price for spot instances. (default: 0.05)
+  -region REGION                        EC2 region name. (default: us-west-2)
+  -zone ZONE                            EC2 placement zone. (default: None)
   -root-device-type {ebs,instance_store}
-                              The root device type. (default: ebs)
-  -ebs-size EBS_SIZE          The root disk space size. (default: None)
-  -ebs-volume-type {gp2,io1,standard}
-                              The root disk volume type. (default: gp2)
-  -ebs-volume-delete-on-termination
-                              Delete the root EBS volume on termination. (default: False)
+                                        The root device type. (default: ebs)
+  -ebs-size EBS_SIZE                    The root disk space size. (default: None)
+  -ebs-volume-type {gp2,io1,standard}   The root disk volume type. (default: gp2)
+  -ebs-volume-delete-on-termination     Delete the root EBS volume on termination. (default: False)
 ```
 
 <a name="UserDataReference"><h2>UserData Reference</h2></a>
@@ -200,7 +284,7 @@ You can use the `-list-userdata-macros` option to print out available macros ins
 <a name="Azure"><h2>Azure</h2></a>
 
 Laniakea supports supports Azure by creating Virtual Machine instances using Azure Resource Management (ARM) Templates. These are JSON files that describe how a Virtual Machine should be
-set up and deployed. This includes parameters such as: machine size, OS parameters, configuration scripts, etc. An example template can be found in the laniaka/examples/azure/template.json. An example 
+set up and deployed. This includes parameters such as: machine size, OS parameters, configuration scripts, etc. An example template can be found in the laniaka/examples/azure/template.json. An example
 configuration script can be found at http://www.github.com/rforbes/azure-configs/deploy-domino.ps1
 
 When we create resources in Azure we start by creating a Resource Group. Azure uses the Resource Group to store all the resources that are created. This includes, the Virtual machine, any storage for the VM, network interfaces, and IP addresses. We use the -fuzzer flag to set the name of the Resource Group. The name cannot be longer than 12 characters. In order to delete a pool, we delete the Resource Group.
@@ -217,7 +301,7 @@ aws_secret_access_key = <your_secret_key>
 Create a azure.json file. This file contains the secrets required for accessing and launching in Azure, the username and password of the VMs being created, and the AWS credentials for accessing
 credstash. Below is example:
 
-Complement the provided `images.json` file with your AWS AMI information (see `laniakea -h` for location).
+Complement the provided `amazon.json` file with your AWS AMI information (see `laniakea -h` for location).
 ```json
 {
     "keys": {
@@ -238,7 +322,7 @@ Complement the provided `images.json` file with your AWS AMI information (see `l
 ```
 The subscription ID, client ID, client secret, and tenant ID are all found in the Azure portal.
 
-Virtual Machine configuration happens using a powershell script that is called in the ARM template. 
+Virtual Machine configuration happens using a powershell script that is called in the ARM template.
 
 THe following section of the ARM template is where the script is set.
 
@@ -279,7 +363,7 @@ optional arguments:
 
 Mandatory Azure Parameters:
   -region name      Azure region. (default: None)
-  -count n          Number of instances to launch. (default: None)
+  -count n          Number of instances to launch. (default: 1)
   -create           Create an instance pool. (default: False)
   -delete           Delete an instance pool. (default: False)
   -group-name name  Group name to be deleted. (default: None)
