@@ -2,6 +2,7 @@
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
+"""General purpose library."""
 import os
 
 
@@ -57,32 +58,41 @@ class Focus(type):
         return Focus.format('data', msg)
 
 
-class String(object):
-    def __new__(self, u_or_str, encoding='utf-8'):
+class String:
+    """
+    """
+    def __new__(cls, u_or_str, encoding='utf-8'):
         return u_or_str if isinstance(u_or_str, str) else u_or_str.decode(encoding)
 
 
-class FlatJSON():
-    def __new__(self, y):
+class FlatJSON:
+    """
+    Converts a JSON structure to single level dict object.
+    """
+    def __new__(cls, y):
         out = dict()
 
-        def flatten(x, name=''):
-            if type(x) is dict:
-                for a in x:
-                    flatten(x[a], name + a + '.')
-            elif type(x) is list:
-                for i, a in enumerate(x):
-                    flatten(a, name + str(i) + '.')
+        def flatten(sub, name=''):
+            if isinstance(sub, dict):
+                for entry in sub:
+                    flatten(sub[entry], name + entry + '.')
+            elif isinstance(sub, list):
+                for i, entry in enumerate(sub):
+                    flatten(entry, name + str(i) + '.')
             else:
-                out[name[:-1]] = x
+                out[name[:-1]] = sub
 
         flatten(y)
         return out
 
 
 class AttributeTree(dict):
+    """
+    Converts a dict object to be accessible via dot notation.
+    """
 
     def __init__(self, value=None):
+        super().__init__()
         if value is None:
             pass
         elif isinstance(value, dict):
@@ -128,3 +138,34 @@ class AttributeTree(dict):
 
     __setattr__ = __setitem__
     __getattr__ = __getitem__
+
+
+class ModuleLoader:
+    """Custom loader for cloud provider modules.
+    """
+    def __init__(self):
+        self.modules = {}
+
+    def load(self, root, module_path):
+        """Load modules dynamically.
+        """
+        root = os.path.join(root, module_path)
+        import_name = module_path.replace(os.sep, '.')
+        packages = []
+        for entry in os.listdir(root):
+            if os.path.isdir(os.path.join(root, entry)) \
+                and os.path.exists(os.path.join(root, entry, '__init__.py')):
+                packages.append(entry)
+        for module in packages:
+            self.modules[module] = __import__('.'.join((import_name, module)), fromlist=['*'])
+        return self.modules
+
+    def command_line_interfaces(self):
+        """Return the CommandLine classes from each provider.
+        """
+        interfaces = []
+        for _, module in self.modules.items():
+            for entry in dir(module):
+                if entry.endswith('CommandLine'):
+                    interfaces.append((module, entry))
+        return interfaces

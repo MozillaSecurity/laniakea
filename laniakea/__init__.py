@@ -2,29 +2,27 @@
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
-'''
+"""
 Laniakea is a utility for managing instances at various cloud providers and aids in setting up a fuzzing cluster.
-'''
+"""
 import os
 import json
 import shutil
 import logging
-import appdirs
 import argparse
 
-from .core.common import Focus
+import appdirs
+
+from .core.common import Focus, ModuleLoader
 from .core.userdata import UserData, UserDataException
-from .core.providers.ec2 import Ec2CommandLine
-from .core.providers.azure import AzureCommandLine
-from .core.providers.packet import PacketCommandLine
 
 logger = logging.getLogger('laniakea')
 
 
-class LaniakeaCommandLine(object):
-    '''
+class LaniakeaCommandLine:
+    """
     Command-line interface for Laniakea.
-    '''
+    """
     HOME = os.path.dirname(os.path.abspath(__file__))
     VERSION = '0.9'
 
@@ -50,10 +48,14 @@ class LaniakeaCommandLine(object):
                                            title='Laniakea Cloud Providers',
                                            metavar='')
 
-        # Todo (posidron): Add modules dynamically.
-        Ec2CommandLine.add_arguments(subparsers, dirs)
-        AzureCommandLine.add_arguments(subparsers, dirs)
-        PacketCommandLine.add_arguments(subparsers, dirs)
+        modules = ModuleLoader()
+        modules.load(os.getcwd(), 'laniakea/core/providers')
+
+        for name, module in modules.modules.items():
+            globals()[name] = module
+
+        for module, cli in modules.command_line_interfaces():
+            getattr(module, cli).add_arguments(subparsers, dirs)
 
         base = parser.add_argument_group('Laniakea Base Parameters')
         base.add_argument('-verbosity',
@@ -110,7 +112,10 @@ class LaniakeaCommandLine(object):
         """
         args = cls.parse_args()
 
-        Focus.init() if args.focus else Focus.disable()
+        if args.focus:
+            Focus.init()
+        else:
+            Focus.disable()
 
         logging.basicConfig(format='[Laniakea] %(asctime)s %(levelname)s: %(message)s',
                             level=args.verbosity * 10,
@@ -149,4 +154,7 @@ class LaniakeaCommandLine(object):
             return 0
 
         if args.provider:
-            globals()[args.provider.title() + 'CommandLine']().main(args, settings, userdata)
+            provider = getattr(globals()[args.provider], args.provider.title() + 'CommandLine')
+            provider().main(args, settings, userdata)
+
+        return 0
