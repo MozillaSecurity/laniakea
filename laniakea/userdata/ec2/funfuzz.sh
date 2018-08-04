@@ -1,6 +1,6 @@
 #! /bin/bash -ex
 # Be in ~/trees/laniakea directory, be sure @import directories are present.
-# python -u -m laniakea ec2 -region=us-east-1 -images ~/images.json -create-on-demand -tags Name=funfuzz-1604-ondemand-201805 -image-name funfuzz-ondemand-ebs -ebs-volume-delete-on-termination -ebs-size 96 -root-device-type ebs -userdata laniakea/userdata/ec2/funfuzz.sh
+# python -u -m laniakea ec2 -region=us-east-1 -images ~/amazon.json -create-on-demand -tags Name=funfuzz-1604-ondemand-201805 -image-name funfuzz-ondemand-ebs -ebs-volume-delete-on-termination -ebs-size 96 -root-device-type ebs -userdata laniakea/userdata/ec2/funfuzz.sh
 # Stop the instance, create an AMI, copy the AMI, then update EC2SpotManager
 export DEBIAN_FRONTEND=noninteractive  # Bypass ncurses configuration screens
 
@@ -90,7 +90,7 @@ sudo -u ubuntu python -m pip install --user --upgrade -r /home/ubuntu/funfuzz/re
 pushd /home/ubuntu/funfuzz/
 
 # Populate FuzzManager settings
-@import(laniakea/userdata/ec2/misc-funfuzz/fmsettings.sh)@
+@import(misc-funfuzz/fmsettings.sh)@
 
 # Populate Mercurial settings.
 cat << EOF > /home/ubuntu/.hgrc

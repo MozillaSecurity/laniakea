@@ -1,14 +1,16 @@
 #!/bin/bash -ex
 
-# Essentials
+@import(common.sh)@
+
 apt-get --yes --quiet update
-apt-get --yes --quiet install python python-pip python-dev git puppet-common build-essential
+apt-get --yes --quiet install build-essential python3 python3-pip python-dev git
 
-# Fetch puppet configuration
-# mv /etc/puppet /etc/puppet.orig
-# git clone https://bitbucket.org/rimey/hello-ec2-puppetboot.git /etc/puppet
+export HOME=/home/ubuntu
+cd $HOME
 
-# Run puppet
-# puppet apply /etc/puppet/manifests/init.pp
+ssh-keyscan github.com >> $HOME/.ssh/known_hosts
 
-# Run fuzzers
+pip3 install fuzzfetch
+fuzzfetch -a -o $HOME -n firefox
+
+chown -R ubuntu:ubuntu $HOME
