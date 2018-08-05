@@ -6,13 +6,12 @@ matrix:
     - env: TOXENV=py27
     - env: TOXENV=py36
 install:
-- pip install pylint pipenv
+- pip install pipenv
 script:
-- rm requirements.txt
 - pipenv install --dev --skip-lock
-- pipenv check
-- pylint laniakea
-- tox
+- pipenv run pipenv check
+- pipenv run pylint laniakea
+- pipenv run tox
 branches:
   only:
   - master
