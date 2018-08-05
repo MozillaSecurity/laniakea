@@ -15,6 +15,3 @@ tox = "==3.1.2"
 pylint = "*"
 pytest = "*"
 pytest-cov = "*"
-
-[requires]
-python_version = "3.7"
