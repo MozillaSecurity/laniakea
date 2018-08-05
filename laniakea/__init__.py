@@ -13,10 +13,11 @@ import argparse
 
 import appdirs
 
+from .__version__ import __version__, __title__
 from .core.common import Focus, ModuleLoader
 from .core.userdata import UserData, UserDataException
 
-logger = logging.getLogger('laniakea')
+logger = logging.getLogger(__title__)
 
 
 class LaniakeaCommandLine:
@@ -24,21 +25,21 @@ class LaniakeaCommandLine:
     Command-line interface for Laniakea.
     """
     HOME = os.path.dirname(os.path.abspath(__file__))
-    VERSION = '0.9'
+    VERSION = __version__
 
     @classmethod
     def parse_args(cls):
         """Main argument parser of Laniakea.
         """
         # Initialize configuration and userdata directories.
-        dirs = appdirs.AppDirs('laniakea', 'Mozilla Security')
+        dirs = appdirs.AppDirs(__title__, 'Mozilla Security')
         if not os.path.isdir(dirs.user_config_dir):
             shutil.copytree(os.path.join(cls.HOME, 'examples'), dirs.user_config_dir)
             shutil.copytree(os.path.join(cls.HOME, 'userdata'), os.path.join(dirs.user_config_dir, 'userdata'))
 
         parser = argparse.ArgumentParser(
             description='Laniakea Runtime v{}'.format(cls.VERSION),
-            prog='laniakea',
+            prog=__title__,
             add_help=False,
             formatter_class=lambda prog: argparse.ArgumentDefaultsHelpFormatter(prog, max_help_position=40, width=120),
             epilog='The exit status is 0 for non-failures and 1 for failures.')

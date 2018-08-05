@@ -1,0 +1,20 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+appdirs = "==1.4.3"
+azure-mgmt-resource = "==1.2.2"
+azure-common = "==1.1.14"
+boto = "==2.48.0"
+packet-python = "==1.37.1"
+
+[dev-packages]
+tox = "==3.1.2"
+pylint = "*"
+pytest = "*"
+pytest-cov = "*"
+
+[requires]
+python_version = "3.7"
