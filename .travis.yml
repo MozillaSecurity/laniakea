@@ -1,10 +1,10 @@
 language: python
 python:
-  - "3.6"
+- '3.6'
 matrix:
   include:
-    - env: TOXENV=py27
-    - env: TOXENV=py36
+  - env: TOXENV=py27
+  - env: TOXENV=py36
 install:
 - pip install pipenv
 script:
@@ -19,7 +19,8 @@ deploy:
   provider: pypi
   user: mozillasecurity
   password:
-    secure: wYc7AFbw8u0mN0DznvZxOiulZ0Tm1TPAReUni4evVMpaYyv6AcL6yglSoGfF+0qiUMgJxY9JJGTBnhXs5GUZSbH9dZylTHQmkA+IOcyph+iUsJ263l3eAuGYhdxCeLjNXzQGQK6mS20MqVwThZgn5eHUixhgKrHGZIHCjaCMwpI=
+    secure: mdBZiiCszOYuliQQVeyW60aJbXNcRQ4A09SXR1GgYQcdZSMEvGPc/FffuVwkOtczhEGy9zQ62hCgxIRKf7NILew/VU/67RiEN8zXMU41nFhaW0oFBRyE4Bc8d/9WXub2B4HKZb5LUZWhn+dTJF30IEnRwfRSB7PTnqz9UhGhiSg=
+  distributions: sdist bdist_wheel
   on:
     tags: true
 notifications:
