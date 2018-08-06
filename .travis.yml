@@ -3,14 +3,10 @@ python:
 - '3.6'
 matrix:
   include:
-  - env: TOXENV=py27
   - env: TOXENV=py36
-install:
-- pip install pipenv
+before_install:
+- pip install tox
 script:
-- pipenv install --dev --skip-lock
-- pipenv run pipenv check
-- pipenv run pylint laniakea
 - pipenv run tox
 branches:
   only:
@@ -19,10 +15,11 @@ deploy:
   provider: pypi
   user: mozillasecurity
   password:
-    secure: mdBZiiCszOYuliQQVeyW60aJbXNcRQ4A09SXR1GgYQcdZSMEvGPc/FffuVwkOtczhEGy9zQ62hCgxIRKf7NILew/VU/67RiEN8zXMU41nFhaW0oFBRyE4Bc8d/9WXub2B4HKZb5LUZWhn+dTJF30IEnRwfRSB7PTnqz9UhGhiSg=
-  distributions: sdist bdist_wheel
+    secure: "RFde7fS5I/akSew25GWGcd9G/sq6z8twknYIgud3Cxwc+Da+Sq8X3GuA8S26wAHeG/ktgrLP7YQi5bJeiWc6NpFeEulTkKUcFTQhoNdrdGbJp/HpOct/Smdu2CkNAmzBnhJDBMGFZ/MZVLlw7KLm6yAWqJGfk54YfvgpkqenuKY="
+  distributions: "sdist bdist_wheel"
   on:
     tags: true
+  skip_cleanup: true
 notifications:
   slack:
     secure: duNeJwuDMG1ZVi26dipUzullK+Dd6nsBIq4d+72KWKD2R7qjyZP4bFBFRFzkSHVqohl/meD3EYPXZICy6RoDWaxPQcBK9oL6KZAlEnsyueRWhunsMDAyOuhyAaRD1FhL717eeyB0dygU0iaTDujpOghDfRY99C9KeWXkzmqD0ss=
