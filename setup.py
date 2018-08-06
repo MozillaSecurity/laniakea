@@ -22,7 +22,7 @@ requires = [
     'appdirs',
     'azure-mgmt-resource==1.2.2',
     'azure-common==1.1.14',
-    'boto>=2.48.0,<3.0'
+    'boto>=2.48.0,<3.0',
     'packet-python==1.37.1'
 ]
 
