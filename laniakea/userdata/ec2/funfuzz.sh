@@ -60,6 +60,7 @@ apt-get --yes --quiet upgrade
 # Install Rust using rustup
 sudo -u ubuntu curl https://sh.rustup.rs -sSf | sudo -u ubuntu sh -s -- -y
 sudo -u ubuntu /home/ubuntu/.cargo/bin/rustup update stable
+sudo -u ubuntu /home/ubuntu/.cargo/bin/rustup target add i686-unknown-linux-gnu
 sudo -u ubuntu /home/ubuntu/.cargo/bin/rustup --version
 sudo -u ubuntu /home/ubuntu/.cargo/bin/rustc --version
 
