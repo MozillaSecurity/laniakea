@@ -97,7 +97,7 @@ rm /home/ubuntu/funfuzz/ripgrep_0.8.1_amd64.deb
 popd
 
 # Populate FuzzManager settings
-@import(laniakea/userdata/ec2/misc-funfuzz/fmsettings.sh)@
+@import(misc-funfuzz/fmsettings.sh)@
 
 # Populate Mercurial settings.
 cat << EOF > /home/ubuntu/.hgrc
