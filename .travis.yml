@@ -5,8 +5,9 @@ matrix:
   include:
   - env: TOXENV=py36
 before_install:
-- pip install tox
+- pip install pipenv
 script:
+- pipenv install --dev
 - pipenv run tox
 branches:
   only:
