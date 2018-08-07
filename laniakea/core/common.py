@@ -4,6 +4,9 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 """General purpose library."""
 import os
+import pkgutil
+
+from importlib import import_module
 
 
 class Focus(type):
@@ -146,18 +149,13 @@ class ModuleLoader:
     def __init__(self):
         self.modules = {}
 
-    def load(self, root, module_path):
+    def load(self, root, module_path, pkg_name):
         """Load modules dynamically.
         """
         root = os.path.join(root, module_path)
-        import_name = module_path.replace(os.sep, '.')
-        packages = []
-        for entry in os.listdir(root):
-            if os.path.isdir(os.path.join(root, entry)) \
-                and os.path.exists(os.path.join(root, entry, '__init__.py')):
-                packages.append(entry)
-        for module in packages:
-            self.modules[module] = __import__('.'.join((import_name, module)), fromlist=['*'])
+        import_name = os.path.join(pkg_name, module_path).replace(os.sep, '.')
+        for (_, name, _) in pkgutil.iter_modules([root]):
+            self.modules[name] = import_module('.' + name, package=import_name)
         return self.modules
 
     def command_line_interfaces(self):

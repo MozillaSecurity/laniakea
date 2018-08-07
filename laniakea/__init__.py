@@ -50,7 +50,7 @@ class LaniakeaCommandLine:
                                            metavar='')
 
         modules = ModuleLoader()
-        modules.load(os.getcwd(), 'laniakea/core/providers')
+        modules.load(cls.HOME, 'core/providers', 'laniakea')
 
         for name, module in modules.modules.items():
             globals()[name] = module
