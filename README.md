@@ -39,7 +39,7 @@ or
 
 ```bash
 pipenv install laniakea
-pipenv shell laniakea -h
+pipenv run laniakea -h
 ```
 
 <a name="LaniakeaHelpMenu"><h2>Laniakea Help Menu</h2></a>
