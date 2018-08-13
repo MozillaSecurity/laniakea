@@ -38,8 +38,8 @@ python3 -m pip install laniakea
 or
 
 ```bash
-python3 -m pip install -r requirements.txt
-python3 -m laniakea -h
+pipenv install laniakea
+pipenv shell laniakea -h
 ```
 
 <a name="LaniakeaHelpMenu"><h2>Laniakea Help Menu</h2></a>
