@@ -32,7 +32,7 @@ Laniakea is a utility for managing instances at various cloud providers and aids
 <a name="Setup"><h2>Setup</h2></a>
 
 ```bash
-pip install laniakea
+python3 -m pip install laniakea
 ```
 
 or
