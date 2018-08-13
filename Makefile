@@ -1,4 +1,4 @@
-.PHONY: clean clean-test clean-pyc clean-build docs help
+.PHONY: clean clean-test clean-pyc clean-build tag docs help
 .DEFAULT_GOAL := help
 
 define PRINT_HELP_PYSCRIPT
@@ -36,6 +36,11 @@ clean-test: ## remove test and coverage artifacts
 	rm -f .coverage
 	rm -fr htmlcov/
 	rm -fr .pytest_cache
+
+tag: ## tag version for new release
+	VERSION=$$(python3 -c 'import laniakea.__version__; print(laniakea.__version__)')
+	git tag -a v$(VERSION)
+	git push origin v$(VERSION)
 
 release: dist ## package and upload a release
 	twine upload dist/*
