@@ -387,7 +387,7 @@ class EC2Manager:
 
         :param instance_ids: A list of instance ids to filter by
         :type instance_ids: list
-        :param filters: A dict of |Filter.N| values defined in http://goo.gl/jYNej9
+        :param filters: A dict of Filter.N values defined in http://goo.gl/jYNej9
         :type filters: dict
         :return: A flattened list of filtered instances.
         :rtype: list

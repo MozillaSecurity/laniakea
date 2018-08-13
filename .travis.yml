@@ -9,9 +9,6 @@ before_install:
 script:
 - pipenv install --dev
 - pipenv run tox
-branches:
-  only:
-  - master
 deploy:
   provider: pypi
   user: mozillasecurity
@@ -20,6 +17,9 @@ deploy:
   distributions: "sdist bdist_wheel"
   on:
     tags: true
+    branches:
+      only:
+      - master
   skip_cleanup: true
 notifications:
   slack:

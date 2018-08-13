@@ -1,5 +1,5 @@
 __title__ = 'laniakea'
-__version__ = '1.14'
+__version__ = '1.15'
 __license__ = 'MPL 2.0'
 __description__ = 'A utility which manages cloud instances and aids in setting up a fuzzing cluster.'
 __keywords__ = 'cluster packet ec2 azure fuzzing'
