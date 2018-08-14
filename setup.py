@@ -5,20 +5,18 @@
 # file, You can obtain one at https://mozilla.org/MPL/2.0/.
 """setuptools install script"""
 import os
-from setuptools import setup, find_packages
+import sys
+
+from setuptools import setup, find_packages, Command
 
 
 HERE = os.path.abspath(os.path.dirname(__file__))
 
-def readme():
-    with open('README.md') as fo:
-        return fo.read()
-
-about = {}
+ABOUT = {}
 with open(os.path.join(HERE, 'laniakea', '__version__.py')) as fo:
-    exec(fo.read(), about)
+    exec(fo.read(), ABOUT) # pylint: disable=exec-used
 
-requires = [
+REQUIRED = [
     'appdirs',
     'azure-mgmt-resource==1.2.2',
     'azure-common==1.1.14',
@@ -26,22 +24,61 @@ requires = [
     'packet-python==1.37.1'
 ]
 
+def README():
+    with open('README.md') as fo:
+        return fo.read()
+
+class PublishCommand(Command):
+    """Command class for: setup.py publish"""
+
+    description = 'Build and publish the package.'
+    user_options = []
+
+    @staticmethod
+    def status(text):
+        """Prints things in bold."""
+        print('\033[1m{0}\033[0m'.format(text))
+
+    def initialize_options(self):
+        pass
+
+    def finalize_options(self):
+        pass
+
+    def run(self):
+        try:
+            self.status('Removing previous builds…')
+            os.system('rm -rf {}'.format(os.path.join(HERE, 'dist')))
+        except OSError:
+            pass
+
+        self.status('Building Source and Wheel distribution ...')
+        os.system('{0} setup.py sdist bdist_wheel'.format(sys.executable))
+
+        self.status('Pushing git tags ...')
+        os.system('git tag v{0}'.format(ABOUT['__version__']))
+        os.system('git push origin v{0}'.format(ABOUT['__version__']))
+
+        self.status('Uploading the package to PyPI via Twine ...')
+        os.system('twine upload dist/*')
+
+        sys.exit()
 
 if __name__ == '__main__':
     setup(
-        version=about['__version__'],
-        name=about['__title__'],
-        license=about['__license__'],
-        keywords=about['__keywords__'],
-        description=about['__description__'],
-        long_description=readme(),
+        version=ABOUT['__version__'],
+        name=ABOUT['__title__'],
+        license=ABOUT['__license__'],
+        keywords=ABOUT['__keywords__'],
+        description=ABOUT['__description__'],
+        long_description=README(),
         long_description_content_type='text/markdown',
-        author=about['__author__'],
-        author_email=about['__author_email__'],
-        maintainer=about['__maintainer__'],
-        maintainer_email=about['__maintainer_email__'],
-        url=about['__url__'],
-        project_urls=about['__project_urls__'],
+        author=ABOUT['__author__'],
+        author_email=ABOUT['__author_email__'],
+        maintainer=ABOUT['__maintainer__'],
+        maintainer_email=ABOUT['__maintainer_email__'],
+        url=ABOUT['__url__'],
+        project_urls=ABOUT['__project_urls__'],
         classifiers=[
             'Intended Audience :: Developers',
             'Topic :: Software Development :: Testing',
@@ -57,12 +94,15 @@ if __name__ == '__main__':
                 "laniakea = laniakea:LaniakeaCommandLine.main"
             ]
         },
-        install_requires=requires,
+        install_requires=REQUIRED,
         packages=find_packages(),
         package_data={
             'laniakea': [
                 'examples/*',
                 'userdata/**/*',
             ]
+        },
+        cmdclass={
+            'publish': PublishCommand,
         }
     )
