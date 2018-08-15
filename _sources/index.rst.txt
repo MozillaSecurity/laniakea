@@ -3,7 +3,6 @@ Laniakea Documentation
 
 .. toctree::
    :maxdepth: 4
-   :caption: Contents:
 
    Laniakea <modules>
    Packet <laniakea.core.providers.packet>
