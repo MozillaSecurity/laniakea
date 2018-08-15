@@ -4,9 +4,6 @@ laniakea.core.providers.packet package
 Submodules
 ----------
 
-laniakea.core.providers.packet.manager module
----------------------------------------------
-
 .. automodule:: laniakea.core.providers.packet.manager
     :members:
     :undoc-members:

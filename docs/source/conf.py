@@ -43,6 +43,7 @@ extensions = [
     'sphinx.ext.autodoc',
     'sphinx.ext.coverage',
     'sphinx.ext.githubpages',
+    'sphinx.ext.autosummary'
 ]
 
 # Add any paths that contain templates here, relative to this directory.
@@ -160,4 +161,3 @@ texinfo_documents = [
 
 
 # -- Extension configuration -------------------------------------------------
-extensions = ['sphinx.ext.autosummary']

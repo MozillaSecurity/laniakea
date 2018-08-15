@@ -43,7 +43,7 @@ tag: ## tag version for new release
 	git push origin v$(VERSION)
 
 docs: ## generate Sphinx HTML documentation, including API docs
-	sphinx-apidoc -f -o docs/source laniakea/
+	sphinx-apidoc -E -f -o docs/source laniakea/
 	$(MAKE) -C docs clean
 	$(MAKE) -C docs html
 
