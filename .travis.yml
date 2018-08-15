@@ -6,30 +6,32 @@ matrix:
   - env: TOXENV=py36
 before_install:
 - pip install pipenv
-script:
+install:
 - pipenv install --dev
+script:
 - pipenv run tox
 after_success:
 - make docs
 deploy:
-  - provider: pypi
-    user: mozillasecurity
-    password:
-      secure: "RFde7fS5I/akSew25GWGcd9G/sq6z8twknYIgud3Cxwc+Da+Sq8X3GuA8S26wAHeG/ktgrLP7YQi5bJeiWc6NpFeEulTkKUcFTQhoNdrdGbJp/HpOct/Smdu2CkNAmzBnhJDBMGFZ/MZVLlw7KLm6yAWqJGfk54YfvgpkqenuKY="
-    distributions: "sdist bdist_wheel"
-    on:
-      tags: true
-      branches:
-        only:
-        - master
-    skip_cleanup: true
-  - provider: pages
-    keep-history: true
-    skip_cleanup: true
-    github_token: $GITHUB_TOKEN
-    on:
-      branch: master
-    local_dir: docs/build/html/
+- provider: pypi
+  user: mozillasecurity
+  password:
+    secure: RFde7fS5I/akSew25GWGcd9G/sq6z8twknYIgud3Cxwc+Da+Sq8X3GuA8S26wAHeG/ktgrLP7YQi5bJeiWc6NpFeEulTkKUcFTQhoNdrdGbJp/HpOct/Smdu2CkNAmzBnhJDBMGFZ/MZVLlw7KLm6yAWqJGfk54YfvgpkqenuKY=
+  distributions: sdist bdist_wheel
+  on:
+    tags: true
+    branches:
+      only:
+      - master
+  skip_cleanup: true
+- provider: pages
+  keep-history: true
+  skip_cleanup: true
+  github_token:
+    secure: PvCrB9ckDfWedl1rdo/3mUvCy/Vg4ksZR2mj4KT3AdEyukbpMiVVDkocMFohuIq+mnRdeyhpvM2KluLHhQrEhWjvqVobiZ9/c0gWWxZHV8doDdqNUPm693MpGojMOxHT4qRih6x9KyjanmWAwy/Bc972dpD5vtaTx1gKOzRUjUI=
+  on:
+    branch: master
+  local_dir: docs/build/html/
 notifications:
   slack:
     secure: duNeJwuDMG1ZVi26dipUzullK+Dd6nsBIq4d+72KWKD2R7qjyZP4bFBFRFzkSHVqohl/meD3EYPXZICy6RoDWaxPQcBK9oL6KZAlEnsyueRWhunsMDAyOuhyAaRD1FhL717eeyB0dygU0iaTDujpOghDfRY99C9KeWXkzmqD0ss=
