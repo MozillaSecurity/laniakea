@@ -27,6 +27,7 @@ Laniakea is a utility for managing instances at various cloud providers and aids
   * [Azure Help Menu](#AzureHelpMenu)
 * [UserData Reference](#UserDataReference)
 * [Extending Laniakea](#ExtendingLaniakea)
+* [API Documentation](#APIDocumentation)
 
 
 <a name="Setup"><h2>Setup</h2></a>
@@ -384,3 +385,7 @@ To extend Laniakea with new cloud providers you need to ...
 * Write an API manager class and name it `manager.py`
 * Add additional files (i.e userdata scripts) to `laniakea/userdata/`
 * Add additional configuration files to `laniakea/examples/`
+
+<a name="APIDocumenation"><h2>API Documentation</h2></a>
+
+* https://mozillasecurity.github.io/laniakea
