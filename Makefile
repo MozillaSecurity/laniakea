@@ -42,6 +42,14 @@ tag: ## tag version for new release
 	git tag -a v$(VERSION)
 	git push origin v$(VERSION)
 
+docs: ## generate Sphinx HTML documentation, including API docs
+	sphinx-apidoc -f -o docs/source laniakea/
+	$(MAKE) -C docs clean
+	$(MAKE) -C docs html
+
+servedocs: docs ## watch for changes and compile the docs
+	watchmedo shell-command -p '*.rst' -c '$(MAKE) -C docs html' -R -D .
+
 release: dist ## package and upload a release
 	twine upload dist/*
 
