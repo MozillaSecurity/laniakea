@@ -4,9 +4,6 @@ laniakea.core.providers.azure package
 Submodules
 ----------
 
-laniakea.core.providers.azure.manager module
---------------------------------------------
-
 .. automodule:: laniakea.core.providers.azure.manager
     :members:
     :undoc-members:

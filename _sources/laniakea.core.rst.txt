@@ -11,24 +11,15 @@ Subpackages
 Submodules
 ----------
 
-laniakea.core.common module
----------------------------
-
 .. automodule:: laniakea.core.common
     :members:
     :undoc-members:
     :show-inheritance:
 
-laniakea.core.multipart module
-------------------------------
-
 .. automodule:: laniakea.core.multipart
     :members:
     :undoc-members:
     :show-inheritance:
-
-laniakea.core.userdata module
------------------------------
 
 .. automodule:: laniakea.core.userdata
     :members:

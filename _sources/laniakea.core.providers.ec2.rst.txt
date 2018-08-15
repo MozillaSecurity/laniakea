@@ -4,9 +4,6 @@ laniakea.core.providers.ec2 package
 Submodules
 ----------
 
-laniakea.core.providers.ec2.manager module
-------------------------------------------
-
 .. automodule:: laniakea.core.providers.ec2.manager
     :members:
     :undoc-members:
