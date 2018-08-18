@@ -13,9 +13,7 @@ logger = logging.getLogger('laniakea')
 
 class AzureManagerException(Exception):
     """Exception class for Azure Manager."""
-
-    def __init(self, message):
-        super().__init__(message)
+    pass
 
 
 class AzureManager:

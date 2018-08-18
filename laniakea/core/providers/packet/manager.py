@@ -19,9 +19,7 @@ except ImportError as msg:
 
 class PacketManagerException(Exception):
     """Exception class for Packet Manager."""
-
-    def __init__(self, message):
-        super().__init__(message)
+    pass
 
 
 class PacketConfiguration:

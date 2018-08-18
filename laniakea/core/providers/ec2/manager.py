@@ -21,9 +21,7 @@ except ImportError as msg:
 
 class EC2ManagerException(Exception):
     """Exception class for Azure Manager."""
-
-    def __init(self, message):
-        super().__init__(message)
+    pass
 
 
 class EC2Manager:
