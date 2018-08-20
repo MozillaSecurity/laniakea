@@ -71,7 +71,7 @@ class UserData:
         :param macros: UserData macros as key value pair.
         :type macros: dict
         :return: UserData script with the macros replaced with their values.
-        :rrtpe: str
+        :rtype: str
         """
         macro_vars = re.findall('@(.*?)@', userdata)
         for macro_var in macro_vars:
