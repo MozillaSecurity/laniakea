@@ -96,8 +96,8 @@
 </li>
 <li class="toctree-l1"><a class="reference internal" href="laniakea.core.providers.packet.html">Packet</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">EC2</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#submodules">Submodules</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#module-contents">Module contents</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-laniakea.core.providers.ec2.manager">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-laniakea.core.providers.ec2">Module contents</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="laniakea.core.providers.azure.html">Azure</a></li>
@@ -175,11 +175,294 @@
             
   <div class="section" id="laniakea-core-providers-ec2-package">
 <h1>laniakea.core.providers.ec2 package<a class="headerlink" href="#laniakea-core-providers-ec2-package" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="submodules">
-<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="module-laniakea.core.providers.ec2.manager">
+<span id="submodules"></span><h2>Submodules<a class="headerlink" href="#module-laniakea.core.providers.ec2.manager" title="Permalink to this headline">¶</a></h2>
+<p>Amazon Elastic Cloud Computing API</p>
+<dl class="class">
+<dt id="laniakea.core.providers.ec2.manager.EC2Manager">
+<em class="property">class </em><code class="descclassname">laniakea.core.providers.ec2.manager.</code><code class="descname">EC2Manager</code><span class="sig-paren">(</span><em>images</em><span class="sig-paren">)</span><a class="headerlink" href="#laniakea.core.providers.ec2.manager.EC2Manager" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Amazon Elastic Cloud Computing manager class.</p>
+<dl class="method">
+<dt id="laniakea.core.providers.ec2.manager.EC2Manager.cancel_spot_requests">
+<code class="descname">cancel_spot_requests</code><span class="sig-paren">(</span><em>requests</em><span class="sig-paren">)</span><a class="headerlink" href="#laniakea.core.providers.ec2.manager.EC2Manager.cancel_spot_requests" title="Permalink to this definition">¶</a></dt>
+<dd><p>Cancel one or more EC2 spot instance requests.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>requests</strong> (<em>list</em>) – List of EC2 spot instance request IDs.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="laniakea.core.providers.ec2.manager.EC2Manager.check_spot_requests">
+<code class="descname">check_spot_requests</code><span class="sig-paren">(</span><em>requests</em>, <em>tags=None</em><span class="sig-paren">)</span><a class="headerlink" href="#laniakea.core.providers.ec2.manager.EC2Manager.check_spot_requests" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check status of one or more EC2 spot instance requests.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>requests</strong> (<em>list</em>) – List of EC2 spot instance request IDs.</li>
+<li><strong>tags</strong> (<em>dict</em>) – </li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">List of boto.ec2.instance.Instance’s created, order corresponding to requests param (None if request
+still open, boto.ec2.instance.Reservation if request is no longer open)</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">list</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="laniakea.core.providers.ec2.manager.EC2Manager.connect">
+<code class="descname">connect</code><span class="sig-paren">(</span><em>region</em>, <em>**kw_params</em><span class="sig-paren">)</span><a class="headerlink" href="#laniakea.core.providers.ec2.manager.EC2Manager.connect" title="Permalink to this definition">¶</a></dt>
+<dd><p>Connect to a EC2.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>region</strong> (<em>str</em>) – The name of the region to connect to.</li>
+<li><strong>kw_params</strong> (<em>dict</em>) – </li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="laniakea.core.providers.ec2.manager.EC2Manager.create_on_demand">
+<code class="descname">create_on_demand</code><span class="sig-paren">(</span><em>instance_type='default'</em>, <em>tags=None</em>, <em>root_device_type='ebs'</em>, <em>size='default'</em>, <em>vol_type='gp2'</em>, <em>delete_on_termination=False</em><span class="sig-paren">)</span><a class="headerlink" href="#laniakea.core.providers.ec2.manager.EC2Manager.create_on_demand" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create one or more EC2 on-demand instances.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>size</strong> (<em>int</em>) – Size of root device</li>
+<li><strong>delete_on_termination</strong> (<em>boolean</em>) – </li>
+<li><strong>vol_type</strong> (<em>str</em>) – </li>
+<li><strong>root_device_type</strong> (<em>str</em>) – The type of the root device.</li>
+<li><strong>instance_type</strong> (<em>str</em>) – A section name in amazon.json</li>
+<li><strong>tags</strong> (<em>dict</em>) – </li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">List of instances created</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">list</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="laniakea.core.providers.ec2.manager.EC2Manager.create_spot">
+<code class="descname">create_spot</code><span class="sig-paren">(</span><em>price</em>, <em>instance_type='default'</em>, <em>tags=None</em>, <em>root_device_type='ebs'</em>, <em>size='default'</em>, <em>vol_type='gp2'</em>, <em>delete_on_termination=False</em>, <em>timeout=None</em><span class="sig-paren">)</span><a class="headerlink" href="#laniakea.core.providers.ec2.manager.EC2Manager.create_spot" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create one or more EC2 spot instances.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>root_device_type</strong> – </li>
+<li><strong>size</strong> – </li>
+<li><strong>vol_type</strong> – </li>
+<li><strong>delete_on_termination</strong> – </li>
+<li><strong>timeout</strong> – </li>
+<li><strong>price</strong> (<em>float</em>) – Max price to pay for spot instance per hour.</li>
+<li><strong>instance_type</strong> (<em>str</em>) – A section name in amazon.json</li>
+<li><strong>tags</strong> (<em>dict</em>) – </li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">List of instances created</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">list</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="laniakea.core.providers.ec2.manager.EC2Manager.create_spot_requests">
+<code class="descname">create_spot_requests</code><span class="sig-paren">(</span><em>price</em>, <em>instance_type='default'</em>, <em>root_device_type='ebs'</em>, <em>size='default'</em>, <em>vol_type='gp2'</em>, <em>delete_on_termination=False</em>, <em>timeout=None</em><span class="sig-paren">)</span><a class="headerlink" href="#laniakea.core.providers.ec2.manager.EC2Manager.create_spot_requests" title="Permalink to this definition">¶</a></dt>
+<dd><p>Request creation of one or more EC2 spot instances.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>size</strong> – </li>
+<li><strong>vol_type</strong> – </li>
+<li><strong>delete_on_termination</strong> – </li>
+<li><strong>root_device_type</strong> (<em>str</em>) – The type of the root device.</li>
+<li><strong>price</strong> (<em>float</em>) – Max price to pay for spot instance per hour.</li>
+<li><strong>instance_type</strong> (<em>str</em>) – A section name in amazon.json</li>
+<li><strong>timeout</strong> (<em>int</em>) – Seconds to keep the request open (cancelled if not fulfilled).</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">List of requests created</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">list</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="laniakea.core.providers.ec2.manager.EC2Manager.find">
+<code class="descname">find</code><span class="sig-paren">(</span><em>instance_ids=None</em>, <em>filters=None</em><span class="sig-paren">)</span><a class="headerlink" href="#laniakea.core.providers.ec2.manager.EC2Manager.find" title="Permalink to this definition">¶</a></dt>
+<dd><p>Flatten list of reservations to a list of instances.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>instance_ids</strong> (<em>list</em>) – A list of instance ids to filter by</li>
+<li><strong>filters</strong> (<em>dict</em>) – A dict of Filter.N values defined in <a class="reference external" href="http://goo.gl/jYNej9">http://goo.gl/jYNej9</a></li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">A flattened list of filtered instances.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">list</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="laniakea.core.providers.ec2.manager.EC2Manager.resolve_image_name">
+<code class="descname">resolve_image_name</code><span class="sig-paren">(</span><em>image_name</em><span class="sig-paren">)</span><a class="headerlink" href="#laniakea.core.providers.ec2.manager.EC2Manager.resolve_image_name" title="Permalink to this definition">¶</a></dt>
+<dd><p>Look up an AMI for the connected region based on an image name.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>image_name</strong> (<em>str</em>) – The name of the image to resolve.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">The AMI for the given image.</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">str</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="laniakea.core.providers.ec2.manager.EC2Manager.retry_on_ec2_error">
+<code class="descname">retry_on_ec2_error</code><span class="sig-paren">(</span><em>func</em>, <em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#laniakea.core.providers.ec2.manager.EC2Manager.retry_on_ec2_error" title="Permalink to this definition">¶</a></dt>
+<dd><p>Call the given method with the given arguments, retrying if the call
+failed due to an EC2ResponseError. This method will wait at most 30
+seconds and perform up to 6 retries. If the method still fails, it will
+propagate the error.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>func</strong> (<em>function</em>) – Function to call</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="laniakea.core.providers.ec2.manager.EC2Manager.stop">
+<code class="descname">stop</code><span class="sig-paren">(</span><em>instances</em>, <em>count=0</em><span class="sig-paren">)</span><a class="headerlink" href="#laniakea.core.providers.ec2.manager.EC2Manager.stop" title="Permalink to this definition">¶</a></dt>
+<dd><p>Stop each provided running instance.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>count</strong> – </li>
+<li><strong>instances</strong> (<em>list</em>) – A list of instances.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="laniakea.core.providers.ec2.manager.EC2Manager.terminate">
+<code class="descname">terminate</code><span class="sig-paren">(</span><em>instances</em>, <em>count=0</em><span class="sig-paren">)</span><a class="headerlink" href="#laniakea.core.providers.ec2.manager.EC2Manager.terminate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Terminate each provided running or stopped instance.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>count</strong> – </li>
+<li><strong>instances</strong> (<em>list</em>) – A list of instances.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="exception">
+<dt id="laniakea.core.providers.ec2.manager.EC2ManagerException">
+<em class="property">exception </em><code class="descclassname">laniakea.core.providers.ec2.manager.</code><code class="descname">EC2ManagerException</code><a class="headerlink" href="#laniakea.core.providers.ec2.manager.EC2ManagerException" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Exception</span></code></p>
+<p>Exception class for Azure Manager.</p>
+</dd></dl>
+
 </div>
-<div class="section" id="module-contents">
-<h2>Module contents<a class="headerlink" href="#module-contents" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="module-laniakea.core.providers.ec2">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-laniakea.core.providers.ec2" title="Permalink to this headline">¶</a></h2>
+<p>Amazon Elastic Cloud Computing CLI</p>
+<dl class="class">
+<dt id="laniakea.core.providers.ec2.Ec2CommandLine">
+<em class="property">class </em><code class="descclassname">laniakea.core.providers.ec2.</code><code class="descname">Ec2CommandLine</code><a class="headerlink" href="#laniakea.core.providers.ec2.Ec2CommandLine" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Sub command-line interface for the Amazon EC2 provider.</p>
+<dl class="attribute">
+<dt id="laniakea.core.providers.ec2.Ec2CommandLine.HOME">
+<code class="descname">HOME</code><em class="property"> = '/home/travis/build/MozillaSecurity/laniakea/laniakea/core/providers/ec2'</em><a class="headerlink" href="#laniakea.core.providers.ec2.Ec2CommandLine.HOME" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="laniakea.core.providers.ec2.Ec2CommandLine.VERSION">
+<code class="descname">VERSION</code><em class="property"> = 0.8</em><a class="headerlink" href="#laniakea.core.providers.ec2.Ec2CommandLine.VERSION" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="classmethod">
+<dt id="laniakea.core.providers.ec2.Ec2CommandLine.add_arguments">
+<em class="property">classmethod </em><code class="descname">add_arguments</code><span class="sig-paren">(</span><em>subparsers</em>, <em>dirs</em><span class="sig-paren">)</span><a class="headerlink" href="#laniakea.core.providers.ec2.Ec2CommandLine.add_arguments" title="Permalink to this definition">¶</a></dt>
+<dd><p>Argument parser of this module.</p>
+</dd></dl>
+
+<dl class="classmethod">
+<dt id="laniakea.core.providers.ec2.Ec2CommandLine.main">
+<em class="property">classmethod </em><code class="descname">main</code><span class="sig-paren">(</span><em>args</em>, <em>settings=None</em>, <em>userdata=None</em><span class="sig-paren">)</span><a class="headerlink" href="#laniakea.core.providers.ec2.Ec2CommandLine.main" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
 </div>
 </div>
 
