@@ -41,6 +41,30 @@ BAZ=someBAZVALthing
 # End
 """
 
+userdata_test_macros_with_defaults = """
+#!/bin/bash
+
+# This is a sample userdata script with macros
+
+VALUE1="@VALUE|default_value@"
+VALUE2=@VALUE|default_value@
+VALUE3=@FOO|default_value@
+
+# End
+"""
+
+userdata_test_macros_with_defaults_expected = """
+#!/bin/bash
+
+# This is a sample userdata script with macros
+
+VALUE1="default_value"
+VALUE2=default_value
+VALUE3=FOOVAL
+
+# End
+"""
+
 userdata_test_macro_export = """
 #!/bin/bash
 
@@ -86,6 +110,9 @@ docker run -e 'FOO=FOOVAL' -e 'BAR=BARVAL' -e 'BAZ=BAZVAL' image
 
 def test_macro_replacement():
     assert UserData.handle_tags(userdata_test_macros, test_macros) == userdata_test_macros_expected
+
+def test_macro_defaults():
+    assert UserData.handle_tags(userdata_test_macros_with_defaults, test_macros) == userdata_test_macros_with_defaults_expected
 
 def test_macro_list_export():
     assert UserData.handle_tags(userdata_test_macro_export, test_macros) == userdata_test_macro_export_expected

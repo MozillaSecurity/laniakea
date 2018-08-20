@@ -52,7 +52,10 @@ class UserData:
 
     @staticmethod
     def list_tags(userdata):
-        """
+        """List all used macros within a UserData script.
+
+        :param userdata: The UserData script.
+        :type userdata: str
         """
         macros = re.findall('@(.*?)@', userdata)
         logging.info('List of available macros:')
@@ -61,7 +64,14 @@ class UserData:
 
     @staticmethod
     def handle_tags(userdata, macros):
-        """
+        """Insert macro values or auto export variables in UserData scripts.
+
+        :param userdata: The UserData script.
+        :type userdata: str
+        :param macros: UserData macros as key value pair.
+        :type macros: dict
+        :return: UserData script with the macros replaced with their values.
+        :rrtpe: str
         """
         macro_vars = re.findall('@(.*?)@', userdata)
         for macro_var in macro_vars:
@@ -79,11 +89,22 @@ class UserData:
                 macro_var_exports = " ".join(macro_var_export_list)
 
                 userdata = userdata.replace('@%s@' % macro_var, macro_var_exports)
-            elif macro_var not in macros:
-                logging.error('Undefined variable @%s@ in UserData script', macro_var)
-                return None
             else:
-                userdata = userdata.replace('@%s@' % macro_var, macros[macro_var])
+                if "|" in macro_var:
+                    macro_var, default_value = macro_var.split('|')
+                    if macro_var not in macros:
+                        logging.warning('Using default variable value %s for @%s@ ', default_value, macro_var)
+                        value = default_value
+                    else:
+                        value = macros[macro_var]
+
+                    userdata = userdata.replace('@%s|%s@' % (macro_var, default_value), value)
+                else:
+                    if macro_var not in macros:
+                        logging.error('Undefined variable @%s@ in UserData script', macro_var)
+                        return None
+
+                    userdata = userdata.replace('@%s@' % macro_var, macros[macro_var])
 
         return userdata
 
