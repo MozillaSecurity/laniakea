@@ -278,6 +278,9 @@ class EC2Manager:
 
             fulfilled = []
             for idx, instance in enumerate(new_instances):
+                if instance.status.code == "bad-parameters":
+                    logging.error('Spot request for "%s" failed due to bad parameters.', instance.id)
+                    self.cancel_spot_requests([instance.id])
                 if instance is not None:
                     fulfilled.append(idx)
                 if isinstance(instance, boto.ec2.instance.Instance):
