@@ -92,9 +92,9 @@ python3 -m pip install --upgrade future-breakpoint
 # Get supporting fuzzing libraries via pip, funfuzz will be used as the "ubuntu" user later
 pushd /home/ubuntu/funfuzz/  # For requirements.txt to work properly, we have to be in the repository directory
 sudo -u ubuntu python3 -m pip install --user --upgrade -r /home/ubuntu/funfuzz/requirements.txt
-sudo -u ubuntu curl -LO https://github.com/BurntSushi/ripgrep/releases/download/0.8.1/ripgrep_0.8.1_amd64.deb
-dpkg -i /home/ubuntu/funfuzz/ripgrep_0.8.1_amd64.deb
-rm /home/ubuntu/funfuzz/ripgrep_0.8.1_amd64.deb
+sudo -u ubuntu curl -LO https://github.com/BurntSushi/ripgrep/releases/download/0.10.0/ripgrep_0.10.0_amd64.deb
+dpkg -i /home/ubuntu/funfuzz/ripgrep_0.10.0_amd64.deb
+rm /home/ubuntu/funfuzz/ripgrep_0.10.0_amd64.deb
 popd
 
 # Populate FuzzManager settings
