@@ -87,6 +87,7 @@ python -m pip install --upgrade pip setuptools virtualenv
 python -m pip install --upgrade pip setuptools
 python -m pip install --upgrade mercurial  # Mercurial only supports Python 2 for now
 python3 -m pip install --upgrade pip setuptools virtualenv
+python3 -m pip install --upgrade future-breakpoint
 
 # Get supporting fuzzing libraries via pip, funfuzz will be used as the "ubuntu" user later
 pushd /home/ubuntu/funfuzz/  # For requirements.txt to work properly, we have to be in the repository directory
