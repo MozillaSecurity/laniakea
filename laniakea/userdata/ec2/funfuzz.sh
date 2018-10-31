@@ -10,6 +10,7 @@ sleep 10  # EC2 takes some time to be able to go online
 # PPAs for newest nodejs, Git, LLVM/Clang 6
 curl -sL https://deb.nodesource.com/setup_10.x | sudo -E bash -  # For nodejs
 add-apt-repository -y ppa:git-core/ppa  # Git PPA needed to get latest security updates
+add-apt-repository -y ppa:x4121/ripgrep
 #add-apt-repository -y ppa:ubuntu-toolchain-r/test
 # Fingerprint: 6084 F3CF 814B 57C1 CF12 EFD5 15CF 4D18 AF4F 7421
 wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key|sudo apt-key add -
@@ -32,6 +33,8 @@ apt-get --yes --quiet install lib32z1 gcc-7-multilib g++-7-multilib  # For compi
 
 # Needed for Valgrind and for compiling with clang, along with llvm-symbolizer
 apt-get --yes --quiet install valgrind libc6-dbg
+
+apt-get --yes --quiet install ripgrep
 
 # Install LLVM/Clang 6
 apt-get --yes --quiet install clang-6.0 clang-tools-6.0 clang-6.0-doc libclang-common-6.0-dev libclang-6.0-dev
@@ -92,9 +95,6 @@ python3 -m pip install --upgrade future-breakpoint
 # Get supporting fuzzing libraries via pip, funfuzz will be used as the "ubuntu" user later
 pushd /home/ubuntu/funfuzz/  # For requirements.txt to work properly, we have to be in the repository directory
 sudo -u ubuntu python3 -m pip install --user --upgrade -r /home/ubuntu/funfuzz/requirements.txt
-sudo -u ubuntu curl -LO https://github.com/BurntSushi/ripgrep/releases/download/0.10.0/ripgrep_0.10.0_amd64.deb
-dpkg -i /home/ubuntu/funfuzz/ripgrep_0.10.0_amd64.deb
-rm /home/ubuntu/funfuzz/ripgrep_0.10.0_amd64.deb
 popd
 
 # Populate FuzzManager settings
