@@ -21,12 +21,13 @@ apt-get --yes --quiet update
 apt-get --yes --quiet dist-upgrade
 # Check using `hg --cwd ~/trees/mozilla-central/ diff -r b2fa4b07f6f7:be32f4014f92 python/mozboot/mozboot/debian.py`
 # Retrieved on 2018-10-31: https://hg.mozilla.org/mozilla-central/file/be32f4014f92/python/mozboot/mozboot/debian.py
-apt-get --yes --quiet install autoconf2.13 build-essential ccache python-dev python-pip python-setuptools unzip uuid zip
-apt-get --yes --quiet install python3-pip python3-setuptools  # For running funfuzz in Python 3
-apt-get --yes --quiet install libasound2-dev libcurl4-openssl-dev libdbus-1-dev libdbus-glib-1-dev libgconf2-dev
-apt-get --yes --quiet install libgtk2.0-dev libgtk-3-dev libpulse-dev libx11-xcb-dev libxt-dev
-apt-get --yes --quiet install nasm nodejs python-dbus yasm xvfb
-apt-get --yes --quiet install cmake curl gdb git openssh-client openssh-server screen vim
+apt-get --yes --quiet install autoconf2.13 build-essential ccache python-dev python-pip python-setuptools \
+    unzip uuid zip \
+    python3-pip python3-setuptools \
+    libasound2-dev libcurl4-openssl-dev libdbus-1-dev libdbus-glib-1-dev libgconf2-dev \
+    libgtk2.0-dev libgtk-3-dev libpulse-dev libx11-xcb-dev libxt-dev \
+    nasm nodejs python-dbus yasm xvfb \
+    cmake curl gdb git openssh-client openssh-server screen ripgrep vim
 #apt-get --yes --quiet install gcc-6 g++-6
 #apt-get --yes --quiet install lib32z1 gcc-6-multilib g++-6-multilib  # For compiling 32-bit in 64-bit OS
 apt-get --yes --quiet install lib32z1 gcc-7-multilib g++-7-multilib  # For compiling 32-bit in 64-bit OS
@@ -34,13 +35,11 @@ apt-get --yes --quiet install lib32z1 gcc-7-multilib g++-7-multilib  # For compi
 # Needed for Valgrind and for compiling with clang, along with llvm-symbolizer
 apt-get --yes --quiet install valgrind libc6-dbg
 
-apt-get --yes --quiet install ripgrep
-
 # Install LLVM/Clang 6
-apt-get --yes --quiet install clang-6.0 clang-tools-6.0 clang-6.0-doc libclang-common-6.0-dev libclang-6.0-dev
-apt-get --yes --quiet install libclang1-6.0 libllvm6.0
-apt-get --yes --quiet install lldb-6.0 llvm-6.0 llvm-6.0-dev llvm-6.0-doc llvm-6.0-examples llvm-6.0-runtime
-apt-get --yes --quiet install clang-format-6.0 python-clang-6.0 lld-6.0 libfuzzer-6.0-dev
+apt-get --yes --quiet install clang-6.0 clang-tools-6.0 clang-6.0-doc libclang-common-6.0-dev libclang-6.0-dev \
+    libclang1-6.0 libllvm6.0 \
+    lldb-6.0 llvm-6.0 llvm-6.0-dev llvm-6.0-doc llvm-6.0-examples llvm-6.0-runtime \
+    clang-format-6.0 python-clang-6.0 lld-6.0 libfuzzer-6.0-dev
 
 # Switch to LLVM/Clang 6
 #update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-5 10 || true  # Ignore exit code if GCC 5 does not exist
