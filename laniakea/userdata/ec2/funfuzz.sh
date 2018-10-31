@@ -143,6 +143,7 @@ chown ubuntu:ubuntu /home/ubuntu/.vimrc
 # Clone m-c repository.
 date
 mkdir -p /home/ubuntu/trees/
+chown ubuntu:ubuntu /home/ubuntu/trees
 pushd /home/ubuntu/trees/
 
 sudo -u ubuntu bash << EOF
