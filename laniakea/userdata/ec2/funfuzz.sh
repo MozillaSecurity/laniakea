@@ -142,8 +142,92 @@ chown ubuntu:ubuntu /home/ubuntu/.vimrc
 
 # Clone m-c repository.
 date
-sudo -u ubuntu hg clone --uncompressed https://hg.mozilla.org/mozilla-central /home/ubuntu/trees/mozilla-central
-sudo -u ubuntu hg clone --uncompressed https://hg.mozilla.org/releases/mozilla-beta /home/ubuntu/trees/mozilla-beta
+mkdir -p /home/ubuntu/trees/
+pushd /home/ubuntu/trees/
+
+sudo -u ubuntu bash << EOF
+URL_BASE=
+URL_REPO_NAME=/mozilla-central
+BASE_DIR=trees
+REPO_NAME=mozilla-central
+SHORT_NAME=mc
+#################
+# mozilla-central
+# The clone process hangs somewhat frequently, but not via wget
+timeout 2 hg clone --stream https://hg.mozilla.org\$URL_BASE\$URL_REPO_NAME \
+    /home/ubuntu/\$BASE_DIR/\$REPO_NAME 2>&1 > /home/ubuntu/\$BASE_DIR/\$SHORT_NAME_url_raw.txt
+echo 'Downloading the bundle...'
+date
+cat /home/ubuntu/\$BASE_DIR/\$SHORT_NAME_url_raw.txt | awk 'NR==1{print \$5}' \
+    | wget -i - -o /home/ubuntu/\$BASE_DIR/\$SHORT_NAME_download_log.txt
+date
+echo 'Extracting the bundle filename minus the front and back single quotes...'
+cat /home/ubuntu/\$BASE_DIR/\$SHORT_NAME_download_log.txt | awk 'NR==6{print substr(\$3, 2, length(\$3)-2)}' 2>&1 \
+    | tee /home/ubuntu/\$BASE_DIR/\$SHORT_NAME_bundle_filename.txt
+echo 'Extracting the bundle...'
+hg init /home/ubuntu/\$BASE_DIR/\$REPO_NAME
+cd /home/ubuntu/\$BASE_DIR/\$REPO_NAME
+date
+hg debugapplystreamclonebundle /home/ubuntu/\$BASE_DIR/\$(cat /home/ubuntu/\$BASE_DIR/\$SHORT_NAME_bundle_filename.txt)
+date
+echo 'Adding the .hgrc for the repository...'
+cat << REOF > /home/ubuntu/\$BASE_DIR/\$REPO_NAME/.hg/hgrc
+[paths]
+
+default = https://hg.mozilla.org\$URL_BASE\$URL_REPO_NAME
+REOF
+chown ubuntu:ubuntu /home/ubuntu/\$BASE_DIR/\$REPO_NAME/.hg/hgrc
+echo 'Updating to default tip gets included below as well...'
+date
+hg -R /home/ubuntu/\$BASE_DIR/\$REPO_NAME pull --rebase
+date
+rm /home/ubuntu/\$BASE_DIR/\$(cat /home/ubuntu/\$BASE_DIR/\$SHORT_NAME_bundle_filename.txt)
+cd /home/ubuntu/\$BASE_DIR
+#################
+EOF
+
+sudo -u ubuntu bash << EOF
+URL_BASE=/releases
+URL_REPO_NAME=/mozilla-beta
+BASE_DIR=trees
+REPO_NAME=mozilla-beta
+SHORT_NAME=mb
+#################
+# mozilla-beta
+# The clone process hangs somewhat frequently, but not via wget
+timeout 2 hg clone --stream https://hg.mozilla.org\$URL_BASE\$URL_REPO_NAME \
+    /home/ubuntu/\$BASE_DIR/\$REPO_NAME 2>&1 > /home/ubuntu/\$BASE_DIR/\$SHORT_NAME_url_raw.txt
+echo 'Downloading the bundle...'
+date
+cat /home/ubuntu/\$BASE_DIR/\$SHORT_NAME_url_raw.txt | awk 'NR==1{print \$5}' \
+    | wget -i - -o /home/ubuntu/\$BASE_DIR/\$SHORT_NAME_download_log.txt
+date
+echo 'Extracting the bundle filename minus the front and back single quotes...'
+cat /home/ubuntu/\$BASE_DIR/\$SHORT_NAME_download_log.txt | awk 'NR==6{print substr(\$3, 2, length(\$3)-2)}' 2>&1 \
+    | tee /home/ubuntu/\$BASE_DIR/\$SHORT_NAME_bundle_filename.txt
+echo 'Extracting the bundle...'
+hg init /home/ubuntu/\$BASE_DIR/\$REPO_NAME
+cd /home/ubuntu/\$BASE_DIR/\$REPO_NAME
+date
+hg debugapplystreamclonebundle /home/ubuntu/\$BASE_DIR/\$(cat /home/ubuntu/\$BASE_DIR/\$SHORT_NAME_bundle_filename.txt)
+date
+echo 'Adding the .hgrc for the repository...'
+cat << REOF > /home/ubuntu/\$BASE_DIR/\$REPO_NAME/.hg/hgrc
+[paths]
+
+default = https://hg.mozilla.org\$URL_BASE\$URL_REPO_NAME
+REOF
+chown ubuntu:ubuntu /home/ubuntu/\$BASE_DIR/\$REPO_NAME/.hg/hgrc
+echo 'Updating to default tip gets included below as well...'
+date
+hg -R /home/ubuntu/\$BASE_DIR/\$REPO_NAME pull --rebase
+date
+rm /home/ubuntu/\$BASE_DIR/\$(cat /home/ubuntu/\$BASE_DIR/\$SHORT_NAME_bundle_filename.txt)
+cd /home/ubuntu/\$BASE_DIR
+#################
+EOF
+
+popd
 date
 
 cat << EOF > /home/ubuntu/funfuzzCronjob
