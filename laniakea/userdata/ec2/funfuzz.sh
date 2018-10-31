@@ -168,7 +168,7 @@ echo '1' > /proc/sys/kernel/core_uses_pid
 echo 'kernel.core_uses_pid = 1' >> /etc/sysctl.conf
 
 # Edit ~/.bashrc if it has not yet been done so
-if [[ \$(tac /home/ubuntu/.bashrc | egrep -m 1 .) != 'ccache -M 8G' ]]; then
+if [[ \$(tac /home/ubuntu/.bashrc | egrep -m 1 .) != 'ccache -M 12G' ]]; then
 cat << 'REOF' >> /home/ubuntu/.bashrc
 
 ulimit -c unlimited
