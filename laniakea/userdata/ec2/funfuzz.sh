@@ -25,7 +25,7 @@ apt-get --yes --quiet install autoconf2.13 build-essential ccache python-dev pyt
 apt-get --yes --quiet install python3-pip python3-setuptools  # For running funfuzz in Python 3
 apt-get --yes --quiet install libasound2-dev libcurl4-openssl-dev libdbus-1-dev libdbus-glib-1-dev libgconf2-dev
 apt-get --yes --quiet install libgtk2.0-dev libgtk-3-dev libpulse-dev libx11-xcb-dev libxt-dev
-apt-get --yes --quiet install nodejs python-dbus yasm xvfb
+apt-get --yes --quiet install nasm nodejs python-dbus yasm xvfb
 apt-get --yes --quiet install cmake curl gdb git openssh-client openssh-server screen vim
 #apt-get --yes --quiet install gcc-6 g++-6
 #apt-get --yes --quiet install lib32z1 gcc-6-multilib g++-6-multilib  # For compiling 32-bit in 64-bit OS
