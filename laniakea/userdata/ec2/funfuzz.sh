@@ -27,7 +27,7 @@ apt-get --yes --quiet install autoconf2.13 build-essential ccache python-dev pyt
     libasound2-dev libcurl4-openssl-dev libdbus-1-dev libdbus-glib-1-dev libgconf2-dev \
     libgtk2.0-dev libgtk-3-dev libpulse-dev libx11-xcb-dev libxt-dev \
     nasm nodejs python-dbus yasm xvfb \
-    cmake curl gdb git openssh-client openssh-server screen ripgrep vim
+    aria2c cmake curl gdb git openssh-client openssh-server screen ripgrep vim
 #apt-get --yes --quiet install gcc-6 g++-6
 #apt-get --yes --quiet install lib32z1 gcc-6-multilib g++-6-multilib  # For compiling 32-bit in 64-bit OS
 apt-get --yes --quiet install lib32z1 gcc-7-multilib g++-7-multilib  # For compiling 32-bit in 64-bit OS
@@ -139,94 +139,13 @@ EOF
 
 chown ubuntu:ubuntu /home/ubuntu/.vimrc
 
-# Clone m-c repository.
+# Clone repositories using get_hg_repo.sh
 date
 mkdir -p /home/ubuntu/trees/
 chown ubuntu:ubuntu /home/ubuntu/trees
 pushd /home/ubuntu/trees/
-
-sudo -u ubuntu bash << EOF
-URL_BASE=
-URL_REPO_NAME=/mozilla-central
-BASE_DIR=trees
-REPO_NAME=mozilla-central
-SHORT_NAME=mc
-#################
-# mozilla-central
-# The clone process hangs somewhat frequently, but not via wget
-timeout 2 hg clone --stream https://hg.mozilla.org\$URL_BASE\$URL_REPO_NAME \
-    /home/ubuntu/\$BASE_DIR/\$REPO_NAME 2>&1 > /home/ubuntu/\$BASE_DIR/\$SHORT_NAME_url_raw.txt
-echo 'Downloading the bundle...'
-date
-cat /home/ubuntu/\$BASE_DIR/\$SHORT_NAME_url_raw.txt | awk 'NR==1{print \$5}' \
-    | wget -i - -o /home/ubuntu/\$BASE_DIR/\$SHORT_NAME_download_log.txt
-date
-echo 'Extracting the bundle filename minus the front and back single quotes...'
-cat /home/ubuntu/\$BASE_DIR/\$SHORT_NAME_download_log.txt | awk 'NR==6{print substr(\$3, 2, length(\$3)-2)}' 2>&1 \
-    | tee /home/ubuntu/\$BASE_DIR/\$SHORT_NAME_bundle_filename.txt
-echo 'Extracting the bundle...'
-hg init /home/ubuntu/\$BASE_DIR/\$REPO_NAME
-cd /home/ubuntu/\$BASE_DIR/\$REPO_NAME
-date
-hg debugapplystreamclonebundle /home/ubuntu/\$BASE_DIR/\$(cat /home/ubuntu/\$BASE_DIR/\$SHORT_NAME_bundle_filename.txt)
-date
-echo 'Adding the .hgrc for the repository...'
-cat << REOF > /home/ubuntu/\$BASE_DIR/\$REPO_NAME/.hg/hgrc
-[paths]
-
-default = https://hg.mozilla.org\$URL_BASE\$URL_REPO_NAME
-REOF
-chown ubuntu:ubuntu /home/ubuntu/\$BASE_DIR/\$REPO_NAME/.hg/hgrc
-echo 'Updating to default tip gets included below as well...'
-date
-hg -R /home/ubuntu/\$BASE_DIR/\$REPO_NAME pull --rebase
-date
-rm /home/ubuntu/\$BASE_DIR/\$(cat /home/ubuntu/\$BASE_DIR/\$SHORT_NAME_bundle_filename.txt)
-cd /home/ubuntu/\$BASE_DIR
-#################
-EOF
-
-sudo -u ubuntu bash << EOF
-URL_BASE=/releases
-URL_REPO_NAME=/mozilla-beta
-BASE_DIR=trees
-REPO_NAME=mozilla-beta
-SHORT_NAME=mb
-#################
-# mozilla-beta
-# The clone process hangs somewhat frequently, but not via wget
-timeout 2 hg clone --stream https://hg.mozilla.org\$URL_BASE\$URL_REPO_NAME \
-    /home/ubuntu/\$BASE_DIR/\$REPO_NAME 2>&1 > /home/ubuntu/\$BASE_DIR/\$SHORT_NAME_url_raw.txt
-echo 'Downloading the bundle...'
-date
-cat /home/ubuntu/\$BASE_DIR/\$SHORT_NAME_url_raw.txt | awk 'NR==1{print \$5}' \
-    | wget -i - -o /home/ubuntu/\$BASE_DIR/\$SHORT_NAME_download_log.txt
-date
-echo 'Extracting the bundle filename minus the front and back single quotes...'
-cat /home/ubuntu/\$BASE_DIR/\$SHORT_NAME_download_log.txt | awk 'NR==6{print substr(\$3, 2, length(\$3)-2)}' 2>&1 \
-    | tee /home/ubuntu/\$BASE_DIR/\$SHORT_NAME_bundle_filename.txt
-echo 'Extracting the bundle...'
-hg init /home/ubuntu/\$BASE_DIR/\$REPO_NAME
-cd /home/ubuntu/\$BASE_DIR/\$REPO_NAME
-date
-hg debugapplystreamclonebundle /home/ubuntu/\$BASE_DIR/\$(cat /home/ubuntu/\$BASE_DIR/\$SHORT_NAME_bundle_filename.txt)
-date
-echo 'Adding the .hgrc for the repository...'
-cat << REOF > /home/ubuntu/\$BASE_DIR/\$REPO_NAME/.hg/hgrc
-[paths]
-
-default = https://hg.mozilla.org\$URL_BASE\$URL_REPO_NAME
-REOF
-chown ubuntu:ubuntu /home/ubuntu/\$BASE_DIR/\$REPO_NAME/.hg/hgrc
-echo 'Updating to default tip gets included below as well...'
-date
-hg -R /home/ubuntu/\$BASE_DIR/\$REPO_NAME pull --rebase
-date
-rm /home/ubuntu/\$BASE_DIR/\$(cat /home/ubuntu/\$BASE_DIR/\$SHORT_NAME_bundle_filename.txt)
-cd /home/ubuntu/\$BASE_DIR
-#################
-EOF
-
+wget -O- https://git.io/fxN6S | sudo -u ubuntu bash -s -- / mozilla-central /home/ubuntu/trees
+wget -O- https://git.io/fxN6S | sudo -u ubuntu bash -s -- /releases/ mozilla-beta /home/ubuntu/trees
 popd
 date
 
