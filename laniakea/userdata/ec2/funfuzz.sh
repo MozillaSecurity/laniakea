@@ -144,8 +144,8 @@ date
 mkdir -p /home/ubuntu/trees/
 chown ubuntu:ubuntu /home/ubuntu/trees
 pushd /home/ubuntu/trees/
-wget -O- https://git.io/fxN6S | sudo -u ubuntu bash -s -- / mozilla-central /home/ubuntu/trees
-wget -O- https://git.io/fxN6S | sudo -u ubuntu bash -s -- /releases/ mozilla-beta /home/ubuntu/trees
+wget -O- https://git.io/fxA6U | sudo -u ubuntu bash -s -- / mozilla-central /home/ubuntu/trees
+wget -O- https://git.io/fxA6U | sudo -u ubuntu bash -s -- /releases/ mozilla-beta /home/ubuntu/trees
 popd
 date
 
