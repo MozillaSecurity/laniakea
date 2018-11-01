@@ -27,7 +27,7 @@ apt-get --yes --quiet install autoconf2.13 build-essential ccache python-dev pyt
     libasound2-dev libcurl4-openssl-dev libdbus-1-dev libdbus-glib-1-dev libgconf2-dev \
     libgtk2.0-dev libgtk-3-dev libpulse-dev libx11-xcb-dev libxt-dev \
     nasm nodejs python-dbus yasm xvfb \
-    aria2c cmake curl gdb git openssh-client openssh-server screen ripgrep vim
+    aria2 cmake curl gdb git openssh-client openssh-server screen ripgrep vim
 #apt-get --yes --quiet install gcc-6 g++-6
 #apt-get --yes --quiet install lib32z1 gcc-6-multilib g++-6-multilib  # For compiling 32-bit in 64-bit OS
 apt-get --yes --quiet install lib32z1 gcc-7-multilib g++-7-multilib  # For compiling 32-bit in 64-bit OS
