@@ -13,7 +13,6 @@ logger = logging.getLogger('laniakea')
 
 class AzureManagerException(Exception):
     """Exception class for Azure Manager."""
-    pass
 
 
 class AzureManager:

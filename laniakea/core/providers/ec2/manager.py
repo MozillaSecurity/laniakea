@@ -21,7 +21,6 @@ except ImportError as msg:
 
 class EC2ManagerException(Exception):
     """Exception class for Azure Manager."""
-    pass
 
 
 class EC2Manager:

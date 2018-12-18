@@ -19,7 +19,6 @@ except ImportError as msg:
 
 class PacketManagerException(Exception):
     """Exception class for Packet Manager."""
-    pass
 
 
 class PacketConfiguration:
