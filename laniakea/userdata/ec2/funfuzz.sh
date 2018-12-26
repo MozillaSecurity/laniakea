@@ -1,6 +1,6 @@
 #! /bin/bash -ex
 # Be in ~/trees/laniakea directory, be sure @import directories are present.
-# python3 -u -m laniakea ec2 -region=us-east-1 -images ~/amazon.json -create-on-demand -tags Name=funfuzz-1804-ondemand-201811 -image-name funfuzz-ondemand-ebs -ebs-volume-delete-on-termination -ebs-size 96 -root-device-type ebs -userdata laniakea/userdata/ec2/funfuzz.sh
+# python3 -u -m laniakea ec2 -region=us-east-1 -images ~/amazon.json -create-on-demand -tags Name=funfuzz-1804-ondemand-201812 -image-name funfuzz-ondemand-ebs -ebs-volume-delete-on-termination -ebs-size 96 -root-device-type ebs -userdata laniakea/userdata/ec2/funfuzz.sh
 # Stop the instance, create an AMI, copy the AMI, then update EC2SpotManager
 export DEBIAN_FRONTEND=noninteractive  # Bypass ncurses configuration screens
 
@@ -19,8 +19,8 @@ echo "deb-src http://apt.llvm.org/bionic/ llvm-toolchain-bionic-7 main" >> /etc/
 
 apt-get --yes --quiet update
 apt-get --yes --quiet dist-upgrade
-# Check using `hg --cwd ~/trees/mozilla-central/ diff -r b2fa4b07f6f7:be32f4014f92 python/mozboot/mozboot/debian.py`
-# Retrieved on 2018-10-31: https://hg.mozilla.org/mozilla-central/file/be32f4014f92/python/mozboot/mozboot/debian.py
+# Check using `hg --cwd ~/trees/mozilla-central/ diff -r edf1f05e9d00:ad6f51d4af0b python/mozboot/mozboot/debian.py`
+# Retrieved on 2018-12-26: https://hg.mozilla.org/mozilla-central/file/ad6f51d4af0b/python/mozboot/mozboot/debian.py
 apt-get --yes --quiet install autoconf2.13 build-essential ccache python-dev python-pip python-setuptools \
     unzip uuid zip \
     python3-pip python3-setuptools \
