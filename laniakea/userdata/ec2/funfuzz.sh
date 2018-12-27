@@ -7,15 +7,15 @@ export DEBIAN_FRONTEND=noninteractive  # Bypass ncurses configuration screens
 date
 sleep 10  # EC2 takes some time to be able to go online
 # Essential Packages
-# PPAs for newest nodejs, Git, LLVM/Clang 7
+# PPAs for newest nodejs, Git, LLVM/Clang 6
 curl -sL https://deb.nodesource.com/setup_10.x | sudo -E bash -  # For nodejs
 add-apt-repository -y ppa:git-core/ppa  # Git PPA needed to get latest security updates
 add-apt-repository -y ppa:x4121/ripgrep
 #add-apt-repository -y ppa:ubuntu-toolchain-r/test
 # Fingerprint: 6084 F3CF 814B 57C1 CF12 EFD5 15CF 4D18 AF4F 7421
 wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key|sudo apt-key add -
-echo "deb http://apt.llvm.org/bionic/ llvm-toolchain-bionic-7 main" >> /etc/apt/sources.list
-echo "deb-src http://apt.llvm.org/bionic/ llvm-toolchain-bionic-7 main" >> /etc/apt/sources.list
+echo "deb http://apt.llvm.org/bionic/ llvm-toolchain-bionic-6.0 main" >> /etc/apt/sources.list
+echo "deb-src http://apt.llvm.org/bionic/ llvm-toolchain-bionic-6.0 main" >> /etc/apt/sources.list
 
 apt-get --yes --quiet update
 apt-get --yes --quiet dist-upgrade
@@ -35,11 +35,13 @@ apt-get --yes --quiet install lib32z1 gcc-7-multilib g++-7-multilib  # For compi
 # Needed for Valgrind and for compiling with clang, along with llvm-symbolizer
 apt-get --yes --quiet install valgrind libc6-dbg
 
-# Install LLVM/Clang 7
-apt-get --yes --quiet install libllvm-7-ocaml-dev libllvm7 llvm-7 llvm-7-dev llvm-7-doc llvm-7-examples llvm-7-runtime \
-    clang-7 clang-tools-7 clang-7-doc libclang-common-7-dev libclang-7-dev libclang1-7 clang-format-7 python-clang-7 \
-    libfuzzer-7-dev lldb-7 lld-7
+# Install LLVM/Clang 6
+apt-get --yes --quiet install clang-6.0 clang-tools-6.0 clang-6.0-doc libclang-common-6.0-dev libclang-6.0-dev \
+    libclang1-6.0 libllvm6.0 \
+    lldb-6.0 llvm-6.0 llvm-6.0-dev llvm-6.0-doc llvm-6.0-examples llvm-6.0-runtime \
+    clang-format-6.0 python-clang-6.0 lld-6.0 libfuzzer-6.0-dev
 
+# Switch to LLVM/Clang 6
 #update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-5 10 || true  # Ignore exit code if GCC 5 does not exist
 #update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-6 20
 #update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-5 10 || true  # Ignore exit code if GCC 5 does not exist
@@ -50,10 +52,9 @@ apt-get --yes --quiet install libllvm-7-ocaml-dev libllvm7 llvm-7 llvm-7-dev llv
 #update-alternatives --install /usr/bin/c++ c++ /usr/bin/g++ 30
 #update-alternatives --set c++ /usr/bin/g++
 
-# Switch to LLVM/Clang 7
-update-alternatives --install /usr/bin/clang clang /usr/bin/clang-7 8
-update-alternatives --install /usr/bin/clang++ clang++ /usr/bin/clang++-7 8
-update-alternatives --install /usr/bin/llvm-symbolizer llvm-symbolizer /usr/bin/llvm-symbolizer-7 8
+update-alternatives --install /usr/bin/clang clang /usr/bin/clang-6.0 8
+update-alternatives --install /usr/bin/clang++ clang++ /usr/bin/clang++-6.0 8
+update-alternatives --install /usr/bin/llvm-symbolizer llvm-symbolizer /usr/bin/llvm-symbolizer-6.0 8
 
 apt-get --yes --quiet autoremove
 apt-get --yes --quiet upgrade
