@@ -163,6 +163,7 @@ chown root:root /home/ubuntu/funfuzzCronjob
 
 ##############
 
+# When moving this portion to Orion, put it in userdata
 # Overwrite CloudInit's configuration setup on (re)boot
 cat << EOF > /home/ubuntu/overwriteCloudInitConfig.sh
 # Make sure coredumps have the pid appended
