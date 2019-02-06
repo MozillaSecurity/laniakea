@@ -14,19 +14,23 @@ HERE = os.path.abspath(os.path.dirname(__file__))
 
 ABOUT = {}
 with open(os.path.join(HERE, 'laniakea', '__version__.py')) as fo:
-    exec(fo.read(), ABOUT) # pylint: disable=exec-used
+    exec(fo.read(), ABOUT)  # pylint: disable=exec-used
 
 REQUIRED = [
     'appdirs',
     'azure-mgmt-resource==1.2.2',
     'azure-common==1.1.14',
     'boto>=2.48.0,<3.0',
-    'packet-python==1.37.1'
+    'packet-python==1.37.1',
+    'apache-libcloud==2.4.0',
+    'pycryptodome==3.7.3'
 ]
+
 
 def README():
     with open('README.md') as fo:
         return fo.read()
+
 
 class PublishCommand(Command):
     """Command class for: setup.py publish"""
@@ -63,6 +67,7 @@ class PublishCommand(Command):
         os.system('twine upload dist/*')
 
         sys.exit()
+
 
 if __name__ == '__main__':
     setup(
