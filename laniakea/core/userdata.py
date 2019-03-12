@@ -31,8 +31,8 @@ class UserData:
     @staticmethod
     def parse_only_criterias(conditions):
         result = {}
-        for kv in conditions: # pylint: disable=invalid-name
-            k, v = kv.split('=', 1) # pylint: disable=invalid-name
+        for kv in conditions:  # pylint: disable=invalid-name
+            k, v = kv.split('=', 1)  # pylint: disable=invalid-name
             if "," in v:
                 result[k] = v.split(',', 1)
             else:
@@ -43,7 +43,7 @@ class UserData:
     def convert_str_to_int(arg):
         """
         """
-        for k, v in list(arg.items()): # pylint: disable=invalid-name
+        for k, v in list(arg.items()):  # pylint: disable=invalid-name
             try:
                 arg[String(k)] = int(v)
             except ValueError:
@@ -119,7 +119,7 @@ class UserData:
         :return: UserData script with the contents of the imported files.
         :rtype: str
         """
-        imports = re.findall('@import\((.*?)\)@', userdata) # pylint: disable=anomalous-backslash-in-string
+        imports = re.findall('@import\((.*?)\)@', userdata)  # pylint: disable=anomalous-backslash-in-string
         if not imports:
             return userdata
 

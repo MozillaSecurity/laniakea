@@ -11,14 +11,14 @@ import pytest
 
 from laniakea.core.providers.packet import PacketManager
 
-#@pytest.fixture
-#def packet():
+# @pytest.fixture
+# def packet():
 #    with open(os.path.join(os.getcwd(), 'laniakea/examples/packet.json')) as fo:
 #        conf = json.loads(fo.read())
 #    return PacketManager(conf)
 
 
-#def test_list_projects(packet):
+# def test_list_projects(packet):
 #    for plan in packet.list_projects():
 #        assert hasattr(plan, 'name')
 #        assert hasattr(plan, 'id')

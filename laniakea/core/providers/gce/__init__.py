@@ -190,17 +190,6 @@ class GceCommandLine:
                 logging.error(msg)
                 return 1
 
-        if args.list:
-            try:
-                nodes = cls.list(cls, cluster, args.zone, args.states, args.names, args.tags)
-                for node in nodes:
-                    logging.info('Node: %s is %s; IP: %s (%s); Preemtible: %s',
-                                 node.name, node.state,
-                                 Kurz.ips(node), Kurz.zone(node), Kurz.is_preemtible(node))
-            except ComputeEngineManagerException as msg:
-                logger.error(msg)
-                return 1
-
         # Run filters before dealing with any state routine.
         nodes = []
         if any([args.stop, args.start, args.reboot, args.terminate]):
@@ -235,6 +224,17 @@ class GceCommandLine:
             try:
                 logger.info("Terminating %d node%s ...", len(nodes), Common.pluralize(nodes))
                 cluster.terminate(nodes)
+            except ComputeEngineManagerException as msg:
+                logger.error(msg)
+                return 1
+
+        if args.list:
+            try:
+                nodes = cls.list(cls, cluster, args.zone, args.states, args.names, args.tags)
+                for node in nodes:
+                    logging.info('Node: %s is %s; IP: %s (%s); Preemtible: %s',
+                                 node.name, node.state,
+                                 Kurz.ips(node), Kurz.zone(node), Kurz.is_preemtible(node))
             except ComputeEngineManagerException as msg:
                 logger.error(msg)
                 return 1

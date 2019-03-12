@@ -182,7 +182,7 @@ class ComputeEngineManager:
         :param   number: Amount of nodes to be spawned.
         :type    number: ``int``
 
-        :param   meta: Metadata dictionary for instance.
+        :param   meta: Metadata dictionary for the nodes.
         :type    meta: ``dict`` or ``None``
 
         :param   name: The name of the node to create.
@@ -203,9 +203,13 @@ class ComputeEngineManager:
         nodes = None
         try:
             if number == 1:
+                # Used because of suffix naming scheme in ex_create_multiple_nodes() for a single node.
                 nodes = [self.gce.create_node(name, size, image, **meta)]
             else:
-                nodes = self.gce.ex_create_multiple_nodes(name, size, None, number, **meta)
+                nodes = self.gce.ex_create_multiple_nodes(name, size, None, number,
+                                                          ignore_errors=False,
+                                                          poll_interval=1,
+                                                          **meta)
         except Exception as err:
             raise ComputeEngineManagerException("Failed to create node: {}".format(err))
 
@@ -297,7 +301,9 @@ class ComputeEngineManager:
 
         if nodes is None:
             nodes = []
-        result = self.gce.ex_destroy_multiple_nodes(nodes or self.nodes)
+        result = self.gce.ex_destroy_multiple_nodes(nodes or self.nodes,
+                                                    poll_interval=1,
+                                                    ignore_errors=False)
         for i, success in enumerate(result):
             if success:
                 logging.info('Destroyed: %s', nodes[i].name)

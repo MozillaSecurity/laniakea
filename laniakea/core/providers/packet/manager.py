@@ -147,7 +147,7 @@ class PacketManager:
         """Print method for devices.
         """
         for device in devices:
-            print('ID: {} OS: {} IP: {} State: {} ({}) Tags: {}' \
+            print('ID: {} OS: {} IP: {} State: {} ({}) Tags: {}'
                   .format(device.id,
                           device.operating_system.slug,
                           self.get_public_ip(device.ip_addresses),
@@ -156,13 +156,13 @@ class PacketManager:
                           device.tags))
 
     @staticmethod
-    def filter(criterias, devices): # pylint: disable=too-many-branches
+    def filter(criterias, devices):  # pylint: disable=too-many-branches
         """Filter a device by criterias on the root level of the dictionary.
         """
         if not criterias:
             return devices
         result = []
-        for device in devices: # pylint: disable=too-many-nested-blocks
+        for device in devices:  # pylint: disable=too-many-nested-blocks
             for criteria_name, criteria_values in criterias.items():
                 if criteria_name in device.keys():
                     if isinstance(device[criteria_name], list):
@@ -195,7 +195,7 @@ class PacketManager:
         for addr in addresses:
             if addr['public'] and addr['address_family'] == version:
                 return addr.get('address')
-        return None # pylint would complain about inconsistent-return-statements.
+        return None  # pylint would complain about inconsistent-return-statements.
 
     def validate_capacity(self, servers):
         """Validates if a deploy can be fulfilled.
