@@ -13,6 +13,7 @@ logger = logging.getLogger('laniakea')
 try:
     from libcloud.compute.types import Provider
     from libcloud.compute.providers import get_driver
+    from libcloud.compute.drivers.gce import GCEFailedNode
     from libcloud.common.google import InvalidRequestError
 except ImportError as msg:
     logger.error(msg)
@@ -173,7 +174,7 @@ class ComputeEngineManager:
         if self.gce is None:
             self.connect()
 
-    def create(self, size, number, meta, name=None, image=None):
+    def create(self, size, number, meta, name=None, image=None, retries=3):
         """Create container VM nodes. Uses a container declaration which is undocumented.
 
         :param   size: The machine type to use.
@@ -191,6 +192,9 @@ class ComputeEngineManager:
         :param   image: The image used to create the disk - optional for multiple nodes.
         :type    image: ``str`` or :class:`GCENodeImage` or ``None``
 
+        :param   retries: The amount of tries to perform in case nodes fail to create.
+        :type    retries: ``int``
+
         :return: A list of newly created Node objects for the new nodes.
         :rtype:  ``list`` of :class:`Node`
         """
@@ -200,20 +204,30 @@ class ComputeEngineManager:
         if image is None and number == 1:
             raise ComputeEngineManagerException("Base image not provided.")
 
-        nodes = None
-        try:
+        successful = 0
+        nodes = []
+
+        while number - successful > 0 and retries > 0:
             if number == 1:
                 # Used because of suffix naming scheme in ex_create_multiple_nodes() for a single node.
                 nodes = [self.gce.create_node(name, size, image, **meta)]
             else:
-                nodes = self.gce.ex_create_multiple_nodes(name, size, None, number,
+                nodes = self.gce.ex_create_multiple_nodes(name, size, None, number - successful,
                                                           ignore_errors=False,
                                                           poll_interval=1,
                                                           **meta)
-        except Exception as err:
-            raise ComputeEngineManagerException("Failed to create node: {}".format(err))
+            for node in nodes:
+                if isinstance(node, GCEFailedNode):
+                    self.logger.error("Node failed to create, code %s error: %s", node.code, node.error)
+                    continue
+                successful += 1
+                self.nodes.append(node)
 
-        self.nodes += nodes
+            retries -= 1
+
+        if number != successful:
+            self.logger.error("We tried but %d nodes failed to create.", number - successful)
+
         return nodes
 
     def stop(self, nodes=None):
