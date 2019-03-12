@@ -35,18 +35,18 @@ class PacketConfiguration:
             raise PacketManagerException('The auth token for Packet is not defined but required.')
         if not self.conf.get('projects'):
             raise PacketManagerException('Required "projects" section is missing.')
-        else:
-            projects = self.conf.get('projects')
-            if not projects.keys():
-                raise PacketManagerException('At least one project at Packet is required.')
-            else:
-                failure = False
-                for project, identifier in projects.items():
-                    if not identifier:
-                        failure = True
-                        logging.error('Project "%s" has no valid identifier.', project)
-                if failure:
-                    raise PacketManagerException('One or more projects are not setup appropriately.')
+
+        projects = self.conf.get('projects')
+        if not projects.keys():
+            raise PacketManagerException('At least one project at Packet is required.')
+
+        failure = False
+        for project, identifier in projects.items():
+            if not identifier:
+                failure = True
+                logging.error('Project "%s" has no valid identifier.', project)
+        if failure:
+            raise PacketManagerException('One or more projects are not setup appropriately.')
 
 
 class PacketManager:
