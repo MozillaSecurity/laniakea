@@ -1,7 +1,11 @@
 spec:
-containers:
-    - name: mozillasecurity/fuzzos
-    image: mozillasecurity/fuzzos
-    stdin: false
-    tty: false
-restartPolicy: Always
+  containers:
+    - name: test
+      image: alpine:latest
+      command:
+        - /bin/ping
+      args:
+        - google.com
+      stdin: false
+      tty: false
+  restartPolicy: Always
