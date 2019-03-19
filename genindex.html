@@ -85,9 +85,10 @@
             
               <ul>
 <li class="toctree-l1"><a class="reference internal" href="modules.html">Laniakea</a></li>
-<li class="toctree-l1"><a class="reference internal" href="laniakea.core.providers.packet.html">Packet</a></li>
-<li class="toctree-l1"><a class="reference internal" href="laniakea.core.providers.ec2.html">EC2</a></li>
-<li class="toctree-l1"><a class="reference internal" href="laniakea.core.providers.azure.html">Azure</a></li>
+<li class="toctree-l1"><a class="reference internal" href="laniakea.core.providers.gce.html">Google Compute Engine</a></li>
+<li class="toctree-l1"><a class="reference internal" href="laniakea.core.providers.packet.html">Packet Bare Metal</a></li>
+<li class="toctree-l1"><a class="reference internal" href="laniakea.core.providers.azure.html">Microsoft Azure</a></li>
+<li class="toctree-l1"><a class="reference internal" href="laniakea.core.providers.ec2.html">Amazon EC2</a></li>
 </ul>
 
             
@@ -155,14 +156,18 @@
 
 <div class="genindex-jumpbox">
  <a href="#A"><strong>A</strong></a>
+ | <a href="#B"><strong>B</strong></a>
  | <a href="#C"><strong>C</strong></a>
  | <a href="#D"><strong>D</strong></a>
+ | <a href="#E"><strong>E</strong></a>
  | <a href="#F"><strong>F</strong></a>
  | <a href="#G"><strong>G</strong></a>
  | <a href="#H"><strong>H</strong></a>
  | <a href="#I"><strong>I</strong></a>
+ | <a href="#K"><strong>K</strong></a>
  | <a href="#L"><strong>L</strong></a>
  | <a href="#M"><strong>M</strong></a>
+ | <a href="#N"><strong>N</strong></a>
  | <a href="#O"><strong>O</strong></a>
  | <a href="#P"><strong>P</strong></a>
  | <a href="#R"><strong>R</strong></a>
@@ -171,6 +176,7 @@
  | <a href="#U"><strong>U</strong></a>
  | <a href="#V"><strong>V</strong></a>
  | <a href="#W"><strong>W</strong></a>
+ | <a href="#Z"><strong>Z</strong></a>
  
 </div>
 <h2 id="A">A</h2>
@@ -181,13 +187,15 @@
       <li><a href="laniakea.core.providers.azure.html#laniakea.core.providers.azure.AzureCommandLine.add_arguments">add_arguments() (laniakea.core.providers.azure.AzureCommandLine class method)</a>
 
       <ul>
+        <li><a href="laniakea.core.providers.gce.html#laniakea.core.providers.gce.GceCommandLine.add_arguments">(laniakea.core.providers.gce.GceCommandLine class method)</a>
+</li>
         <li><a href="laniakea.core.providers.packet.html#laniakea.core.providers.packet.PacketCommandLine.add_arguments">(laniakea.core.providers.packet.PacketCommandLine class method)</a>
 </li>
       </ul></li>
-      <li><a href="laniakea.core.providers.packet.html#laniakea.core.providers.packet.manager.PacketManager.attach_volume_to_device">attach_volume_to_device() (laniakea.core.providers.packet.manager.PacketManager method)</a>
-</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="laniakea.core.providers.packet.html#laniakea.core.providers.packet.manager.PacketManager.attach_volume_to_device">attach_volume_to_device() (laniakea.core.providers.packet.manager.PacketManager method)</a>
+</li>
       <li><a href="laniakea.core.html#laniakea.core.common.AttributeTree">AttributeTree (class in laniakea.core.common)</a>
 </li>
       <li><a href="laniakea.core.providers.azure.html#laniakea.core.providers.azure.AzureCommandLine">AzureCommandLine (class in laniakea.core.providers.azure)</a>
@@ -199,6 +207,18 @@
   </ul></td>
 </tr></table>
 
+<h2 id="B">B</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="laniakea.core.providers.gce.html#laniakea.core.providers.gce.manager.ComputeEngineManager.build_bootdisk">build_bootdisk() (laniakea.core.providers.gce.manager.ComputeEngineManager method)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="laniakea.core.providers.gce.html#laniakea.core.providers.gce.manager.ComputeEngineManager.build_container_vm">build_container_vm() (laniakea.core.providers.gce.manager.ComputeEngineManager method)</a>
+</li>
+  </ul></td>
+</tr></table>
+
 <h2 id="C">C</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
@@ -206,16 +226,30 @@
 </li>
       <li><a href="laniakea.core.html#laniakea.core.common.ModuleLoader.command_line_interfaces">command_line_interfaces() (laniakea.core.common.ModuleLoader method)</a>
 </li>
-      <li><a href="laniakea.core.providers.azure.html#laniakea.core.providers.azure.manager.AzureManager.connect">connect() (laniakea.core.providers.azure.manager.AzureManager method)</a>
+      <li><a href="laniakea.core.html#laniakea.core.common.Common">Common (class in laniakea.core.common)</a>
 </li>
+      <li><a href="laniakea.core.providers.gce.html#laniakea.core.providers.gce.manager.ComputeEngineManager">ComputeEngineManager (class in laniakea.core.providers.gce.manager)</a>
+</li>
+      <li><a href="laniakea.core.providers.gce.html#laniakea.core.providers.gce.manager.ComputeEngineManagerException">ComputeEngineManagerException</a>
+</li>
+      <li><a href="laniakea.core.providers.azure.html#laniakea.core.providers.azure.manager.AzureManager.connect">connect() (laniakea.core.providers.azure.manager.AzureManager method)</a>
+
+      <ul>
+        <li><a href="laniakea.core.providers.gce.html#laniakea.core.providers.gce.manager.ComputeEngineManager.connect">(laniakea.core.providers.gce.manager.ComputeEngineManager method)</a>
+</li>
+      </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="laniakea.core.html#laniakea.core.userdata.UserData.convert_pair_to_dict">convert_pair_to_dict() (laniakea.core.userdata.UserData static method)</a>
 </li>
       <li><a href="laniakea.core.html#laniakea.core.userdata.UserData.convert_str_to_int">convert_str_to_int() (laniakea.core.userdata.UserData static method)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="laniakea.core.providers.azure.html#laniakea.core.providers.azure.manager.AzureManager.create">create() (laniakea.core.providers.azure.manager.AzureManager method)</a>
+
+      <ul>
+        <li><a href="laniakea.core.providers.gce.html#laniakea.core.providers.gce.manager.ComputeEngineManager.create">(laniakea.core.providers.gce.manager.ComputeEngineManager method)</a>
 </li>
+      </ul></li>
       <li><a href="laniakea.core.providers.packet.html#laniakea.core.providers.packet.manager.PacketManager.create_demand">create_demand() (laniakea.core.providers.packet.manager.PacketManager method)</a>
 </li>
       <li><a href="laniakea.core.providers.azure.html#laniakea.core.providers.azure.manager.AzureManager.create_parameters">create_parameters() (laniakea.core.providers.azure.manager.AzureManager method)</a>
@@ -239,13 +273,27 @@
   </ul></td>
 </tr></table>
 
+<h2 id="E">E</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="laniakea.core.providers.gce.html#laniakea.core.providers.gce.manager.Filter.expr">expr() (laniakea.core.providers.gce.manager.Filter method)</a>
+</li>
+  </ul></td>
+</tr></table>
+
 <h2 id="F">F</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="laniakea.core.html#laniakea.core.common.Focus.fail">fail() (laniakea.core.common.Focus static method)</a>
 </li>
-      <li><a href="laniakea.core.providers.packet.html#laniakea.core.providers.packet.manager.PacketManager.filter">filter() (laniakea.core.providers.packet.manager.PacketManager static method)</a>
+      <li><a href="laniakea.core.providers.gce.html#laniakea.core.providers.gce.manager.Filter">Filter (class in laniakea.core.providers.gce.manager)</a>
 </li>
+      <li><a href="laniakea.core.providers.gce.html#laniakea.core.providers.gce.manager.ComputeEngineManager.filter">filter() (laniakea.core.providers.gce.manager.ComputeEngineManager method)</a>
+
+      <ul>
+        <li><a href="laniakea.core.providers.packet.html#laniakea.core.providers.packet.manager.PacketManager.filter">(laniakea.core.providers.packet.manager.PacketManager static method)</a>
+</li>
+      </ul></li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="laniakea.core.html#laniakea.core.common.FlatJSON">FlatJSON (class in laniakea.core.common)</a>
@@ -260,14 +308,20 @@
 <h2 id="G">G</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="laniakea.core.providers.gce.html#laniakea.core.providers.gce.GceCommandLine">GceCommandLine (class in laniakea.core.providers.gce)</a>
+</li>
       <li><a href="laniakea.core.html#laniakea.core.multipart.MultipartUserData.get_mime_type">get_mime_type() (laniakea.core.multipart.MultipartUserData static method)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="laniakea.core.providers.packet.html#laniakea.core.providers.packet.manager.PacketManager.get_public_ip">get_public_ip() (laniakea.core.providers.packet.manager.PacketManager static method)</a>
 </li>
-      <li><a href="laniakea.core.providers.packet.html#laniakea.core.providers.packet.manager.PacketManager.get_random_hostname">get_random_hostname() (laniakea.core.providers.packet.manager.PacketManager static method)</a>
+      <li><a href="laniakea.core.html#laniakea.core.common.Common.get_random_hostname">get_random_hostname() (laniakea.core.common.Common static method)</a>
+
+      <ul>
+        <li><a href="laniakea.core.providers.packet.html#laniakea.core.providers.packet.manager.PacketManager.get_random_hostname">(laniakea.core.providers.packet.manager.PacketManager static method)</a>
 </li>
+      </ul></li>
   </ul></td>
 </tr></table>
 
@@ -278,12 +332,12 @@
 </li>
       <li><a href="laniakea.core.html#laniakea.core.userdata.UserData.handle_tags">handle_tags() (laniakea.core.userdata.UserData static method)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="laniakea.core.providers.azure.html#laniakea.core.providers.azure.AzureCommandLine.HOME">HOME (laniakea.core.providers.azure.AzureCommandLine attribute)</a>
 
       <ul>
         <li><a href="laniakea.html#laniakea.LaniakeaCommandLine.HOME">(laniakea.LaniakeaCommandLine attribute)</a>
+</li>
+        <li><a href="laniakea.core.providers.gce.html#laniakea.core.providers.gce.GceCommandLine.HOME">(laniakea.core.providers.gce.GceCommandLine attribute)</a>
 </li>
         <li><a href="laniakea.core.providers.packet.html#laniakea.core.providers.packet.PacketCommandLine.HOME">(laniakea.core.providers.packet.PacketCommandLine attribute)</a>
 </li>
@@ -296,9 +350,25 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="laniakea.core.html#laniakea.core.common.Focus.info">info() (laniakea.core.common.Focus static method)</a>
 </li>
+      <li><a href="laniakea.core.html#laniakea.core.common.Focus.init">init() (laniakea.core.common.Focus static method)</a>
+</li>
+      <li><a href="laniakea.core.providers.gce.html#laniakea.core.providers.gce.manager.Kurz.ips">ips() (laniakea.core.providers.gce.manager.Kurz static method)</a>
+</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="laniakea.core.html#laniakea.core.common.Focus.init">init() (laniakea.core.common.Focus static method)</a>
+      <li><a href="laniakea.core.providers.gce.html#laniakea.core.providers.gce.manager.ComputeEngineManager.is_connected">is_connected() (laniakea.core.providers.gce.manager.ComputeEngineManager method)</a>
+</li>
+      <li><a href="laniakea.core.providers.gce.html#laniakea.core.providers.gce.manager.Filter.is_preemptible">is_preemptible() (laniakea.core.providers.gce.manager.Filter method)</a>
+</li>
+      <li><a href="laniakea.core.providers.gce.html#laniakea.core.providers.gce.manager.Kurz.is_preemtible">is_preemtible() (laniakea.core.providers.gce.manager.Kurz static method)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="K">K</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="laniakea.core.providers.gce.html#laniakea.core.providers.gce.manager.Kurz">Kurz (class in laniakea.core.providers.gce.manager)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -320,6 +390,10 @@
 </li>
       <li><a href="laniakea.core.providers.azure.html#module-laniakea.core.providers.azure.manager">laniakea.core.providers.azure.manager (module)</a>
 </li>
+      <li><a href="laniakea.core.providers.gce.html#module-laniakea.core.providers.gce">laniakea.core.providers.gce (module)</a>
+</li>
+      <li><a href="laniakea.core.providers.gce.html#module-laniakea.core.providers.gce.manager">laniakea.core.providers.gce.manager (module)</a>
+</li>
       <li><a href="laniakea.core.providers.packet.html#module-laniakea.core.providers.packet">laniakea.core.providers.packet (module)</a>
 </li>
       <li><a href="laniakea.core.providers.packet.html#module-laniakea.core.providers.packet.manager">laniakea.core.providers.packet.manager (module)</a>
@@ -329,6 +403,8 @@
       <li><a href="laniakea.core.html#module-laniakea.core.userdata">laniakea.core.userdata (module)</a>
 </li>
       <li><a href="laniakea.html#laniakea.LaniakeaCommandLine">LaniakeaCommandLine (class in laniakea)</a>
+</li>
+      <li><a href="laniakea.core.providers.gce.html#laniakea.core.providers.gce.GceCommandLine.list">list() (laniakea.core.providers.gce.GceCommandLine method)</a>
 </li>
       <li><a href="laniakea.core.providers.packet.html#laniakea.core.providers.packet.manager.PacketManager.list_devices">list_devices() (laniakea.core.providers.packet.manager.PacketManager method)</a>
 </li>
@@ -357,6 +433,8 @@
       <ul>
         <li><a href="laniakea.html#laniakea.LaniakeaCommandLine.main">(laniakea.LaniakeaCommandLine class method)</a>
 </li>
+        <li><a href="laniakea.core.providers.gce.html#laniakea.core.providers.gce.GceCommandLine.main">(laniakea.core.providers.gce.GceCommandLine class method)</a>
+</li>
         <li><a href="laniakea.core.providers.packet.html#laniakea.core.providers.packet.PacketCommandLine.main">(laniakea.core.providers.packet.PacketCommandLine class method)</a>
 </li>
       </ul></li>
@@ -367,6 +445,14 @@
       <li><a href="laniakea.core.html#laniakea.core.common.ModuleLoader">ModuleLoader (class in laniakea.core.common)</a>
 </li>
       <li><a href="laniakea.core.html#laniakea.core.multipart.MultipartUserData">MultipartUserData (class in laniakea.core.multipart)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="N">N</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="laniakea.core.providers.gce.html#laniakea.core.providers.gce.manager.Filter.name">name() (laniakea.core.providers.gce.manager.Filter method)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -394,10 +480,16 @@
 </li>
       <li><a href="laniakea.core.html#laniakea.core.userdata.UserData.parse_only_criterias">parse_only_criterias() (laniakea.core.userdata.UserData static method)</a>
 </li>
+      <li><a href="laniakea.core.html#laniakea.core.common.Common.pluralize">pluralize() (laniakea.core.common.Common static method)</a>
+</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="laniakea.core.providers.packet.html#laniakea.core.providers.packet.manager.PacketManager.pprint">pprint() (laniakea.core.providers.packet.manager.PacketManager method)</a>
+      <li><a href="laniakea.core.html#laniakea.core.common.Common.pprint">pprint() (laniakea.core.common.Common static method)</a>
+
+      <ul>
+        <li><a href="laniakea.core.providers.packet.html#laniakea.core.providers.packet.manager.PacketManager.pprint">(laniakea.core.providers.packet.manager.PacketManager method)</a>
 </li>
+      </ul></li>
       <li><a href="laniakea.core.providers.packet.html#laniakea.core.providers.packet.manager.PacketManager.print_devices">print_devices() (laniakea.core.providers.packet.manager.PacketManager method)</a>
 </li>
       <li><a href="laniakea.core.providers.packet.html#laniakea.core.providers.packet.manager.PacketManager.print_facilities">print_facilities() (laniakea.core.providers.packet.manager.PacketManager method)</a>
@@ -416,8 +508,12 @@
 <h2 id="R">R</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="laniakea.core.providers.packet.html#laniakea.core.providers.packet.manager.PacketManager.reboot">reboot() (laniakea.core.providers.packet.manager.PacketManager method)</a>
+      <li><a href="laniakea.core.providers.gce.html#laniakea.core.providers.gce.manager.ComputeEngineManager.reboot">reboot() (laniakea.core.providers.gce.manager.ComputeEngineManager method)</a>
+
+      <ul>
+        <li><a href="laniakea.core.providers.packet.html#laniakea.core.providers.packet.manager.PacketManager.reboot">(laniakea.core.providers.packet.manager.PacketManager method)</a>
 </li>
+      </ul></li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="laniakea.core.html#laniakea.core.common.Focus.repr">repr() (laniakea.core.common.Focus static method)</a>
@@ -432,11 +528,17 @@
 </li>
       <li><a href="laniakea.core.html#laniakea.core.common.AttributeTree.setdefault">setdefault() (laniakea.core.common.AttributeTree method)</a>
 </li>
+      <li><a href="laniakea.core.providers.gce.html#laniakea.core.providers.gce.manager.ComputeEngineManager.start">start() (laniakea.core.providers.gce.manager.ComputeEngineManager method)</a>
+</li>
+      <li><a href="laniakea.core.providers.gce.html#laniakea.core.providers.gce.manager.Filter.state">state() (laniakea.core.providers.gce.manager.Filter method)</a>
+</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="laniakea.core.providers.azure.html#laniakea.core.providers.azure.manager.AzureManager.stop">stop() (laniakea.core.providers.azure.manager.AzureManager method)</a>
 
       <ul>
+        <li><a href="laniakea.core.providers.gce.html#laniakea.core.providers.gce.manager.ComputeEngineManager.stop">(laniakea.core.providers.gce.manager.ComputeEngineManager method)</a>
+</li>
         <li><a href="laniakea.core.providers.packet.html#laniakea.core.providers.packet.manager.PacketManager.stop">(laniakea.core.providers.packet.manager.PacketManager method)</a>
 </li>
       </ul></li>
@@ -448,12 +550,22 @@
 <h2 id="T">T</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="laniakea.core.providers.gce.html#laniakea.core.providers.gce.manager.Filter.tags">tags() (laniakea.core.providers.gce.manager.Filter method)</a>
+</li>
       <li><a href="laniakea.core.providers.azure.html#laniakea.core.providers.azure.manager.AzureManager.terminate">terminate() (laniakea.core.providers.azure.manager.AzureManager method)</a>
 
       <ul>
+        <li><a href="laniakea.core.providers.gce.html#laniakea.core.providers.gce.manager.ComputeEngineManager.terminate">(laniakea.core.providers.gce.manager.ComputeEngineManager method)</a>
+</li>
         <li><a href="laniakea.core.providers.packet.html#laniakea.core.providers.packet.manager.PacketManager.terminate">(laniakea.core.providers.packet.manager.PacketManager method)</a>
 </li>
       </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="laniakea.core.providers.gce.html#laniakea.core.providers.gce.manager.ComputeEngineManager.terminate_ex">terminate_ex() (laniakea.core.providers.gce.manager.ComputeEngineManager method)</a>
+</li>
+      <li><a href="laniakea.core.providers.gce.html#laniakea.core.providers.gce.manager.ComputeEngineManager.terminate_with_threads">terminate_with_threads() (laniakea.core.providers.gce.manager.ComputeEngineManager method)</a>
+</li>
   </ul></td>
 </tr></table>
 
@@ -476,12 +588,12 @@
 </li>
       <li><a href="laniakea.core.providers.packet.html#laniakea.core.providers.packet.manager.PacketManager.validate_capacity">validate_capacity() (laniakea.core.providers.packet.manager.PacketManager method)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="laniakea.core.providers.azure.html#laniakea.core.providers.azure.AzureCommandLine.VERSION">VERSION (laniakea.core.providers.azure.AzureCommandLine attribute)</a>
 
       <ul>
         <li><a href="laniakea.html#laniakea.LaniakeaCommandLine.VERSION">(laniakea.LaniakeaCommandLine attribute)</a>
+</li>
+        <li><a href="laniakea.core.providers.gce.html#laniakea.core.providers.gce.GceCommandLine.VERSION">(laniakea.core.providers.gce.GceCommandLine attribute)</a>
 </li>
         <li><a href="laniakea.core.providers.packet.html#laniakea.core.providers.packet.PacketCommandLine.VERSION">(laniakea.core.providers.packet.PacketCommandLine attribute)</a>
 </li>
@@ -493,6 +605,14 @@
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="laniakea.core.html#laniakea.core.common.Focus.warn">warn() (laniakea.core.common.Focus static method)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="Z">Z</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="laniakea.core.providers.gce.html#laniakea.core.providers.gce.manager.Kurz.zone">zone() (laniakea.core.providers.gce.manager.Kurz static method)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -509,7 +629,7 @@
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2018, Mozilla Fuzzing Team
+        &copy; Copyright 2019, Mozilla Fuzzing Team
 
     </p>
   </div>

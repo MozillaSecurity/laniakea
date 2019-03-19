@@ -1,0 +1,607 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>laniakea.core.providers.gce package &mdash; Laniakea 1.16.0 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script type="text/javascript" src="_static/jquery.js"></script>
+        <script type="text/javascript" src="_static/underscore.js"></script>
+        <script type="text/javascript" src="_static/doctools.js"></script>
+        <script type="text/javascript" src="_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="laniakea.core.providers.packet package" href="laniakea.core.providers.packet.html" />
+    <link rel="prev" title="laniakea.core.providers.ec2 package" href="laniakea.core.providers.ec2.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home"> Laniakea
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                1.16.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="modules.html">Laniakea</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="laniakea.html">laniakea package</a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="laniakea.html#subpackages">Subpackages</a><ul class="current">
+<li class="toctree-l4 current"><a class="reference internal" href="laniakea.core.html">laniakea.core package</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="laniakea.html#module-laniakea">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Google Compute Engine</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#module-laniakea.core.providers.gce.manager">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-laniakea.core.providers.gce">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="laniakea.core.providers.packet.html">Packet Bare Metal</a></li>
+<li class="toctree-l1"><a class="reference internal" href="laniakea.core.providers.azure.html">Microsoft Azure</a></li>
+<li class="toctree-l1"><a class="reference internal" href="laniakea.core.providers.ec2.html">Amazon EC2</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Laniakea</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="modules.html">laniakea</a> &raquo;</li>
+        
+          <li><a href="laniakea.html">laniakea package</a> &raquo;</li>
+        
+          <li><a href="laniakea.core.html">laniakea.core package</a> &raquo;</li>
+        
+          <li><a href="laniakea.core.providers.html">laniakea.core.providers package</a> &raquo;</li>
+        
+      <li>laniakea.core.providers.gce package</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/laniakea.core.providers.gce.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="laniakea-core-providers-gce-package">
+<h1>laniakea.core.providers.gce package<a class="headerlink" href="#laniakea-core-providers-gce-package" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="module-laniakea.core.providers.gce.manager">
+<span id="submodules"></span><h2>Submodules<a class="headerlink" href="#module-laniakea.core.providers.gce.manager" title="Permalink to this headline">¶</a></h2>
+<p>Google Compute Engine API</p>
+<dl class="class">
+<dt id="laniakea.core.providers.gce.manager.ComputeEngineManager">
+<em class="property">class </em><code class="descclassname">laniakea.core.providers.gce.manager.</code><code class="descname">ComputeEngineManager</code><span class="sig-paren">(</span><em>user_id</em>, <em>key</em>, <em>project</em><span class="sig-paren">)</span><a class="headerlink" href="#laniakea.core.providers.gce.manager.ComputeEngineManager" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Google Compute Engine Manager base class.</p>
+<dl class="method">
+<dt id="laniakea.core.providers.gce.manager.ComputeEngineManager.build_bootdisk">
+<code class="descname">build_bootdisk</code><span class="sig-paren">(</span><em>image</em>, <em>size=10</em>, <em>auto_delete=True</em><span class="sig-paren">)</span><a class="headerlink" href="#laniakea.core.providers.gce.manager.ComputeEngineManager.build_bootdisk" title="Permalink to this definition">¶</a></dt>
+<dd><p>Buid a disk struct.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>image</strong> (<code class="docutils literal notranslate"><span class="pre">str</span></code>) – Base image name.</li>
+<li><strong>size</strong> (<code class="docutils literal notranslate"><span class="pre">int</span></code>) – Persistent disk size.</li>
+<li><strong>auto_delete</strong> (<code class="docutils literal notranslate"><span class="pre">bool</span></code>) – Wether to auto delete disk on instance termination.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="laniakea.core.providers.gce.manager.ComputeEngineManager.build_container_vm">
+<code class="descname">build_container_vm</code><span class="sig-paren">(</span><em>container</em>, <em>disk</em>, <em>zone='us-east1-b'</em>, <em>tags=None</em>, <em>preemptible=True</em><span class="sig-paren">)</span><a class="headerlink" href="#laniakea.core.providers.gce.manager.ComputeEngineManager.build_container_vm" title="Permalink to this definition">¶</a></dt>
+<dd><p>Build kwargs for a container VM.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>container</strong> (<code class="docutils literal notranslate"><span class="pre">dict</span></code>) – Container declaration.</li>
+<li><strong>disk</strong> (<code class="docutils literal notranslate"><span class="pre">dict</span></code>) – Disk definition structure.</li>
+<li><strong>zone</strong> (<code class="docutils literal notranslate"><span class="pre">str</span></code>) – The zone in which the instance should run.</li>
+<li><strong>tags</strong> (<code class="docutils literal notranslate"><span class="pre">dict</span></code>) – Tags associated with the instance.</li>
+<li><strong>preemptible</strong> (<code class="docutils literal notranslate"><span class="pre">bool</span></code>) – Wether the instance is a preemtible or not.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="laniakea.core.providers.gce.manager.ComputeEngineManager.connect">
+<code class="descname">connect</code><span class="sig-paren">(</span><em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#laniakea.core.providers.gce.manager.ComputeEngineManager.connect" title="Permalink to this definition">¶</a></dt>
+<dd><p>Connect to Google Compute Engine.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="laniakea.core.providers.gce.manager.ComputeEngineManager.create">
+<code class="descname">create</code><span class="sig-paren">(</span><em>size</em>, <em>number</em>, <em>meta</em>, <em>name=None</em>, <em>image=None</em>, <em>attempts=3</em><span class="sig-paren">)</span><a class="headerlink" href="#laniakea.core.providers.gce.manager.ComputeEngineManager.create" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create container VM nodes. Uses a container declaration which is undocumented.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>size</strong> (<code class="docutils literal notranslate"><span class="pre">str</span></code> or <code class="xref py py-class docutils literal notranslate"><span class="pre">GCENodeSize</span></code>) – The machine type to use.</li>
+<li><strong>number</strong> (<code class="docutils literal notranslate"><span class="pre">int</span></code>) – Amount of nodes to be spawned.</li>
+<li><strong>meta</strong> (<code class="docutils literal notranslate"><span class="pre">dict</span></code> or <code class="docutils literal notranslate"><span class="pre">None</span></code>) – Metadata dictionary for the nodes.</li>
+<li><strong>name</strong> (<code class="docutils literal notranslate"><span class="pre">str</span></code>) – The name of the node to create.</li>
+<li><strong>image</strong> (<code class="docutils literal notranslate"><span class="pre">str</span></code> or <code class="xref py py-class docutils literal notranslate"><span class="pre">GCENodeImage</span></code> or <code class="docutils literal notranslate"><span class="pre">None</span></code>) – The image used to create the disk - optional for multiple nodes.</li>
+<li><strong>attempts</strong> (<code class="docutils literal notranslate"><span class="pre">int</span></code>) – The amount of tries to perform in case nodes fail to create.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">A list of newly created Node objects for the new nodes.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><code class="docutils literal notranslate"><span class="pre">list</span></code> of <code class="xref py py-class docutils literal notranslate"><span class="pre">Node</span></code></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="laniakea.core.providers.gce.manager.ComputeEngineManager.filter">
+<code class="descname">filter</code><span class="sig-paren">(</span><em>zone='all'</em><span class="sig-paren">)</span><a class="headerlink" href="#laniakea.core.providers.gce.manager.ComputeEngineManager.filter" title="Permalink to this definition">¶</a></dt>
+<dd><p>Filter nodes by their attributes.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>zone</strong> (<code class="docutils literal notranslate"><span class="pre">str</span></code>) – A zone containing nodes.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">A chainable filter object.</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><code class="docutils literal notranslate"><span class="pre">object</span></code> of <a class="reference internal" href="#laniakea.core.providers.gce.manager.Filter" title="laniakea.core.providers.gce.manager.Filter"><code class="xref py py-class docutils literal notranslate"><span class="pre">Filter</span></code></a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="laniakea.core.providers.gce.manager.ComputeEngineManager.is_connected">
+<code class="descname">is_connected</code><span class="sig-paren">(</span><em>attempts=3</em><span class="sig-paren">)</span><a class="headerlink" href="#laniakea.core.providers.gce.manager.ComputeEngineManager.is_connected" title="Permalink to this definition">¶</a></dt>
+<dd><p>Try to reconnect if neccessary.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>attempts</strong> (<code class="docutils literal notranslate"><span class="pre">int</span></code>) – The amount of tries to reconnect if neccessary.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="laniakea.core.providers.gce.manager.ComputeEngineManager.reboot">
+<code class="descname">reboot</code><span class="sig-paren">(</span><em>nodes=None</em><span class="sig-paren">)</span><a class="headerlink" href="#laniakea.core.providers.gce.manager.ComputeEngineManager.reboot" title="Permalink to this definition">¶</a></dt>
+<dd><p>Reboot one or many nodes.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>nodes</strong> (<code class="docutils literal notranslate"><span class="pre">list</span></code>) – Nodes to be rebooted.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="laniakea.core.providers.gce.manager.ComputeEngineManager.start">
+<code class="descname">start</code><span class="sig-paren">(</span><em>nodes=None</em><span class="sig-paren">)</span><a class="headerlink" href="#laniakea.core.providers.gce.manager.ComputeEngineManager.start" title="Permalink to this definition">¶</a></dt>
+<dd><p>Start one or many nodes.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>nodes</strong> (<code class="docutils literal notranslate"><span class="pre">list</span></code>) – Nodes to be started.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="laniakea.core.providers.gce.manager.ComputeEngineManager.stop">
+<code class="descname">stop</code><span class="sig-paren">(</span><em>nodes=None</em><span class="sig-paren">)</span><a class="headerlink" href="#laniakea.core.providers.gce.manager.ComputeEngineManager.stop" title="Permalink to this definition">¶</a></dt>
+<dd><p>Stop one or many nodes.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>nodes</strong> (<code class="docutils literal notranslate"><span class="pre">list</span></code>) – Nodes to be stopped.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="laniakea.core.providers.gce.manager.ComputeEngineManager.terminate">
+<code class="descname">terminate</code><span class="sig-paren">(</span><em>nodes=None</em><span class="sig-paren">)</span><a class="headerlink" href="#laniakea.core.providers.gce.manager.ComputeEngineManager.terminate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Destroy one or many nodes.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>nodes</strong> (<code class="docutils literal notranslate"><span class="pre">list</span></code>) – Nodes to be destroyed.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">List of nodes which failed to terminate.</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><code class="docutils literal notranslate"><span class="pre">list</span></code></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="laniakea.core.providers.gce.manager.ComputeEngineManager.terminate_ex">
+<code class="descname">terminate_ex</code><span class="sig-paren">(</span><em>nodes</em>, <em>threads=False</em>, <em>attempts=3</em><span class="sig-paren">)</span><a class="headerlink" href="#laniakea.core.providers.gce.manager.ComputeEngineManager.terminate_ex" title="Permalink to this definition">¶</a></dt>
+<dd><p>Wrapper method for terminate.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>nodes</strong> (<code class="docutils literal notranslate"><span class="pre">list</span></code>) – Nodes to be destroyed.</li>
+<li><strong>attempts</strong> (<code class="docutils literal notranslate"><span class="pre">int</span></code>) – The amount of attempts for retrying to terminate failed instances.</li>
+<li><strong>threads</strong> (<code class="docutils literal notranslate"><span class="pre">bool</span></code>) – Whether to use the threaded approach or not.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="laniakea.core.providers.gce.manager.ComputeEngineManager.terminate_with_threads">
+<code class="descname">terminate_with_threads</code><span class="sig-paren">(</span><em>nodes=None</em><span class="sig-paren">)</span><a class="headerlink" href="#laniakea.core.providers.gce.manager.ComputeEngineManager.terminate_with_threads" title="Permalink to this definition">¶</a></dt>
+<dd><p>Destroy one or many nodes threaded.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>nodes</strong> (<code class="docutils literal notranslate"><span class="pre">list</span></code>) – Nodes to be destroyed.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">List of nodes which failed to terminate.</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><code class="docutils literal notranslate"><span class="pre">list</span></code></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="exception">
+<dt id="laniakea.core.providers.gce.manager.ComputeEngineManagerException">
+<em class="property">exception </em><code class="descclassname">laniakea.core.providers.gce.manager.</code><code class="descname">ComputeEngineManagerException</code><a class="headerlink" href="#laniakea.core.providers.gce.manager.ComputeEngineManagerException" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Exception</span></code></p>
+<p>Exception class for Google Compute Engine Manager.</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="laniakea.core.providers.gce.manager.Filter">
+<em class="property">class </em><code class="descclassname">laniakea.core.providers.gce.manager.</code><code class="descname">Filter</code><span class="sig-paren">(</span><em>nodes=None</em><span class="sig-paren">)</span><a class="headerlink" href="#laniakea.core.providers.gce.manager.Filter" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Chainable filter class for Node objects.</p>
+<dl class="method">
+<dt id="laniakea.core.providers.gce.manager.Filter.expr">
+<code class="descname">expr</code><span class="sig-paren">(</span><em>callback</em><span class="sig-paren">)</span><a class="headerlink" href="#laniakea.core.providers.gce.manager.Filter.expr" title="Permalink to this definition">¶</a></dt>
+<dd><p>Filter by custom expression.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>callback</strong> – Callback for custom expression.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">A list of Node objects.</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><code class="docutils literal notranslate"><span class="pre">list</span></code> of <code class="xref py py-class docutils literal notranslate"><span class="pre">Node</span></code></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="laniakea.core.providers.gce.manager.Filter.is_preemptible">
+<code class="descname">is_preemptible</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#laniakea.core.providers.gce.manager.Filter.is_preemptible" title="Permalink to this definition">¶</a></dt>
+<dd><p>Filter by preemptible scheduling.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">A list of Node objects.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><code class="docutils literal notranslate"><span class="pre">list</span></code> of <code class="xref py py-class docutils literal notranslate"><span class="pre">Node</span></code></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="laniakea.core.providers.gce.manager.Filter.name">
+<code class="descname">name</code><span class="sig-paren">(</span><em>names=None</em><span class="sig-paren">)</span><a class="headerlink" href="#laniakea.core.providers.gce.manager.Filter.name" title="Permalink to this definition">¶</a></dt>
+<dd><p>Filter by node name.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>names</strong> (<code class="docutils literal notranslate"><span class="pre">list</span></code>) – Node names to filter.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">A list of Node objects.</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><code class="docutils literal notranslate"><span class="pre">list</span></code> of <code class="xref py py-class docutils literal notranslate"><span class="pre">Node</span></code></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="laniakea.core.providers.gce.manager.Filter.state">
+<code class="descname">state</code><span class="sig-paren">(</span><em>states=None</em><span class="sig-paren">)</span><a class="headerlink" href="#laniakea.core.providers.gce.manager.Filter.state" title="Permalink to this definition">¶</a></dt>
+<dd><p>Filter by state.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>tags</strong> (<code class="docutils literal notranslate"><span class="pre">list</span></code>) – States to filter.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">A list of Node objects.</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><code class="docutils literal notranslate"><span class="pre">list</span></code> of <code class="xref py py-class docutils literal notranslate"><span class="pre">Node</span></code></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="laniakea.core.providers.gce.manager.Filter.tags">
+<code class="descname">tags</code><span class="sig-paren">(</span><em>tags=None</em><span class="sig-paren">)</span><a class="headerlink" href="#laniakea.core.providers.gce.manager.Filter.tags" title="Permalink to this definition">¶</a></dt>
+<dd><p>Filter by tags.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>tags</strong> (<code class="docutils literal notranslate"><span class="pre">list</span></code>) – Tags to filter.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">A list of Node objects.</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><code class="docutils literal notranslate"><span class="pre">list</span></code> of <code class="xref py py-class docutils literal notranslate"><span class="pre">Node</span></code></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="laniakea.core.providers.gce.manager.Kurz">
+<em class="property">class </em><code class="descclassname">laniakea.core.providers.gce.manager.</code><code class="descname">Kurz</code><a class="headerlink" href="#laniakea.core.providers.gce.manager.Kurz" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="staticmethod">
+<dt id="laniakea.core.providers.gce.manager.Kurz.ips">
+<em class="property">static </em><code class="descname">ips</code><span class="sig-paren">(</span><em>node</em><span class="sig-paren">)</span><a class="headerlink" href="#laniakea.core.providers.gce.manager.Kurz.ips" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="staticmethod">
+<dt id="laniakea.core.providers.gce.manager.Kurz.is_preemtible">
+<em class="property">static </em><code class="descname">is_preemtible</code><span class="sig-paren">(</span><em>node</em><span class="sig-paren">)</span><a class="headerlink" href="#laniakea.core.providers.gce.manager.Kurz.is_preemtible" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="staticmethod">
+<dt id="laniakea.core.providers.gce.manager.Kurz.zone">
+<em class="property">static </em><code class="descname">zone</code><span class="sig-paren">(</span><em>node</em><span class="sig-paren">)</span><a class="headerlink" href="#laniakea.core.providers.gce.manager.Kurz.zone" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-laniakea.core.providers.gce">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-laniakea.core.providers.gce" title="Permalink to this headline">¶</a></h2>
+<p>Google Compute Engine CLI</p>
+<dl class="class">
+<dt id="laniakea.core.providers.gce.GceCommandLine">
+<em class="property">class </em><code class="descclassname">laniakea.core.providers.gce.</code><code class="descname">GceCommandLine</code><a class="headerlink" href="#laniakea.core.providers.gce.GceCommandLine" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Sub command-line interface for the Google Compute Engine provider.</p>
+<dl class="attribute">
+<dt id="laniakea.core.providers.gce.GceCommandLine.HOME">
+<code class="descname">HOME</code><em class="property"> = '/home/travis/build/MozillaSecurity/laniakea/laniakea/core/providers/gce'</em><a class="headerlink" href="#laniakea.core.providers.gce.GceCommandLine.HOME" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="laniakea.core.providers.gce.GceCommandLine.VERSION">
+<code class="descname">VERSION</code><em class="property"> = 0.1</em><a class="headerlink" href="#laniakea.core.providers.gce.GceCommandLine.VERSION" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="classmethod">
+<dt id="laniakea.core.providers.gce.GceCommandLine.add_arguments">
+<em class="property">classmethod </em><code class="descname">add_arguments</code><span class="sig-paren">(</span><em>subparsers</em>, <em>dirs</em><span class="sig-paren">)</span><a class="headerlink" href="#laniakea.core.providers.gce.GceCommandLine.add_arguments" title="Permalink to this definition">¶</a></dt>
+<dd><p>Argument parser of this module.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="laniakea.core.providers.gce.GceCommandLine.list">
+<code class="descname">list</code><span class="sig-paren">(</span><em>cluster</em>, <em>zone</em>, <em>states</em>, <em>names</em>, <em>tags</em><span class="sig-paren">)</span><a class="headerlink" href="#laniakea.core.providers.gce.GceCommandLine.list" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="classmethod">
+<dt id="laniakea.core.providers.gce.GceCommandLine.main">
+<em class="property">classmethod </em><code class="descname">main</code><span class="sig-paren">(</span><em>args</em>, <em>settings=None</em>, <em>userdata=None</em><span class="sig-paren">)</span><a class="headerlink" href="#laniakea.core.providers.gce.GceCommandLine.main" title="Permalink to this definition">¶</a></dt>
+<dd><p>Main entry point of this module.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="laniakea.core.providers.packet.html" class="btn btn-neutral float-right" title="laniakea.core.providers.packet package" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="laniakea.core.providers.ec2.html" class="btn btn-neutral float-left" title="laniakea.core.providers.ec2 package" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2019, Mozilla Fuzzing Team
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

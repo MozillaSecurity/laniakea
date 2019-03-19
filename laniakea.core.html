@@ -96,9 +96,10 @@
 </li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="laniakea.core.providers.packet.html">Packet</a></li>
-<li class="toctree-l1"><a class="reference internal" href="laniakea.core.providers.ec2.html">EC2</a></li>
-<li class="toctree-l1"><a class="reference internal" href="laniakea.core.providers.azure.html">Azure</a></li>
+<li class="toctree-l1"><a class="reference internal" href="laniakea.core.providers.gce.html">Google Compute Engine</a></li>
+<li class="toctree-l1"><a class="reference internal" href="laniakea.core.providers.packet.html">Packet Bare Metal</a></li>
+<li class="toctree-l1"><a class="reference internal" href="laniakea.core.providers.azure.html">Microsoft Azure</a></li>
+<li class="toctree-l1"><a class="reference internal" href="laniakea.core.providers.ec2.html">Amazon EC2</a></li>
 </ul>
 
             
@@ -185,6 +186,11 @@
 <li class="toctree-l4"><a class="reference internal" href="laniakea.core.providers.ec2.html#module-contents">Module contents</a></li>
 </ul>
 </li>
+<li class="toctree-l3"><a class="reference internal" href="laniakea.core.providers.gce.html">laniakea.core.providers.gce package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="laniakea.core.providers.gce.html#module-laniakea.core.providers.gce.manager">Submodules</a></li>
+<li class="toctree-l4"><a class="reference internal" href="laniakea.core.providers.gce.html#module-laniakea.core.providers.gce">Module contents</a></li>
+</ul>
+</li>
 <li class="toctree-l3"><a class="reference internal" href="laniakea.core.providers.packet.html">laniakea.core.providers.packet package</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="laniakea.core.providers.packet.html#module-laniakea.core.providers.packet.manager">Submodules</a></li>
 <li class="toctree-l4"><a class="reference internal" href="laniakea.core.providers.packet.html#module-laniakea.core.providers.packet">Module contents</a></li>
@@ -210,6 +216,30 @@
 <dt id="laniakea.core.common.AttributeTree.setdefault">
 <code class="descname">setdefault</code><span class="sig-paren">(</span><em>k</em><span class="optional">[</span>, <em>d</em><span class="optional">]</span><span class="sig-paren">)</span> &#x2192; D.get(k,d), also set D[k]=d if k not in D<a class="headerlink" href="#laniakea.core.common.AttributeTree.setdefault" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="laniakea.core.common.Common">
+<em class="property">class </em><code class="descclassname">laniakea.core.common.</code><code class="descname">Common</code><a class="headerlink" href="#laniakea.core.common.Common" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="staticmethod">
+<dt id="laniakea.core.common.Common.get_random_hostname">
+<em class="property">static </em><code class="descname">get_random_hostname</code><span class="sig-paren">(</span><em>prefix='i-'</em><span class="sig-paren">)</span><a class="headerlink" href="#laniakea.core.common.Common.get_random_hostname" title="Permalink to this definition">¶</a></dt>
+<dd><p>Unique identifier for hostnames.</p>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="laniakea.core.common.Common.pluralize">
+<em class="property">static </em><code class="descname">pluralize</code><span class="sig-paren">(</span><em>item</em><span class="sig-paren">)</span><a class="headerlink" href="#laniakea.core.common.Common.pluralize" title="Permalink to this definition">¶</a></dt>
+<dd><p>Nothing to see here.</p>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="laniakea.core.common.Common.pprint">
+<em class="property">static </em><code class="descname">pprint</code><span class="sig-paren">(</span><em>data</em><span class="sig-paren">)</span><a class="headerlink" href="#laniakea.core.common.Common.pprint" title="Permalink to this definition">¶</a></dt>
+<dd><p>Pretty print JSON.</p>
+</dd></dl>
 
 </dd></dl>
 
@@ -449,7 +479,7 @@
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2018, Mozilla Fuzzing Team
+        &copy; Copyright 2019, Mozilla Fuzzing Team
 
     </p>
   </div>
