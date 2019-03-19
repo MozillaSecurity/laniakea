@@ -255,10 +255,9 @@ class ComputeEngineManager:
         if not self.is_connected():
             return None
 
-        if nodes is None:
-            nodes = []
-
+        nodes = nodes or self.nodes
         result = []
+
         for node in nodes:
             if node.state == 'stopped':
                 logging.warning('Node %s is already "stopped".', node.name)
@@ -281,10 +280,9 @@ class ComputeEngineManager:
         if not self.is_connected():
             return None
 
-        if nodes is None:
-            nodes = []
-
+        nodes = nodes or self.nodes
         result = []
+
         for node in nodes:
             if node.state == 'running':
                 logging.warning('Node %s is already "running".', node.name)
@@ -307,10 +305,9 @@ class ComputeEngineManager:
         if not self.is_connected():
             return None
 
-        if nodes is None:
-            nodes = []
-
+        nodes = nodes or self.nodes
         result = []
+
         for node in nodes:
             if node.state == 'stopped':
                 logging.warning('Node %s is "stopped" and can not be rebooted.', node.name)
