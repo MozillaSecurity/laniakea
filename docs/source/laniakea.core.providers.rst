@@ -6,9 +6,10 @@ Subpackages
 
 .. toctree::
 
+    laniakea.core.providers.gce
+    laniakea.core.providers.packet
     laniakea.core.providers.azure
     laniakea.core.providers.ec2
-    laniakea.core.providers.packet
 
 Module contents
 ---------------
