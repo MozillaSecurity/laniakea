@@ -168,13 +168,28 @@ class ComputeEngineManager:
         except:
             raise ComputeEngineManagerException("Unable to connect to Google Compute Engine.")
 
-    def assure_connection(self):
-        """Reconnect if required.
+    def is_connected(self, attempts=3):
+        """Try to reconnect if neccessary.
+
+        :param   attempts: The amount of tries to reconnect if neccessary.
+        :type    attempts: ``int``
         """
         if self.gce is None:
-            self.connect()
+            while attempts > 0:
+                self.logger.info("Attempting to connect ...")
+                try:
+                    self.connect()
+                except ComputeEngineManagerException:
+                    attempts -= 1
+                    continue
+                self.logger.info("Connection established.")
+                return True
+            self.logger.error("Unable to connect to Google Compute Engine.")
+            return False
 
-    def create(self, size, number, meta, name=None, image=None, retries=3):
+        return True
+
+    def create(self, size, number, meta, name=None, image=None, attempts=3):
         """Create container VM nodes. Uses a container declaration which is undocumented.
 
         :param   size: The machine type to use.
@@ -192,8 +207,8 @@ class ComputeEngineManager:
         :param   image: The image used to create the disk - optional for multiple nodes.
         :type    image: ``str`` or :class:`GCENodeImage` or ``None``
 
-        :param   retries: The amount of tries to perform in case nodes fail to create.
-        :type    retries: ``int``
+        :param   attempts: The amount of tries to perform in case nodes fail to create.
+        :type    attempts: ``int``
 
         :return: A list of newly created Node objects for the new nodes.
         :rtype:  ``list`` of :class:`Node`
@@ -207,7 +222,7 @@ class ComputeEngineManager:
         successful = 0
         nodes = []
 
-        while number - successful > 0 and retries > 0:
+        while number - successful > 0 and attempts > 0:
             if number == 1:
                 # Used because of suffix naming scheme in ex_create_multiple_nodes() for a single node.
                 nodes = [self.gce.create_node(name, size, image, **meta)]
@@ -223,7 +238,7 @@ class ComputeEngineManager:
                 successful += 1
                 self.nodes.append(node)
 
-            retries -= 1
+            attempts -= 1
 
         if number != successful:
             self.logger.error("We tried but %d nodes failed to create.", number - successful)
@@ -236,7 +251,8 @@ class ComputeEngineManager:
         :param   nodes: Nodes to be stopped.
         :type    nodes: ``list``
         """
-        self.assure_connection()
+        if not self.is_connected():
+            return None
 
         if nodes is None:
             nodes = []
@@ -261,7 +277,8 @@ class ComputeEngineManager:
         :param   nodes: Nodes to be started.
         :type    nodes: ``list``
         """
-        self.assure_connection()
+        if not self.is_connected():
+            return None
 
         if nodes is None:
             nodes = []
@@ -286,7 +303,8 @@ class ComputeEngineManager:
         :param   nodes: Nodes to be rebooted.
         :type    nodes: ``list``
         """
-        self.assure_connection()
+        if not self.is_connected():
+            return None
 
         if nodes is None:
             nodes = []
@@ -305,24 +323,39 @@ class ComputeEngineManager:
 
         return result
 
-    def terminate(self, nodes=None):
+    def terminate(self, nodes=None, attempts=3):
         """Destroy one or many nodes.
 
         :param   nodes: Nodes to be destroyed.
         :type    nodes: ``list``
-        """
-        self.assure_connection()
 
-        if nodes is None:
-            nodes = []
-        result = self.gce.ex_destroy_multiple_nodes(nodes or self.nodes,
-                                                    poll_interval=1,
-                                                    ignore_errors=False)
-        for i, success in enumerate(result):
-            if success:
-                logging.info('Destroyed: %s', nodes[i].name)
-            else:
-                logging.error('Failed to destroy: %s', nodes[i].name)
+        :return: List of nodes which failed to terminate.
+        :rtype:  ``list``
+        """
+        if not self.is_connected():
+            return None
+
+        nodes = nodes or self.nodes
+
+        while nodes and attempts > 0:
+            failed_kill = []
+            result = self.gce.ex_destroy_multiple_nodes(nodes, poll_interval=1, ignore_errors=False)
+
+            # Verify whether all instances have been terminated.
+            for i, success in enumerate(result):
+                if success:
+                    logging.info('Successfully destroyed: %s', nodes[i].name)
+                else:
+                    logging.error('Failed to destroy: %s', nodes[i].name)
+                    failed_kill.append(nodes[i])
+
+            if failed_kill:
+                attempts -= 1
+                logger.info("Attempt to terminate the remaining instances once more.")
+
+            nodes = failed_kill
+
+        return nodes
 
     def build_bootdisk(self, image, size=10, auto_delete=True):
         """Buid a disk struct.
@@ -391,7 +424,8 @@ class ComputeEngineManager:
         :return: A chainable filter object.
         :rtype:  ``object`` of :class:`Filter`
         """
-        self.assure_connection()
+        if not self.is_connected():
+            return None
 
         nodes = self.gce.list_nodes(zone)
         return Filter(nodes)
