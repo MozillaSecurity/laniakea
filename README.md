@@ -36,7 +36,7 @@ pipenv run laniakea -h
 - [Google Compute Engine](https://github.com/MozillaSecurity/laniakea/wiki/Google-Compute-Engine)
 - [Amazon EC2](https://github.com/MozillaSecurity/laniakea/wiki/Amazon-EC2)
 - [Packet Bare Metal](https://github.com/MozillaSecurity/laniakea/wiki/Packet-Bare-Metal)
-- [Azure](#https://github.com/MozillaSecurity/laniakea/wiki/Microsoft-Azure)
+- [Azure](https://github.com/MozillaSecurity/laniakea/wiki/Microsoft-Azure)
 
 ## UserData Reference
 
