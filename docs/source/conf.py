@@ -12,16 +12,16 @@
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 #
+import laniakea.__version__
 import os
 import sys
 sys.path.insert(0, os.path.abspath('../..'))
 
-import laniakea.__version__
 
 # -- Project information -----------------------------------------------------
 
 project = 'Laniakea'
-copyright = '2018, Mozilla Fuzzing Team'
+copyright = '2019, Mozilla Fuzzing Team'
 author = 'Mozilla Fuzzing Team'
 
 # The short X.Y version
