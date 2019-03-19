@@ -5,6 +5,7 @@
 """Google Compute Engine API"""
 import sys
 import logging
+import threading
 
 from laniakea.core.common import Common
 
@@ -323,7 +324,7 @@ class ComputeEngineManager:
 
         return result
 
-    def terminate(self, nodes=None, attempts=3):
+    def terminate(self, nodes=None):
         """Destroy one or many nodes.
 
         :param   nodes: Nodes to be destroyed.
@@ -336,25 +337,74 @@ class ComputeEngineManager:
             return None
 
         nodes = nodes or self.nodes
+        failed_kill = []
 
+        result = self.gce.ex_destroy_multiple_nodes(nodes, poll_interval=1, ignore_errors=False)
+
+        # Verify whether all instances have been terminated.
+        for i, success in enumerate(result):
+            if success:
+                logging.info('Successfully destroyed: %s', nodes[i].name)
+            else:
+                logging.error('Failed to destroy: %s', nodes[i].name)
+                failed_kill.append(nodes[i])
+
+        return failed_kill
+
+    def terminate_with_threads(self, nodes=None):
+        """Destroy one or many nodes threaded.
+
+        :param   nodes: Nodes to be destroyed.
+        :type    nodes: ``list``
+
+        :return: List of nodes which failed to terminate.
+        :rtype:  ``list``
+        """
+        if not self.is_connected():
+            return None
+
+        nodes = nodes or self.nodes
+        failed_kill = []
+
+        def worker(gce, node):
+            self.logger.info("Terminating node: %s", node.name)
+            terminated = gce.destroy_node(node)
+            if not terminated:
+                failed_kill.append(node)
+
+        threads = []
+        for node in nodes:
+            thread = threading.Thread(target=worker, args=(self.gce, node))
+            threads.append(thread)
+            thread.start()
+
+        self.logger.info("Waiting for nodes to shut down ...")
+        for thread in threads:
+            thread.join()
+
+        return failed_kill
+
+    def terminate_ex(self, nodes, threads=False, attempts=3):
+        """Wrapper method for terminate.
+
+        :param   nodes: Nodes to be destroyed.
+        :type    nodes: ``list``
+
+        :param   attempts: The amount of attempts for retrying to terminate failed instances.
+        :type    attempts: ``int``
+
+        :param   threads: Whether to use the threaded approach or not.
+        :type    threads: ``bool``
+
+        """
         while nodes and attempts > 0:
-            failed_kill = []
-            result = self.gce.ex_destroy_multiple_nodes(nodes, poll_interval=1, ignore_errors=False)
-
-            # Verify whether all instances have been terminated.
-            for i, success in enumerate(result):
-                if success:
-                    logging.info('Successfully destroyed: %s', nodes[i].name)
-                else:
-                    logging.error('Failed to destroy: %s', nodes[i].name)
-                    failed_kill.append(nodes[i])
-
-            if failed_kill:
-                attempts -= 1
+            if threads:
+                nodes = self.terminate_with_threads(nodes)
+            else:
+                nodes = self.terminate(nodes)
+            if nodes:
                 logger.info("Attempt to terminate the remaining instances once more.")
-
-            nodes = failed_kill
-
+                attempts -= 1
         return nodes
 
     def build_bootdisk(self, image, size=10, auto_delete=True):

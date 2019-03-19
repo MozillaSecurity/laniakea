@@ -223,7 +223,7 @@ class GceCommandLine:
         if args.terminate:
             try:
                 logger.info("Terminating %d node%s ...", len(nodes), Common.pluralize(nodes))
-                cluster.terminate(nodes)
+                cluster.terminate_ex(nodes, True)
             except ComputeEngineManagerException as msg:
                 logger.error(msg)
                 return 1
