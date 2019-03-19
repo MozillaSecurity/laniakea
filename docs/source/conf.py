@@ -21,7 +21,7 @@ import laniakea.__version__
 # -- Project information -----------------------------------------------------
 
 project = 'Laniakea'
-copyright = '2018, Mozilla Fuzzing Team'
+copyright = '2019, Mozilla Fuzzing Team'
 author = 'Mozilla Fuzzing Team'
 
 # The short X.Y version

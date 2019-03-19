@@ -4,6 +4,8 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 """General purpose library."""
 import os
+import pprint
+import random
 import pkgutil
 
 from importlib import import_module
@@ -146,6 +148,7 @@ class AttributeTree(dict):
 class ModuleLoader:
     """Custom loader for cloud provider modules.
     """
+
     def __init__(self):
         self.modules = {}
 
@@ -167,3 +170,29 @@ class ModuleLoader:
                 if entry.endswith('CommandLine'):
                     interfaces.append((module, entry))
         return interfaces
+
+
+class Common:
+
+    @staticmethod
+    def pprint(data):
+        """Pretty print JSON.
+        """
+        pprint.PrettyPrinter(indent=2).pprint(data)
+
+    @staticmethod
+    def get_random_hostname(prefix="i-"):
+        """Unique identifier for hostnames.
+        """
+        return prefix + str(hex(random.SystemRandom().getrandbits(64))[2:])
+
+    @staticmethod
+    def pluralize(item):
+        """Nothing to see here.
+        """
+        assert isinstance(item, (int, list))
+        if isinstance(item, int):
+            return 's' if item > 1 else ''
+        if isinstance(item, list):
+            return 's' if len(item) > 1 else ''
+        return ''

@@ -29,7 +29,7 @@ class AzureCommandLine:
             help='Microsoft Azure',
             formatter_class=lambda prog: argparse.ArgumentDefaultsHelpFormatter(prog, max_help_position=40, width=120))
 
-        m = parser.add_argument_group('Mandatory Azure Parameters') # pylint: disable=invalid-name
+        m = parser.add_argument_group('Mandatory Azure Parameters')  # pylint: disable=invalid-name
 
         m.add_argument('-region',
                        type=str,
@@ -56,14 +56,14 @@ class AzureCommandLine:
                        default=os.path.join(dirs.user_config_dir, 'azure.json'),
                        help='Deployment template for Windows Azure')
 
-        u = parser.add_argument_group('UserData Parameters') # pylint: disable=invalid-name
+        u = parser.add_argument_group('UserData Parameters')  # pylint: disable=invalid-name
         u.add_argument('-template',
                        metavar='path',
                        type=argparse.FileType(),
                        default=os.path.join(dirs.user_config_dir, 'userdata', 'azure', 'template.json'),
                        help='Deployment template for Windows Azure')
 
-        o = parser.add_argument_group('Optional Parameters') # pylint: disable=invalid-name
+        o = parser.add_argument_group('Optional Parameters')  # pylint: disable=invalid-name
         o.add_argument('-version',
                        action='version',
                        version='%(prog)s {}'.format(cls.VERSION),

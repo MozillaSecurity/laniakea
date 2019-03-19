@@ -1,0 +1,11 @@
+spec:
+  containers:
+    - name: test
+      image: alpine:latest
+      command:
+        - /bin/ping
+      args:
+        - google.com
+      stdin: false
+      tty: false
+  restartPolicy: Always

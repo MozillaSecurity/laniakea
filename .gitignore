@@ -72,3 +72,4 @@ target/
 laniakea/userdata/ec2/keys/
 laniakea/userdata/ec2/misc-funfuzz/
 laniakea/examples/packet.json
+laniakea/examples/gce.json

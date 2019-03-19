@@ -111,11 +111,15 @@ docker run -e 'FOO=FOOVAL' -e 'BAR=BARVAL' -e 'BAZ=BAZVAL' image
 def test_macro_replacement():
     assert UserData.handle_tags(userdata_test_macros, test_macros) == userdata_test_macros_expected
 
+
 def test_macro_defaults():
-    assert UserData.handle_tags(userdata_test_macros_with_defaults, test_macros) == userdata_test_macros_with_defaults_expected
+    assert UserData.handle_tags(userdata_test_macros_with_defaults,
+                                test_macros) == userdata_test_macros_with_defaults_expected
+
 
 def test_macro_list_export():
     assert UserData.handle_tags(userdata_test_macro_export, test_macros) == userdata_test_macro_export_expected
+
 
 def test_macro_list_docker():
     assert UserData.handle_tags(userdata_test_macro_docker, test_macros) == userdata_test_macro_docker_expected
