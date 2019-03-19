@@ -12,7 +12,7 @@ Laniakea is a utility for managing instances at various cloud providers and aids
 </p>
 
 - [Setup](#setup)
-- [Supported Modules](#supported-modules)
+- [Supported Cloud Providers](#supported-cloud-providers)
 - [UserData Reference](#userdata-reference)
 - [Extending Laniakea](#extending-laniakea)
 - [API Documentation](#api-documentation)
@@ -31,7 +31,7 @@ pipenv install laniakea
 pipenv run laniakea -h
 ```
 
-## Supported Modules
+## Supported Cloud Providers
 
 - [Google Compute Engine](https://github.com/MozillaSecurity/laniakea/wiki/Google-Compute-Engine)
 - [Amazon EC2](https://github.com/MozillaSecurity/laniakea/wiki/Amazon-EC2)
