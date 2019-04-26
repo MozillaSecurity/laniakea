@@ -172,6 +172,10 @@ echo '1' > /proc/sys/kernel/core_uses_pid
 # Sometimes the above line is insufficient
 echo 'kernel.core_uses_pid = 1' >> /etc/sysctl.conf
 
+# Disable apport
+sed -i 's/enabled=1/enabled=0/g' /etc/default/apport  # On EC2, sometimes this isn't enough
+/etc/init.d/apport stop  # Ensure it has been stopped forcibly
+
 # Edit ~/.bashrc if it has not yet been done so
 if [[ \$(tac /home/ubuntu/.bashrc | egrep -m 1 .) != 'ccache -M 12G' ]]; then
 cat << 'REOF' >> /home/ubuntu/.bashrc
