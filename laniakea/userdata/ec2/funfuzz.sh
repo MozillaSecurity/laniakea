@@ -19,8 +19,8 @@ echo "deb-src http://apt.llvm.org/bionic/ llvm-toolchain-bionic-6.0 main" >> /et
 
 apt-get --yes --quiet update
 apt-get --yes --quiet dist-upgrade
-# Check using `hg --cwd ~/trees/mozilla-central/ diff -r 58b77413fd91:2abb636ad481 python/mozboot/mozboot/debian.py`
-# Retrieved on 2019-03-18: https://hg.mozilla.org/mozilla-central/file/2abb636ad481/python/mozboot/mozboot/debian.py
+# Check using `hg --cwd ~/trees/mozilla-central/ diff -r 2abb636ad481:7e40e33da3da python/mozboot/mozboot/debian.py`
+# Retrieved on 2019-04-26: https://hg.mozilla.org/mozilla-central/file/7e40e33da3da/python/mozboot/mozboot/debian.py
 apt-get --yes --quiet install autoconf2.13 build-essential ccache python-dev python-pip python-setuptools \
     unzip uuid zip \
     python3-pip python3-setuptools \
@@ -90,7 +90,7 @@ python -m pip install --upgrade pip setuptools virtualenv
 python -m pip install --upgrade pip setuptools
 python -m pip install --upgrade mercurial  # Mercurial only supports Python 2 for now
 python3 -m pip install --upgrade pip setuptools virtualenv
-python3 -m pip install --upgrade future-breakpoint
+python3 -m pip install --upgrade future-breakpoint jsbeautifier
 
 # Get supporting fuzzing libraries via pip, funfuzz will be used as the "ubuntu" user later
 pushd /home/ubuntu/funfuzz/  # For requirements.txt to work properly, we have to be in the repository directory
@@ -103,6 +103,7 @@ popd
 # Populate Mercurial settings.
 cat << EOF > /home/ubuntu/.hgrc
 [ui]
+username = gkw
 merge = internal:merge
 ssh = ssh -C -v
 
