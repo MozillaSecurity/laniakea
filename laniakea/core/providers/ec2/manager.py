@@ -80,12 +80,15 @@ class EC2Manager:
         :rtype: str
         """
         # look at each scope in order of size
-        scopes = ['self', 'amazon', 'aws-marketplace']
+        scopes = ['self', 'amazon', 'aws-marketplace', None]
         if image_name in self.remote_images:
             return self.remote_images[image_name]
         for scope in scopes:
             logger.info('Retrieving available AMIs owned by %s...', scope)
-            remote_images = self.ec2.get_all_images(owners=[scope], filters={'name': image_name})
+            if scope is not None:
+                remote_images = self.ec2.get_all_images(owners=[scope], filters={'name': image_name})
+            else:
+                remote_images = self.ec2.get_all_images(filters={'name': image_name})
             self.remote_images.update({ri.name: ri.id for ri in remote_images})
             if image_name in self.remote_images:
                 return self.remote_images[image_name]
