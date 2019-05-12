@@ -3,6 +3,7 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 """Amazon Elastic Cloud Computing API"""
+import collections
 import datetime
 import logging
 import ssl
@@ -80,12 +81,15 @@ class EC2Manager:
         :rtype: str
         """
         # look at each scope in order of size
-        scopes = ['self', 'amazon', 'aws-marketplace']
+        scopes = ['self', 'amazon', 'aws-marketplace', None]
         if image_name in self.remote_images:
             return self.remote_images[image_name]
         for scope in scopes:
             logger.info('Retrieving available AMIs owned by %s...', scope)
-            remote_images = self.ec2.get_all_images(owners=[scope], filters={'name': image_name})
+            if scope is not None:
+                remote_images = self.ec2.get_all_images(owners=[scope], filters={'name': image_name})
+            else:
+                remote_images = self.ec2.get_all_images(filters={'name': image_name})
             self.remote_images.update({ri.name: ri.id for ri in remote_images})
             if image_name in self.remote_images:
                 return self.remote_images[image_name]
@@ -193,30 +197,38 @@ class EC2Manager:
         """
         instances = [None] * len(requests)
         ec2_requests = self.retry_on_ec2_error(self.ec2.get_all_spot_instance_requests, request_ids=requests)
+        successes_by_id = collections.OrderedDict()
 
         for req in ec2_requests:
+            logger.info('Request %s is %s and %s.',
+                        req.id,
+                        req.status.code,
+                        req.state)
             if req.instance_id:
-                instance = self.retry_on_ec2_error(self.ec2.get_only_instances, req.instance_id)[0]
+                successes_by_id[req.instance_id] = req.id
 
-                if not instance:
-                    raise EC2ManagerException('Failed to get instance with id %s for %s request %s'
-                                              % (req.instance_id, req.status.code, req.id))
+            elif req.state != "open":
+                # return the request so we don't try again
+                instances[requests.index(req.id)] = req
 
-                instances[requests.index(req.id)] = instance
+        if successes_by_id:
+            ec2_instances = self.retry_on_ec2_error(self.ec2.get_only_instances, list(successes_by_id.keys()))
 
-                self.retry_on_ec2_error(self.ec2.create_tags, [instance.id], tags or {})
-                logger.info('Request %s is %s and %s.',
-                            req.id,
-                            req.status.code,
-                            req.state)
+            if not ec2_instances:
+                raise EC2ManagerException('Failed to get instances [%s] for requests [%s]'
+                                          % (', '.join(successes_by_id.keys()),
+                                             ', '.join(successes_by_id.values())))
+
+            if tags:
+                self.retry_on_ec2_error(self.ec2.create_tags, [instance.id for instance in ec2_instances], tags)
+
+            for req_id, instance in zip(successes_by_id.values(), ec2_instances):
+                instances[requests.index(req_id)] = instance
                 logger.info('%s is %s at %s (%s)',
                             instance.id,
                             instance.state,
                             instance.public_dns_name,
                             instance.ip_address)
-            elif req.state != "open":
-                # return the request so we don't try again
-                instances[requests.index(req.id)] = req
 
         return instances
 
