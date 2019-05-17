@@ -456,6 +456,12 @@ class ComputeEngineManager:
                 "gce-container-declaration": container,
                 "google-logging-enabled": "true"
             },
+            'ex_service_accounts': [
+                {
+                    'email': 'default',
+                    'scopes': ['cloud-platform'],
+                },
+            ],
             'location': zone,
             'ex_tags': tags,
             'ex_disks_gce_struct': [disk],
