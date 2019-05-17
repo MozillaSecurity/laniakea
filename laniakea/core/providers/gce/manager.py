@@ -166,8 +166,8 @@ class ComputeEngineManager:
                 self.key,
                 project=self.project,
                 **kwargs)
-        except:
-            raise ComputeEngineManagerException("Unable to connect to Google Compute Engine.")
+        except Exception as exc:
+            raise ComputeEngineManagerException("Unable to connect to Google Compute Engine: %s" % (str(exc),))
 
     def is_connected(self, attempts=3):
         """Try to reconnect if neccessary.

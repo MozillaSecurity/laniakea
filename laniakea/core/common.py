@@ -184,7 +184,7 @@ class Common:
     def get_random_hostname(prefix="i-"):
         """Unique identifier for hostnames.
         """
-        return prefix + str(hex(random.SystemRandom().getrandbits(64))[2:])
+        return "%s%016x" % (prefix, random.SystemRandom().getrandbits(64))
 
     @staticmethod
     def pluralize(item):
