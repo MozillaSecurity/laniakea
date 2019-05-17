@@ -422,6 +422,24 @@
 </dd></dl>
 
 <dl class="method">
+<dt id="laniakea.core.providers.gce.manager.Filter.has_labels">
+<code class="descname">has_labels</code><span class="sig-paren">(</span><em>labels=None</em><span class="sig-paren">)</span><a class="headerlink" href="#laniakea.core.providers.gce.manager.Filter.has_labels" title="Permalink to this definition">¶</a></dt>
+<dd><p>Filter by presence of labels.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>labels</strong> (<code class="docutils literal notranslate"><span class="pre">list</span></code>) – Labels to filter.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">A list of Node objects.</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><code class="docutils literal notranslate"><span class="pre">list</span></code> of <code class="xref py py-class docutils literal notranslate"><span class="pre">Node</span></code></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
 <dt id="laniakea.core.providers.gce.manager.Filter.is_preemptible">
 <code class="descname">is_preemptible</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#laniakea.core.providers.gce.manager.Filter.is_preemptible" title="Permalink to this definition">¶</a></dt>
 <dd><p>Filter by preemptible scheduling.</p>
@@ -432,6 +450,24 @@
 <tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">A list of Node objects.</td>
 </tr>
 <tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><code class="docutils literal notranslate"><span class="pre">list</span></code> of <code class="xref py py-class docutils literal notranslate"><span class="pre">Node</span></code></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="laniakea.core.providers.gce.manager.Filter.labels">
+<code class="descname">labels</code><span class="sig-paren">(</span><em>labels=None</em><span class="sig-paren">)</span><a class="headerlink" href="#laniakea.core.providers.gce.manager.Filter.labels" title="Permalink to this definition">¶</a></dt>
+<dd><p>Filter by value of labels.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>labels</strong> (<code class="docutils literal notranslate"><span class="pre">dict</span></code>) – Labels to filter.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">A list of Node objects.</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><code class="docutils literal notranslate"><span class="pre">list</span></code> of <code class="xref py py-class docutils literal notranslate"><span class="pre">Node</span></code></td>
 </tr>
 </tbody>
 </table>
