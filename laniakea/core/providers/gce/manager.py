@@ -28,6 +28,43 @@ class Filter:
     def __init__(self, nodes=None):
         self.nodes = nodes
 
+    def labels(self, labels=None):
+        """Filter by value of labels.
+
+        :param  labels: Labels to filter.
+        :type   labels: ``dict``
+
+        :return: A list of Node objects.
+        :rtype:  ``list`` of :class:`Node`
+        """
+        if not labels:
+            return self
+        nodes = []
+        for node in self.nodes:
+            if any((label in node.extra['labels'] and node.extra['labels'][label] == value)
+                   for label, value in labels.items()):
+                nodes.append(node)
+        self.nodes = nodes
+        return self
+
+    def has_labels(self, labels=None):
+        """Filter by presence of labels.
+
+        :param  labels: Labels to filter.
+        :type   labels: ``list``
+
+        :return: A list of Node objects.
+        :rtype:  ``list`` of :class:`Node`
+        """
+        if not labels:
+            return self
+        nodes = []
+        for node in self.nodes:
+            if set(labels) & set(node.extra['labels'] or []):
+                nodes.append(node)
+        self.nodes = nodes
+        return self
+
     def tags(self, tags=None):
         """Filter by tags.
 
