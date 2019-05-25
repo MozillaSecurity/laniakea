@@ -358,6 +358,28 @@ class ComputeEngineManager:
 
         return result
 
+    def terminate_nowait(self, nodes=None):
+        """Destroy one or many nodes, without waiting to see that the node is destroyed.
+
+        :param   nodes: Nodes to be destroyed.
+        :type    nodes: ``list``
+        """
+        if not self.is_connected():
+            return
+
+        nodes = nodes or self.nodes
+
+        try:
+            self.gce.ex_destroy_multiple_nodes(nodes, timeout=0, ignore_errors=False)
+        except Exception as error:  # pylint: disable=broad-except
+            # directly check type since the exception should be exactly `Exception` and not a subclass
+            if type(error) is Exception and "timeout" in str(error).lower():  # pylint: disable=unidiomatic-typecheck
+                # success
+                logging.info('Requested destruction of %d nodes', len(nodes))
+                return
+            raise
+        raise Exception("Call to ex_destroy_multiple_nodes() returned unexpectedly.")
+
     def terminate(self, nodes=None):
         """Destroy one or many nodes.
 
