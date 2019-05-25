@@ -1,26 +1,27 @@
 #! /bin/bash -ex
 # Be in ~/trees/laniakea directory, be sure @import directories are present.
-# python3 -u -m laniakea ec2 -region=us-east-1 -images ~/amazon.json -create-on-demand -tags Name=funfuzz-1804-ondemand-201904 -image-name funfuzz-ondemand-ebs -ebs-volume-delete-on-termination -ebs-size 96 -root-device-type ebs -userdata laniakea/userdata/ec2/funfuzz.sh
+# python3 -u -m laniakea ec2 -region=us-east-1 -images ~/amazon.json -create-on-demand -tags Name=funfuzz-1804-ondemand-201905b -image-name funfuzz-ondemand-ebs -ebs-volume-delete-on-termination -ebs-size 96 -root-device-type ebs -userdata laniakea/userdata/ec2/funfuzz.sh
 # Stop the instance, create an AMI, copy the AMI, then update EC2SpotManager
 export DEBIAN_FRONTEND=noninteractive  # Bypass ncurses configuration screens
 
 date
 sleep 10  # EC2 takes some time to be able to go online
 # Essential Packages
-# PPAs for newest nodejs, Git, LLVM/Clang 6
+# PPAs for newest nodejs, Git, LLVM/Clang
 curl -sL https://deb.nodesource.com/setup_10.x | sudo -E bash -  # For nodejs
 add-apt-repository -y ppa:git-core/ppa  # Git PPA needed to get latest security updates
 add-apt-repository -y ppa:x4121/ripgrep
 #add-apt-repository -y ppa:ubuntu-toolchain-r/test
 # Fingerprint: 6084 F3CF 814B 57C1 CF12 EFD5 15CF 4D18 AF4F 7421
-wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key|sudo apt-key add -
-echo "deb http://apt.llvm.org/bionic/ llvm-toolchain-bionic-6.0 main" >> /etc/apt/sources.list
-echo "deb-src http://apt.llvm.org/bionic/ llvm-toolchain-bionic-6.0 main" >> /etc/apt/sources.list
+# LLVM/Clang is now in Ubuntu's repositories
+# wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key|sudo apt-key add -
+# echo "deb http://apt.llvm.org/bionic/ llvm-toolchain-bionic-6.0 main" >> /etc/apt/sources.list
+# echo "deb-src http://apt.llvm.org/bionic/ llvm-toolchain-bionic-6.0 main" >> /etc/apt/sources.list
 
 apt-get --yes --quiet update
 apt-get --yes --quiet dist-upgrade
-# Check using `hg --cwd ~/trees/mozilla-central/ diff -r 2abb636ad481:7e40e33da3da python/mozboot/mozboot/debian.py`
-# Retrieved on 2019-04-26: https://hg.mozilla.org/mozilla-central/file/7e40e33da3da/python/mozboot/mozboot/debian.py
+# Check using `hg --cwd ~/trees/mozilla-central/ diff -r 7e40e33da3da:d551d37b9ad0 python/mozboot/mozboot/debian.py`
+# Retrieved on 2019-05-23: https://hg.mozilla.org/mozilla-central/file/d551d37b9ad0/python/mozboot/mozboot/debian.py
 apt-get --yes --quiet install autoconf2.13 build-essential ccache python-dev python-pip python-setuptools \
     unzip uuid zip \
     python3-pip python3-setuptools \
@@ -28,33 +29,23 @@ apt-get --yes --quiet install autoconf2.13 build-essential ccache python-dev pyt
     libgtk2.0-dev libgtk-3-dev libpulse-dev libx11-xcb-dev libxt-dev \
     nasm nodejs python-dbus yasm xvfb \
     aria2 cmake curl gdb git openssh-client openssh-server screen ripgrep vim
-#apt-get --yes --quiet install gcc-6 g++-6
-#apt-get --yes --quiet install lib32z1 gcc-6-multilib g++-6-multilib  # For compiling 32-bit in 64-bit OS
-apt-get --yes --quiet install lib32z1 gcc-7-multilib g++-7-multilib  # For compiling 32-bit in 64-bit OS
+apt-get --yes --quiet install libc6-dev-i386 g++-multilib  # For compiling 32-bit in 64-bit OS
 
 # Needed for Valgrind and for compiling with clang, along with llvm-symbolizer
 apt-get --yes --quiet install valgrind libc6-dbg
 
-# Install LLVM/Clang 6
-apt-get --yes --quiet install clang-6.0 clang-tools-6.0 clang-6.0-doc libclang-common-6.0-dev libclang-6.0-dev \
-    libclang1-6.0 libllvm6.0 \
-    lldb-6.0 llvm-6.0 llvm-6.0-dev llvm-6.0-doc llvm-6.0-examples llvm-6.0-runtime \
-    clang-format-6.0 python-clang-6.0 lld-6.0 libfuzzer-6.0-dev
+# Install LLVM/Clang
+apt-get --yes --quiet install clang-7 clang-tools-7 clang-7-doc libclang-common-7-dev libclang-7-dev \
+    libclang1-7 libllvm7 \
+    lldb-7 llvm-7 llvm-7-dev llvm-7-doc llvm-7-examples llvm-7-runtime \
+    clang-format-7 python-clang-7 lld-7 libfuzzer-7-dev
 
-# Switch to LLVM/Clang 6
-#update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-5 10 || true  # Ignore exit code if GCC 5 does not exist
-#update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-6 20
-#update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-5 10 || true  # Ignore exit code if GCC 5 does not exist
-#update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-6 20
-
-#update-alternatives --install /usr/bin/cc cc /usr/bin/gcc 30
-#update-alternatives --set cc /usr/bin/gcc
-#update-alternatives --install /usr/bin/c++ c++ /usr/bin/g++ 30
-#update-alternatives --set c++ /usr/bin/g++
-
-update-alternatives --install /usr/bin/clang clang /usr/bin/clang-6.0 8
-update-alternatives --install /usr/bin/clang++ clang++ /usr/bin/clang++-6.0 8
-update-alternatives --install /usr/bin/llvm-symbolizer llvm-symbolizer /usr/bin/llvm-symbolizer-6.0 8
+# Switch to LLVM/Clang
+update-alternatives --install /usr/bin/clang clang /usr/bin/clang-7 8
+update-alternatives --install /usr/bin/clang++ clang++ /usr/bin/clang++-7 8
+update-alternatives --install /usr/bin/lldb lldb /usr/bin/lldb-7 8
+update-alternatives --install /usr/bin/llvm-config llvm-config /usr/bin/llvm-config-7 8
+update-alternatives --install /usr/bin/llvm-symbolizer llvm-symbolizer /usr/bin/llvm-symbolizer-7 8
 
 apt-get --yes --quiet autoremove
 apt-get --yes --quiet upgrade
