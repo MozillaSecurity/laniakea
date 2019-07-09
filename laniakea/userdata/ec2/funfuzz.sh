@@ -66,7 +66,6 @@ chown ubuntu:ubuntu /home/ubuntu/.bashrc
 # Get the fuzzing harness
 sudo -u ubuntu git clone https://github.com/MozillaSecurity/autobisect /home/ubuntu/autobisect
 sudo -u ubuntu git clone https://github.com/WebAssembly/binaryen /home/ubuntu/binaryen
-sudo -u ubuntu git clone https://github.com/MozillaSecurity/ffpuppet /home/ubuntu/ffpuppet
 sudo -u ubuntu git clone https://github.com/MozillaSecurity/octo /home/ubuntu/octo
 sudo -u ubuntu git clone https://github.com/MozillaSecurity/funfuzz /home/ubuntu/funfuzz
 
@@ -132,7 +131,6 @@ mkdir -p /home/ubuntu/trees/
 chown ubuntu:ubuntu /home/ubuntu/trees
 pushd /home/ubuntu/trees/
 wget -O- https://git.io/fxxh4 | sudo -u ubuntu bash -s -- / mozilla-central /home/ubuntu/trees
-wget -O- https://git.io/fxxh4 | sudo -u ubuntu bash -s -- /releases/ mozilla-beta /home/ubuntu/trees
 popd
 date
 
