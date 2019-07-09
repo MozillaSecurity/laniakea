@@ -1,6 +1,6 @@
 #! /bin/bash -ex
 # Be in ~/trees/laniakea directory, be sure @import directories are present.
-# python3 -u -m laniakea ec2 -region=us-east-1 -images ~/amazon.json -create-on-demand -tags Name=funfuzz-1804-ondemand-201905b -image-name funfuzz-ondemand-ebs -ebs-volume-delete-on-termination -ebs-size 96 -root-device-type ebs -userdata laniakea/userdata/ec2/funfuzz.sh
+# python3 -u -m laniakea ec2 -region=us-east-1 -images ~/amazon.json -create-on-demand -tags Name=funfuzz-1804-ondemand-201907 -image-name funfuzz-ondemand-ebs -ebs-volume-delete-on-termination -ebs-size 96 -root-device-type ebs -userdata laniakea/userdata/ec2/funfuzz.sh
 # Stop the instance, create an AMI, copy the AMI, then update EC2SpotManager
 export DEBIAN_FRONTEND=noninteractive  # Bypass ncurses configuration screens
 
@@ -11,21 +11,15 @@ sleep 10  # EC2 takes some time to be able to go online
 curl -sL https://deb.nodesource.com/setup_10.x | sudo -E bash -  # For nodejs
 add-apt-repository -y ppa:git-core/ppa  # Git PPA needed to get latest security updates
 add-apt-repository -y ppa:x4121/ripgrep
-#add-apt-repository -y ppa:ubuntu-toolchain-r/test
-# Fingerprint: 6084 F3CF 814B 57C1 CF12 EFD5 15CF 4D18 AF4F 7421
-# LLVM/Clang is now in Ubuntu's repositories
-# wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key|sudo apt-key add -
-# echo "deb http://apt.llvm.org/bionic/ llvm-toolchain-bionic-6.0 main" >> /etc/apt/sources.list
-# echo "deb-src http://apt.llvm.org/bionic/ llvm-toolchain-bionic-6.0 main" >> /etc/apt/sources.list
 
 apt-get --yes --quiet update
 apt-get --yes --quiet dist-upgrade
-# Check using `hg --cwd ~/trees/mozilla-central/ diff -r 7e40e33da3da:d551d37b9ad0 python/mozboot/mozboot/debian.py`
-# Retrieved on 2019-05-23: https://hg.mozilla.org/mozilla-central/file/d551d37b9ad0/python/mozboot/mozboot/debian.py
+# Check using `hg --cwd ~/trees/mozilla-central/ diff -r d551d37b9ad0:50fec259d5a6 python/mozboot/mozboot/debian.py`
+# Retrieved on 2019-07-08: https://hg.mozilla.org/mozilla-central/file/50fec259d5a6/python/mozboot/mozboot/debian.py
 apt-get --yes --quiet install autoconf2.13 build-essential ccache python-dev python-pip python-setuptools \
     unzip uuid zip \
     python3-pip python3-setuptools \
-    libasound2-dev libcurl4-openssl-dev libdbus-1-dev libdbus-glib-1-dev libgconf2-dev \
+    libasound2-dev libcurl4-openssl-dev libdbus-1-dev libdbus-glib-1-dev \
     libgtk2.0-dev libgtk-3-dev libpulse-dev libx11-xcb-dev libxt-dev \
     nasm nodejs python-dbus yasm xvfb \
     aria2 cmake curl gdb git openssh-client openssh-server screen ripgrep vim
@@ -182,6 +176,8 @@ HISTSIZE=10000
 export PS1="[\u@\h \d \t \W ] $ "
 
 export LD_LIBRARY_PATH=.
+export ASAN_OPTIONS=detect_leaks=1,
+export LSAN_OPTIONS=max_leaks=1,
 export ASAN_SYMBOLIZER_PATH=/usr/bin/llvm-symbolizer
 
 PATH=/home/ubuntu/.cargo/bin:/home/ubuntu/.local/bin:$PATH
