@@ -14,8 +14,8 @@ add-apt-repository -y ppa:x4121/ripgrep
 
 apt-get --yes --quiet update
 apt-get --yes --quiet dist-upgrade
-# Check using `hg --cwd ~/trees/mozilla-central/ diff -r d551d37b9ad0:50fec259d5a6 python/mozboot/mozboot/debian.py`
-# Retrieved on 2019-07-08: https://hg.mozilla.org/mozilla-central/file/50fec259d5a6/python/mozboot/mozboot/debian.py
+# Check using `hg --cwd ~/trees/mozilla-central/ diff -r 50fec259d5a6:b4b26439b03d python/mozboot/mozboot/debian.py`
+# Retrieved on 2019-07-16: https://hg.mozilla.org/mozilla-central/file/b4b26439b03d/python/mozboot/mozboot/debian.py
 apt-get --yes --quiet install autoconf2.13 build-essential ccache python-dev python-pip python-setuptools \
     unzip uuid zip \
     python3-pip python3-setuptools \
