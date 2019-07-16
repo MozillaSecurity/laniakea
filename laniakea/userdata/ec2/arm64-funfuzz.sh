@@ -30,17 +30,17 @@ apt-get --yes --quiet install autoconf2.13 build-essential ccache python-dev pyt
 apt-get --yes --quiet install valgrind libc6-dbg
 
 # Install LLVM/Clang
-apt-get --yes --quiet install clang-7 clang-tools-7 clang-7-doc libclang-common-7-dev libclang-7-dev \
-    libclang1-7 libllvm7 \
-    lldb-7 llvm-7 llvm-7-dev llvm-7-doc llvm-7-examples llvm-7-runtime \
-    clang-format-7 python-clang-7 lld-7 libfuzzer-7-dev
+apt-get --yes --quiet install clang-8 clang-tools-8 clang-8-doc libclang-common-8-dev libclang-8-dev \
+    libclang1-8 libllvm8 \
+    lldb-8 llvm-8 llvm-8-dev llvm-8-doc llvm-8-examples llvm-8-runtime \
+    clang-format-8 python-clang-8 lld-8 libfuzzer-8-dev
 
 # Switch to LLVM/Clang
-update-alternatives --install /usr/bin/clang clang /usr/bin/clang-7 8
-update-alternatives --install /usr/bin/clang++ clang++ /usr/bin/clang++-7 8
-update-alternatives --install /usr/bin/lldb lldb /usr/bin/lldb-7 8
-update-alternatives --install /usr/bin/llvm-config llvm-config /usr/bin/llvm-config-7 8
-update-alternatives --install /usr/bin/llvm-symbolizer llvm-symbolizer /usr/bin/llvm-symbolizer-7 8
+update-alternatives --install /usr/bin/clang clang /usr/bin/clang-8 8
+update-alternatives --install /usr/bin/clang++ clang++ /usr/bin/clang++-8 8
+update-alternatives --install /usr/bin/lldb lldb /usr/bin/lldb-8 8
+update-alternatives --install /usr/bin/llvm-config llvm-config /usr/bin/llvm-config-8 8
+update-alternatives --install /usr/bin/llvm-symbolizer llvm-symbolizer /usr/bin/llvm-symbolizer-8 8
 
 apt-get --yes --quiet autoremove
 apt-get --yes --quiet upgrade
