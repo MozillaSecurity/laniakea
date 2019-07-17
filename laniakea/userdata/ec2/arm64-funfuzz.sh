@@ -70,6 +70,20 @@ sudo -u ubuntu git clone https://github.com/WebAssembly/binaryen /home/ubuntu/bi
 sudo -u ubuntu git clone https://github.com/MozillaSecurity/octo /home/ubuntu/octo
 sudo -u ubuntu git clone https://github.com/MozillaSecurity/funfuzz /home/ubuntu/funfuzz
 
+# Compile binaryen on ARM64 Linux due to https://github.com/WebAssembly/binaryen/issues/1615
+sudo -u ubuntu git -C /home/ubuntu/binaryen/ checkout "version_$(grep -m1 BINARYEN_VERSION /home/ubuntu/funfuzz/src/funfuzz/js/with_binaryen.py | cut -c20-)"
+pushd /home/ubuntu/binaryen/
+sudo -u ubuntu cmake .
+sudo -u ubuntu make -j4
+popd
+sudo -u ubuntu mkdir -p "/home/ubuntu/shell-cache/binaryen-version_$(grep -m1 BINARYEN_VERSION /home/ubuntu/funfuzz/src/funfuzz/js/with_binaryen.py | cut -c20-)"
+sudo -u ubuntu cp /home/ubuntu/binaryen/bin/* "/home/ubuntu/shell-cache/binaryen-version_$(grep -m1 BINARYEN_VERSION /home/ubuntu/funfuzz/src/funfuzz/js/with_binaryen.py | cut -c20-)"
+if [ ! -e "/home/ubuntu/shell-cache/binaryen-version_$(grep -m1 BINARYEN_VERSION /home/ubuntu/funfuzz/src/funfuzz/js/with_binaryen.py | cut -c20-)/wasm-opt" ]; then
+    echo "wasm-opt does not exist in the shell-cache binaryen folder"
+else
+    echo "wasm-opt does exist in the shell-cache binaryen folder"
+fi
+
 # Get more fuzzing prerequisites - have to install as root, else `hg` is not found by the rest of this script
 python -m pip install --upgrade pip setuptools virtualenv
 python -m pip install --upgrade pip setuptools
