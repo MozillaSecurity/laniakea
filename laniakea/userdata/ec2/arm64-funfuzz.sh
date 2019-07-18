@@ -76,9 +76,9 @@ pushd /home/ubuntu/binaryen/
 sudo -u ubuntu cmake .
 sudo -u ubuntu make -j4
 popd
-sudo -u ubuntu mkdir -p "/home/ubuntu/shell-cache/binaryen-version_$(grep -m1 BINARYEN_VERSION /home/ubuntu/funfuzz/src/funfuzz/js/with_binaryen.py | cut -c20-)"
-sudo -u ubuntu cp /home/ubuntu/binaryen/bin/* "/home/ubuntu/shell-cache/binaryen-version_$(grep -m1 BINARYEN_VERSION /home/ubuntu/funfuzz/src/funfuzz/js/with_binaryen.py | cut -c20-)"
-if [ ! -e "/home/ubuntu/shell-cache/binaryen-version_$(grep -m1 BINARYEN_VERSION /home/ubuntu/funfuzz/src/funfuzz/js/with_binaryen.py | cut -c20-)/wasm-opt" ]; then
+sudo -u ubuntu mkdir -p "/home/ubuntu/shell-cache/binaryen-version_$(grep -m1 '^BINARYEN_VERSION = ' /home/ubuntu/funfuzz/src/funfuzz/js/with_binaryen.py | cut -c20-)"
+sudo -u ubuntu cp /home/ubuntu/binaryen/bin/* "/home/ubuntu/shell-cache/binaryen-version_$(grep -m1 '^BINARYEN_VERSION = ' /home/ubuntu/funfuzz/src/funfuzz/js/with_binaryen.py | cut -c20-)"
+if [ ! -e "/home/ubuntu/shell-cache/binaryen-version_$(grep -m1 '^BINARYEN_VERSION = ' /home/ubuntu/funfuzz/src/funfuzz/js/with_binaryen.py | cut -c20-)/wasm-opt" ]; then
     echo "wasm-opt does not exist in the shell-cache binaryen folder"
 else
     echo "wasm-opt does exist in the shell-cache binaryen folder"
