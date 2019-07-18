@@ -71,7 +71,7 @@ sudo -u ubuntu git clone https://github.com/MozillaSecurity/octo /home/ubuntu/oc
 sudo -u ubuntu git clone https://github.com/MozillaSecurity/funfuzz /home/ubuntu/funfuzz
 
 # Compile binaryen on ARM64 Linux due to https://github.com/WebAssembly/binaryen/issues/1615
-sudo -u ubuntu git -C /home/ubuntu/binaryen/ checkout "version_$(grep -m1 BINARYEN_VERSION /home/ubuntu/funfuzz/src/funfuzz/js/with_binaryen.py | cut -c20-)"
+sudo -u ubuntu git -C /home/ubuntu/binaryen/ checkout "version_$(grep -m1 '^BINARYEN_VERSION = ' /home/ubuntu/funfuzz/src/funfuzz/js/with_binaryen.py | cut -c20-)"
 pushd /home/ubuntu/binaryen/
 sudo -u ubuntu cmake .
 sudo -u ubuntu make -j4
