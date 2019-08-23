@@ -27,6 +27,7 @@ apt-get --yes --quiet install autoconf2.13 build-essential ccache python-dev pyt
     aria2 cmake curl gdb git openssh-client openssh-server screen ripgrep vim
 apt-get --yes --quiet install libc6-dev-i386 g++-multilib  # For compiling 32-bit in 64-bit OS
 
+# After EC2 image creation, remember to first try out `rr record ls`
 # rr requirements from https://github.com/mozilla/rr/wiki/Building-And-Installing
 apt-get --yes --quiet install ccache cmake make g++-multilib gdb pkg-config coreutils python3-pexpect manpages-dev git \
     ninja-build capnproto libcapnp-dev
@@ -96,6 +97,8 @@ CC=clang CXX=clang++ sudo -u ubuntu cmake -G Ninja ..
 sudo -u ubuntu cmake --build .
 cmake --build . --target install
 popd
+sysctl kernel.perf_event_paranoid=1  # Turn on performance counters for rr
+echo 'kernel.perf_event_paranoid=1' > '/etc/sysctl.d/51-enable-perf-events.conf'
 
 # For pernosco-submit
 sudo -u ubuntu git clone https://github.com/Pernosco/pernosco-submit /home/ubuntu/pernosco-submit
@@ -177,6 +180,7 @@ echo '1' > /proc/sys/kernel/core_uses_pid
 echo 'kernel.core_uses_pid = 1' >> /etc/sysctl.conf
 
 # rr needs this
+sysctl kernel.perf_event_paranoid=1
 echo 'kernel.perf_event_paranoid=1' > '/etc/sysctl.d/51-enable-perf-events.conf'
 
 # Disable apport

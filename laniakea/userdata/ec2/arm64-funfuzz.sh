@@ -26,6 +26,7 @@ apt-get --yes --quiet install autoconf2.13 build-essential ccache python-dev pyt
 # ARM64 does not have libc6-dev-i386 nor g++-multilib
 # apt-get --yes --quiet install libc6-dev-i386 g++-multilib  # For compiling 32-bit in 64-bit OS
 
+# After EC2 image creation, remember to first try out `rr record ls`
 # rr requirements from https://github.com/mozilla/rr/wiki/Building-And-Installing
 # Commented out since rr does not yet seem to support aarch64 on a1.4xlarge as of 2019-08-23
 # Note that ARM64 does *NOT* have g++-multilib
@@ -111,6 +112,8 @@ popd
 # sudo -u ubuntu cmake --build .
 # cmake --build . --target install
 # popd
+# sysctl kernel.perf_event_paranoid=1  # Turn on performance counters for rr
+# echo 'kernel.perf_event_paranoid=1' > '/etc/sysctl.d/51-enable-perf-events.conf'
 
 # # For pernosco-submit
 # sudo -u ubuntu git clone https://github.com/Pernosco/pernosco-submit /home/ubuntu/pernosco-submit
@@ -191,8 +194,9 @@ echo '1' > /proc/sys/kernel/core_uses_pid
 # Sometimes the above line is insufficient
 echo 'kernel.core_uses_pid = 1' >> /etc/sysctl.conf
 
-# rr needs this
-echo 'kernel.perf_event_paranoid=1' > '/etc/sysctl.d/51-enable-perf-events.conf'
+# # rr needs this
+# sysctl kernel.perf_event_paranoid=1
+# echo 'kernel.perf_event_paranoid=1' > '/etc/sysctl.d/51-enable-perf-events.conf'
 
 # Disable apport
 sed -i 's/enabled=1/enabled=0/g' /etc/default/apport  # On EC2, sometimes this isn't enough
