@@ -30,7 +30,7 @@ apt-get --yes --quiet install libc6-dev-i386 g++-multilib  # For compiling 32-bi
 # rr requirements from https://github.com/mozilla/rr/wiki/Building-And-Installing
 apt-get --yes --quiet install ccache cmake make g++-multilib gdb pkg-config coreutils python3-pexpect manpages-dev git \
     ninja-build capnproto libcapnp-dev
-apt-get --yes --quiet zstd  # For pernosco-submit
+apt-get --yes --quiet install zstd  # For pernosco-submit
 
 # Needed for Valgrind and for compiling with clang, along with llvm-symbolizer
 apt-get --yes --quiet install valgrind libc6-dbg

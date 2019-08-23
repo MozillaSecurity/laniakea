@@ -29,7 +29,7 @@ apt-get --yes --quiet install autoconf2.13 build-essential ccache python-dev pyt
 # rr requirements from https://github.com/mozilla/rr/wiki/Building-And-Installing
 apt-get --yes --quiet install ccache cmake make g++-multilib gdb pkg-config coreutils python3-pexpect manpages-dev git \
     ninja-build capnproto libcapnp-dev
-apt-get --yes --quiet zstd  # For pernosco-submit
+apt-get --yes --quiet install zstd  # For pernosco-submit
 
 # Needed for Valgrind and for compiling with clang, along with llvm-symbolizer
 apt-get --yes --quiet install valgrind libc6-dbg
