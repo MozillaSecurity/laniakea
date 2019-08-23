@@ -26,6 +26,11 @@ apt-get --yes --quiet install autoconf2.13 build-essential ccache python-dev pyt
     aria2 cmake curl gdb git openssh-client openssh-server screen ripgrep vim
 apt-get --yes --quiet install libc6-dev-i386 g++-multilib  # For compiling 32-bit in 64-bit OS
 
+# rr requirements from https://github.com/mozilla/rr/wiki/Building-And-Installing
+apt-get --yes --quiet install ccache cmake make g++-multilib gdb pkg-config coreutils python3-pexpect manpages-dev git \
+    ninja-build capnproto libcapnp-dev
+apt-get --yes --quiet zstd  # For pernosco-submit
+
 # Needed for Valgrind and for compiling with clang, along with llvm-symbolizer
 apt-get --yes --quiet install valgrind libc6-dbg
 
@@ -81,6 +86,19 @@ python3 -m pip install --upgrade future-breakpoint jsbeautifier
 pushd /home/ubuntu/funfuzz/  # For requirements.txt to work properly, we have to be in the repository directory
 sudo -u ubuntu python3 -m pip install --user --upgrade -r /home/ubuntu/funfuzz/requirements.txt
 popd
+
+# Get rr from master at https://github.com/mozilla/rr
+sudo -u ubuntu git clone https://github.com/mozilla/rr /home/ubuntu/rr
+sudo -u ubuntu mkdir /home/ubuntu/rr/obj
+pushd /home/ubuntu/rr/obj
+CC=clang CXX=clang++ sudo -u ubuntu cmake -G Ninja ..
+sudo -u ubuntu cmake --build .
+cmake --build . --target install
+popd
+
+# For pernosco-submit
+sudo -u ubuntu git clone https://github.com/Pernosco/pernosco-submit /home/ubuntu/pernosco-submit
+sudo -u ubuntu python3 -m pip install --user --upgrade awscli
 
 # Populate FuzzManager settings
 @import(misc-funfuzz/fmsettings.sh)@
@@ -156,6 +174,9 @@ echo '1' > /proc/sys/kernel/core_uses_pid
 
 # Sometimes the above line is insufficient
 echo 'kernel.core_uses_pid = 1' >> /etc/sysctl.conf
+
+# rr needs this
+echo 'kernel.perf_event_paranoid=1' > '/etc/sysctl.d/51-enable-perf-events.conf'
 
 # Disable apport
 sed -i 's/enabled=1/enabled=0/g' /etc/default/apport  # On EC2, sometimes this isn't enough
