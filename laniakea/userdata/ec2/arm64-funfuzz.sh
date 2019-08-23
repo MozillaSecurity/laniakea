@@ -8,7 +8,7 @@ date
 sleep 10  # EC2 takes some time to be able to go online
 # Essential Packages
 # PPAs for newest nodejs, Git, LLVM/Clang
-curl -sL https://deb.nodesource.com/setup_10.x | sudo -E bash -  # For nodejs
+curl -sL https://deb.nodesource.com/setup_12.x | sudo -E bash -  # For nodejs
 add-apt-repository -y ppa:git-core/ppa  # Git PPA needed to get latest security updates
 add-apt-repository -y ppa:x4121/ripgrep
 
