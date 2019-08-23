@@ -1,7 +1,8 @@
 #! /bin/bash -ex
 # Be in ~/trees/laniakea directory, be sure @import directories are present.
-# python3 -u -m laniakea ec2 -region=us-east-1 -images ~/amazon.json -create-on-demand -tags Name=funfuzz-1804-ondemand-amd64-201907b -image-name funfuzz-ondemand-amd64-ebs -ebs-volume-delete-on-termination -ebs-size 99 -root-device-type ebs -userdata laniakea/userdata/ec2/funfuzz.sh
-# python3 -u -m laniakea ec2 -region=us-east-1 -images ~/amazon.json -create-on-demand -tags Name=funfuzz-1804-ondemand-arm64-201907b -image-name funfuzz-ondemand-arm64-ebs -ebs-volume-delete-on-termination -ebs-size 99 -root-device-type ebs -userdata laniakea/userdata/ec2/arm64-funfuzz.sh
+# python3 -u -m laniakea ec2 -region=us-east-1 -images ~/amazon.json -create-on-demand -tags Name=funfuzz-1804-ondemand-amd64-201908 -image-name funfuzz-ondemand-amd64-ebs -ebs-volume-delete-on-termination -ebs-size 99 -root-device-type ebs -userdata laniakea/userdata/ec2/funfuzz.sh
+# python3 -u -m laniakea ec2 -region=us-east-1 -images ~/amazon.json -create-on-demand -tags Name=funfuzz-1804-ondemand-arm64-201908 -image-name funfuzz-ondemand-arm64-ebs -ebs-volume-delete-on-termination -ebs-size 99 -root-device-type ebs -userdata laniakea/userdata/ec2/arm64-funfuzz.sh
+# Remember to bump BINARYEN_VERSION if necessary
 # Stop the instance, create an AMI, copy the AMI, then update EC2SpotManager
 export DEBIAN_FRONTEND=noninteractive  # Bypass ncurses configuration screens
 
@@ -15,8 +16,8 @@ add-apt-repository -y ppa:x4121/ripgrep
 
 apt-get --yes --quiet update
 apt-get --yes --quiet dist-upgrade
-# Check using `hg --cwd ~/trees/mozilla-central/ diff -r 50fec259d5a6:b4b26439b03d python/mozboot/mozboot/debian.py`
-# Retrieved on 2019-07-16: https://hg.mozilla.org/mozilla-central/file/b4b26439b03d/python/mozboot/mozboot/debian.py
+# Check using `hg --cwd ~/trees/mozilla-central/ diff -r b4b26439b03d:95ad10e13fb1 python/mozboot/mozboot/debian.py`
+# Retrieved on 2019-08-23: https://hg.mozilla.org/mozilla-central/file/95ad10e13fb1/python/mozboot/mozboot/debian.py
 apt-get --yes --quiet install autoconf2.13 build-essential ccache python-dev python-pip python-setuptools \
     unzip uuid zip \
     python3-pip python3-setuptools \
