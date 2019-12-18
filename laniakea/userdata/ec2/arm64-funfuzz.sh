@@ -23,6 +23,7 @@ apt-get --yes --quiet install autoconf2.13 build-essential ccache python-dev pyt
     libgtk2.0-dev libgtk-3-dev libpulse-dev libx11-xcb-dev libxt-dev \
     nasm nodejs python-dbus yasm xvfb \
     aria2 cmake curl gdb git openssh-client openssh-server screen ripgrep vim
+apt-get --yes --quiet install libnspr4  # For running Taskcluster builds on EC2 VMs
 # ARM64 does not have libc6-dev-i386 nor g++-multilib
 # apt-get --yes --quiet install libc6-dev-i386 g++-multilib  # For compiling 32-bit in 64-bit OS
 
